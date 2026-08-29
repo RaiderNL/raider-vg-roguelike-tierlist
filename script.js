@@ -217,7 +217,6 @@ function createGameCard(game) {
     }
 
     const title = document.createElement('h3');
-
     title.className = 'game-title';
     title.textContent = name;
 
