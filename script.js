@@ -189,20 +189,29 @@ function createGameCard(game) {
     const description = game['Description']  '';
     const comment = game['Comment']  '';
 
-    if (cover) {
+    
+    const steamImage = getSteamImage(steamLink);
+    const imageUrl = cover || steamImage;
+    
+    if (imageUrl) {
         const image = document.createElement('img');
-
+    
         image.className = 'game-cover';
-        image.src = cover;
+        image.src = imageUrl;
         image.alt = name;
         image.loading = 'lazy';
-
+    
         image.addEventListener('error', () => {
-            image.remove();
+            if (cover && steamImage && image.src !== steamImage) {
+                image.src = steamImage;
+            } else {
+                image.remove();
+            }
         });
-
+    
         card.appendChild(image);
     }
+
 
     const title = document.createElement('h3');
 
@@ -266,3 +275,16 @@ function createLink(url, text) {
 
     return link;
 }
+
+function getSteamImage(steamLink) {
+    const match = String(steamLink || '').match(/\/app\/(\d+)/i);
+
+    if (!match) {
+        return '';
+    }
+
+    const appId = match[1];
+
+    return https://cdn.cloudflare.steamstatic.com/steam/apps/${appId}/header.jpg;
+}
+
