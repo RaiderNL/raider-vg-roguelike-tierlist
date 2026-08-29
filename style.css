@@ -72,10 +72,24 @@ body {
     box-shadow: 0 0 0 3px rgb(37 99 235 / 15%);
 }
 
+/*
+ * Общая область тир-листа и выбранного видео.
+ *
+ * Левая колонка занимает всё свободное место,
+ * правая имеет фиксированную ширину 320px.
+ */
+.tier-list-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 320px;
+    align-items: start;
+    gap: 16px;
+}
+
 .tier-list {
     display: flex;
     flex-direction: column;
     gap: 8px;
+    min-width: 0;
 }
 
 .tier-row {
@@ -199,7 +213,7 @@ body {
 
 /*
  * Иллюстрация занимает верхние 2/3 карточки
- * и полностью заполняет выделенную область.
+ * и полностью заполняет доступное пространство.
  */
 .game-cover {
     display: block;
@@ -265,7 +279,19 @@ body {
 }
 
 /*
- * Всплывающее окно отображается сверху карточки.
+ * Принудительно скрывает ховер после клика
+ * по одной из ссылок в превью.
+ */
+.game-card.preview-closed .game-preview-popup {
+    visibility: hidden !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+
+    transform: translate(-50%, 8px) !important;
+}
+
+/*
+ * Всплывающее меню отображается над карточкой.
  */
 .game-preview-popup {
     position: absolute;
@@ -306,19 +332,15 @@ body {
     transform: translate(-50%, 0);
 }
 
-.game-card.preview-closed .game-preview-popup {
+.game-card.preview-closed:hover .game-preview-popup,
+.game-card.preview-closed:focus-within .game-preview-popup {
     visibility: hidden !important;
     opacity: 0 !important;
     pointer-events: none !important;
-
-    transform: translate(-50%, 8px) !important;
 }
 
-
-
 /*
- * Невидимый мост между карточкой и превью.
- * Он убирает разрыв при движении мыши вверх.
+ * Невидимый мост между карточкой и всплывающим окном.
  */
 .game-preview-popup::after {
     content: '';
@@ -382,6 +404,92 @@ body {
     text-align: center;
 }
 
+/*
+ * Панель выбранного YouTube-ролика.
+ */
+.selected-video-panel {
+    position: sticky;
+    top: 16px;
+
+    display: none;
+    width: 320px;
+    padding: 12px;
+
+    background: #fff;
+    border: 1px solid #e1e3e8;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgb(0 0 0 / 10%);
+}
+
+.selected-video-panel.is-visible {
+    display: block;
+}
+
+.selected-video-title {
+    margin: 0 0 10px;
+
+    color: #20232a;
+    font-size: 16px;
+    line-height: 1.3;
+    overflow-wrap: anywhere;
+}
+
+.selected-video-link {
+    display: block;
+    overflow: hidden;
+
+    color: #fff;
+    text-decoration: none;
+
+    background: #20232a;
+    border-radius: 8px;
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.selected-video-link:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 14px rgb(0 0 0 / 22%);
+}
+
+.selected-video-image {
+    display: block;
+
+    width: 100%;
+    height: auto;
+    aspect-ratio: 16 / 9;
+
+    object-fit: cover;
+    object-position: center;
+
+    background: #30343d;
+}
+
+.selected-video-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 100%;
+    aspect-ratio: 16 / 9;
+
+    color: #fff;
+    font-size: 42px;
+    background: #30343d;
+}
+
+.selected-video-caption {
+    display: block;
+
+    padding: 9px 10px;
+
+    font-size: 12px;
+    font-weight: 700;
+    text-align: center;
+}
+
 .loading-error {
     width: 100%;
     padding: 20px;
@@ -395,6 +503,36 @@ body {
 
     color: #666;
     text-align: center;
+}
+
+.site-footer a {
+    color: #2563eb;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.site-footer a:hover {
+    color: #1d4ed8;
+    text-decoration: underline;
+}
+
+.site-footer a:focus {
+    outline: 3px solid rgb(37 99 235 / 25%);
+    outline-offset: 3px;
+    border-radius: 3px;
+}
+
+@media (max-width: 900px) {
+    .tier-list-layout {
+        display: block;
+    }
+
+    .selected-video-panel {
+        position: static;
+
+        width: 100%;
+        margin-top: 16px;
+    }
 }
 
 @media (max-width: 600px) {
@@ -414,6 +552,7 @@ body {
     .controls {
         align-items: stretch;
         flex-direction: column;
+
         margin-bottom: 16px;
     }
 
@@ -466,7 +605,16 @@ body {
 
     .preview-label {
         padding: 6px;
+
         font-size: 11px;
+    }
+
+    .selected-video-panel {
+        padding: 10px;
+    }
+
+    .selected-video-title {
+        font-size: 15px;
     }
 }
 
