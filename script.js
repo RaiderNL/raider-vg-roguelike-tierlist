@@ -2,7 +2,7 @@ const SHEET_ID = '1WOZWwc-DohQsz6wwEOOF7xaVv2Y2MHCi_4kOq7yOK1s';
 const SHEET_GID = '0';
 
 const SHEET_URL =
-    https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=${SHEET_GID};
+    `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=${SHEET_GID}`;
 
 const tierNames = ['S', 'A', 'B', 'C', 'D', 'E', 'F'];
 
@@ -23,7 +23,7 @@ async function loadGames() {
         const response = await fetch(SHEET_URL);
 
         if (!response.ok) {
-            throw new Error(Ошибка загрузки таблицы: ${response.status});
+            throw new Error(`Ошибка загрузки таблицы: ${response.status}`);
         }
 
         const csvText = await response.text();
@@ -35,11 +35,11 @@ async function loadGames() {
     } catch (error) {
         console.error(error);
 
-        document.querySelector('.tier-list').innerHTML = 
+        document.querySelector('.tier-list').innerHTML = `
             <p class="loading-error">
                 Не удалось загрузить данные из Google Sheets.
             </p>
-        ;
+        `;
     }
 }
 
@@ -80,9 +80,9 @@ function parseCSV(text) {
         } else {
             value += character;
         }
-        }
+    }
 
-    if (value.length > 0  row.length > 0) {
+    if (value.length > 0 || row.length > 0) {
         row.push(value.trim());
         rows.push(row);
     }
@@ -97,7 +97,7 @@ function parseCSV(text) {
         const game = {};
 
         headers.forEach((header, index) => {
-            game[header] = columns[index]  '';
+            game[header] = columns[index] || '';
         });
 
         return game;
@@ -107,11 +107,13 @@ function parseCSV(text) {
 function fillTagFilter() {
     const tagFilter = document.querySelector('#tag-filter');
 
-    const tags = [...new Set(
-        games
-            .map(game => game['Tag']  '')
-            .filter(tag => tag.trim() !== '')
-    )].sort();
+    const tags = [
+        ...new Set(
+            games
+                .map(game => game['Tag'])
+                .filter(tag => tag.trim() !== '')
+        )
+    ].sort();
 
     tagFilter.innerHTML = '<option value="">Все жанры</option>';
 
@@ -127,7 +129,7 @@ function fillTagFilter() {
 
 function renderGames() {
     tierNames.forEach(tier => {
-        const container = document.querySelector(#tier-${tier});
+        const container = document.querySelector(`#tier-${tier}`);
 
         if (container) {
             container.innerHTML = '';
@@ -143,25 +145,26 @@ function renderGames() {
     const selectedTag = document.querySelector('#tag-filter').value;
 
     const filteredGames = games.filter(game => {
-        const name = (game['Name']  '').toLowerCase();
-        const tag = game['Tag']  '';
+        const name = (game['Name'] || '').toLowerCase();
+        const tag = game['Tag'] || '';
 
         const matchesSearch = name.includes(searchValue);
-        const matchesTag = selectedTag === ''  tag === selectedTag;
+        const matchesTag =
+            selectedTag === '' || tag === selectedTag;
 
         return matchesSearch && matchesTag;
     });
 
     filteredGames.sort((firstGame, secondGame) => {
-        const firstOrder = Number(firstGame['Order'])  999999;
-        const secondOrder = Number(secondGame['Order'])  999999;
+        const firstOrder = Number(firstGame['Order']) || 999999;
+        const secondOrder = Number(secondGame['Order']) || 999999;
 
         return firstOrder - secondOrder;
     });
 
     filteredGames.forEach(game => {
         const tier = normalizeTier(game['Tier']);
-        const container = document.querySelector(#tier-${tier});
+        const container = document.querySelector(`#tier-${tier}`);
 
         if (container) {
             container.appendChild(createGameCard(game));
@@ -170,7 +173,7 @@ function renderGames() {
 }
 
 function normalizeTier(tier) {
-    const normalizedTier = String(tier  '')
+    const normalizedTier = String(tier || '')
         .trim()
         .toUpperCase();
 
@@ -183,16 +186,16 @@ function createGameCard(game) {
     const card = document.createElement('article');
     card.className = 'game-card';
 
-    const name = game['Name']  'Без названия';
-    const cover = game['Cover']  '';
-    const video = game['Video']  '';
-    const steamLink = game['Steam Link']  '';
-    const tag = game['Tag']  '';
-    const description = game['Description']  '';
-    const comment = game['Comment']  '';
+    const name = game['Name'] || 'Без названия';
+    const cover = game['Cover'] || '';
+    const video = game['Video'] || '';
+    const steamLink = game['Steam Link'] || '';
+    const tag = game['Tag'] || '';
+    const description = game['Description'] || '';
+    const comment = game['Comment'] || '';
 
     const steamImage = getSteamImage(steamLink);
-    const imageUrl = cover  steamImage;
+    const imageUrl = cover || steamImage;
 
     if (imageUrl) {
         const image = document.createElement('img');
@@ -248,7 +251,6 @@ function createGameCard(game) {
     }
 
     const links = document.createElement('div');
-
     links.className = 'game-links';
 
     if (video) {
@@ -286,6 +288,5 @@ function getSteamImage(steamLink) {
 
     const appId = match[1];
 
-    return https://cdn.cloudflare.steamstatic.com/steam/apps/${appId}/header.jpg;
+    return `https://cdn.cloudflare.steamstatic.com/steam/apps/${appId}/header.jpg`;
 }
-
