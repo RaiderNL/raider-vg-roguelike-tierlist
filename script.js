@@ -23,6 +23,15 @@ window.addEventListener('pageshow', () => {
     closeAllPreviews();
 });
 
+window.addEventListener('resize', () => {
+    document
+        .querySelectorAll('.game-card:hover, .game-card:focus-within')
+        .forEach(card => {
+            positionPreview(card);
+        });
+});
+
+
 function init() {
     const searchInput = document.querySelector('#search');
     const tagFilter = document.querySelector('#tag-filter');
@@ -429,24 +438,101 @@ function setupCardHover(card) {
     card.addEventListener('mouseenter', () => {
         card.classList.remove(PREVIEW_CLOSED_CLASS);
         setTierRowActive(card, true);
+
+        requestAnimationFrame(() => {
+            positionPreview(card);
+        });
     });
 
     card.addEventListener('mouseleave', () => {
         card.classList.add(PREVIEW_CLOSED_CLASS);
         setTierRowActive(card, false);
+        resetPreviewPosition(card);
     });
 
     card.addEventListener('focusin', () => {
         card.classList.remove(PREVIEW_CLOSED_CLASS);
         setTierRowActive(card, true);
+
+        requestAnimationFrame(() => {
+            positionPreview(card);
+        });
     });
 
     card.addEventListener('focusout', event => {
         if (!card.contains(event.relatedTarget)) {
             card.classList.add(PREVIEW_CLOSED_CLASS);
             setTierRowActive(card, false);
+            resetPreviewPosition(card);
         }
     });
+}
+function positionPreview(card) {
+    const popup = card.querySelector('.game-preview-popup');
+
+    if (!popup) {
+        return;
+    }
+
+    popup.classList.remove(
+        'preview-position-right',
+        'preview-position-left',
+        'preview-position-bottom'
+    );
+
+    const cardRect = card.getBoundingClientRect();
+    const popupRect = popup.getBoundingClientRect();
+
+    const viewportWidth = window.innerWidth;
+    const viewportHeight = window.innerHeight;
+    const edgeOffset = 8;
+    const popupGap = 10;
+
+    const fitsAbove =
+        cardRect.top - popupRect.height - popupGap >= edgeOffset;
+
+    const fitsRight =
+        cardRect.right + popupRect.width + popupGap <=
+        viewportWidth - edgeOffset;
+
+    const fitsLeft =
+        cardRect.left - popupRect.width - popupGap >= edgeOffset;
+
+    const fitsBelow =
+        cardRect.bottom + popupRect.height + popupGap <=
+        viewportHeight - edgeOffset;
+
+    if (fitsAbove) {
+        return;
+    }
+
+    if (fitsRight) {
+        popup.classList.add('preview-position-right');
+        return;
+    }
+
+    if (fitsLeft) {
+        popup.classList.add('preview-position-left');
+        return;
+    }
+
+    if (fitsBelow) {
+        popup.classList.add('preview-position-bottom');
+    }
+}
+
+function resetPreviewPosition(card) {
+    const popup = card.querySelector('.game-preview-popup');
+
+    if (!popup) {
+        return;
+    }
+
+    popup.classList.remove(
+        'preview-position-right',
+        'preview-position-left',
+        'preview-position-bottom'
+    );
 }
 
 function setTierRowActive(card, isActive) {
