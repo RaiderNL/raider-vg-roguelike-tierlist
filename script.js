@@ -270,20 +270,22 @@ function createGameCard(game) {
             `Открыть страницу игры ${name} в Steam`
         );
 
-        card.addEventListener('click', () => {
-        card.classList.add('preview-closed');
+    card.addEventListener('click', () => {
+        closeAllPreviews();
         openExternalLink(steamLink);
     });
+
     
     
-            card.addEventListener('keydown', event => {
+    card.addEventListener('keydown', event => {
         if (event.key === 'Enter' || event.key === ' ') {
             event.preventDefault();
     
-            card.classList.add('preview-closed');
+            closeAllPreviews();
             openExternalLink(steamLink);
         }
     });
+
 
     }
 
@@ -384,6 +386,7 @@ function createPreviewPopup({
 
     popup.addEventListener('click', event => {
         event.stopPropagation();
+        closeAllPreviews();
     
         const card = popup.closest('.game-card');
     
