@@ -31,7 +31,7 @@ body {
 }
 
 .container {
-    width: min(1200px, calc(100% - 32px));
+    width: min(1400px, calc(100% - 32px));
     margin: 24px auto;
 }
 
@@ -170,13 +170,12 @@ body {
     flex: 1;
     flex-wrap: wrap;
     align-items: flex-start;
-    gap: 12px;
+    gap: 8px;
 
     min-width: 0;
-    padding: 16px;
+    padding: 12px;
     overflow: visible;
 }
-
 
 /*
  * Квадратная карточка.
