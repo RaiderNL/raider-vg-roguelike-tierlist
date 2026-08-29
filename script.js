@@ -239,22 +239,25 @@ function createGameCard(game) {
     const imageUrl = cover || steamImage;
 
     card.addEventListener('mouseenter', () => {
+        card.classList.remove('preview-closed');
+    
         const tierRow = card.closest('.tier-row');
-
+    
         if (tierRow) {
             tierRow.classList.add('tier-row-active');
         }
     });
-
-       card.addEventListener('mouseleave', () => {
+    
+    card.addEventListener('mouseleave', () => {
+        card.classList.add('preview-closed');
+    
         const tierRow = card.closest('.tier-row');
     
         if (tierRow) {
             tierRow.classList.remove('tier-row-active');
         }
-    
-        card.classList.remove('preview-closed');
     });
+
 
 
     if (steamLink) {
@@ -472,6 +475,26 @@ function createPreviewPopup({
     }
 
     return popup;
+}
+
+function closeAllPreviews() {
+    document
+        .querySelectorAll('.game-card.preview-closed')
+        .forEach(card => {
+            card.classList.remove('preview-closed');
+        });
+
+    document
+        .querySelectorAll('.game-card')
+        .forEach(card => {
+            card.classList.add('preview-closed');
+        });
+
+    document
+        .querySelectorAll('.tier-row-active')
+        .forEach(tierRow => {
+            tierRow.classList.remove('tier-row-active');
+        });
 }
 
 function getYouTubeThumbnail(videoUrl) {
