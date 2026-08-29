@@ -240,7 +240,6 @@ function createGameCard(game) {
 
     const name = game['Name'] || 'Без названия';
     const cover = game['Cover'] || '';
-    const video = game['Video'] || '';
     const steamLink = game['Steam Link'] || '';
     const description = game['Description'] || '';
     const comment = game['Comment'] || '';
@@ -248,6 +247,33 @@ function createGameCard(game) {
     const gameTags = getGameTags(game);
     const steamImage = getSteamImage(steamLink);
     const imageUrl = cover || steamImage;
+
+    // Если есть Steam-ссылка — карточка становится кликабельной
+    if (steamLink) {
+        card.classList.add('game-card-clickable');
+        card.setAttribute('role', 'link');
+        card.setAttribute('tabindex', '0');
+
+        card.addEventListener('click', () => {
+            window.open(
+                steamLink,
+                '_blank',
+                'noopener,noreferrer'
+            );
+        });
+
+        card.addEventListener('keydown', event => {
+            if (event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault();
+
+                window.open(
+                    steamLink,
+                    '_blank',
+                    'noopener,noreferrer'
+                );
+            }
+        });
+    }
 
     if (imageUrl) {
         const image = document.createElement('img');
@@ -318,23 +344,9 @@ function createGameCard(game) {
         card.appendChild(commentElement);
     }
 
-    const links = document.createElement('div');
-    links.className = 'game-links';
-
-    if (video) {
-        links.appendChild(createLink(video, 'Видео'));
-    }
-
-    if (steamLink) {
-        links.appendChild(createLink(steamLink, 'Steam'));
-    }
-
-    if (links.children.length > 0) {
-        card.appendChild(links);
-    }
-
     return card;
 }
+
 
 function createLink(url, text) {
     const link = document.createElement('a');
