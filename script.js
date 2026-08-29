@@ -246,13 +246,16 @@ function createGameCard(game) {
         }
     });
 
-    card.addEventListener('mouseleave', () => {
+       card.addEventListener('mouseleave', () => {
         const tierRow = card.closest('.tier-row');
-
+    
         if (tierRow) {
             tierRow.classList.remove('tier-row-active');
         }
+    
+        card.classList.remove('preview-closed');
     });
+
 
     if (steamLink) {
         card.classList.add('game-card-clickable');
@@ -265,15 +268,20 @@ function createGameCard(game) {
         );
 
         card.addEventListener('click', () => {
+        card.classList.add('preview-closed');
+        openExternalLink(steamLink);
+    });
+    
+    
+            card.addEventListener('keydown', event => {
+        if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault();
+    
+            card.classList.add('preview-closed');
             openExternalLink(steamLink);
-        });
+        }
+    });
 
-        card.addEventListener('keydown', event => {
-            if (event.key === 'Enter' || event.key === ' ') {
-                event.preventDefault();
-                openExternalLink(steamLink);
-            }
-        });
     }
 
     if (imageUrl) {
@@ -373,7 +381,14 @@ function createPreviewPopup({
 
     popup.addEventListener('click', event => {
         event.stopPropagation();
+    
+        const card = popup.closest('.game-card');
+    
+        if (card) {
+            card.classList.add('preview-closed');
+        }
     });
+
 
     popup.addEventListener('keydown', event => {
         event.stopPropagation();
