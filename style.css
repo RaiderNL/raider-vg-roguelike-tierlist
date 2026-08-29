@@ -317,7 +317,10 @@ body {
     visibility: hidden !important;
     opacity: 0 !important;
     pointer-events: none !important;
+
+    transform: translate(-50%, 8px) !important;
 }
+
 
 
 /*
@@ -347,11 +350,11 @@ body {
     border-radius: 10px;
     box-shadow: 0 10px 30px rgb(0 0 0 / 35%);
 
-    transform: translate(-50%, 8px);
+    transform: translate(-50%, 0);
     transition:
         opacity 0.2s ease,
-        transform 0.2s ease,
         visibility 0.2s ease;
+
 }
 /*
  * Превью справа от карточки.
@@ -414,9 +417,8 @@ body {
     visibility: visible;
     opacity: 1;
     pointer-events: auto;
-
-    transform: translate(-50%, 0);
 }
+
 
 .game-card.preview-closed:hover .game-preview-popup,
 .game-card.preview-closed:focus-within .game-preview-popup {
