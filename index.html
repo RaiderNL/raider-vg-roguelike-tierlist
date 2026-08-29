@@ -1,10 +1,17 @@
-
 <!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" type="image/svg+xml" href="Ico-min.ico">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <link
+        rel="icon"
+        type="image/x-icon"
+        href="Ico-min.ico"
+    >
 
     <title>Raider_VG Ultimate Roguelike Tierlist</title>
 
@@ -38,83 +45,128 @@
             </label>
 
             <select id="tag-filter">
-                <option value="">Все жанры</option>
+                <option value="">
+                    Все жанры
+                </option>
+            </select>
+
+            <label for="video-filter">
+                Видео
+            </label>
+
+            <select id="video-filter">
+                <option value="">
+                    Все ролики
+                </option>
             </select>
         </section>
 
-        <section class="tier-list">
+        <div class="tier-list-layout">
 
-            <div class="tier-row">
-                <div class="tier-label tier-s">
-                    S
+            <section class="tier-list">
+
+                <div class="tier-row">
+                    <div class="tier-label tier-s">
+                        S
+                    </div>
+
+                    <div
+                        class="games-container"
+                        id="tier-S"
+                    >
+                        <!-- Игры уровня S будут добавлены здесь -->
+                    </div>
                 </div>
 
-                <div class="games-container" id="tier-S">
-                    <!-- Игры уровня S будут добавлены здесь -->
-                </div>
-            </div>
+                <div class="tier-row">
+                    <div class="tier-label tier-a">
+                        A
+                    </div>
 
-            <div class="tier-row">
-                <div class="tier-label tier-a">
-                    A
-                </div>
-
-                <div class="games-container" id="tier-A">
-                    <!-- Игры уровня A будут добавлены здесь -->
-                </div>
-            </div>
-
-            <div class="tier-row">
-                <div class="tier-label tier-b">
-                    B
+                    <div
+                        class="games-container"
+                        id="tier-A"
+                    >
+                        <!-- Игры уровня A будут добавлены здесь -->
+                    </div>
                 </div>
 
-                <div class="games-container" id="tier-B">
-                    <!-- Игры уровня B будут добавлены здесь -->
-                </div>
-            </div>
+                <div class="tier-row">
+                    <div class="tier-label tier-b">
+                        B
+                    </div>
 
-            <div class="tier-row">
-                <div class="tier-label tier-c">
-                    C
-                </div>
-
-                <div class="games-container" id="tier-C">
-                    <!-- Игры уровня C будут добавлены здесь -->
-                </div>
-            </div>
-
-            <div class="tier-row">
-                <div class="tier-label tier-d">
-                    D
+                    <div
+                        class="games-container"
+                        id="tier-B"
+                    >
+                        <!-- Игры уровня B будут добавлены здесь -->
+                    </div>
                 </div>
 
-                <div class="games-container" id="tier-D">
-                    <!-- Игры уровня D будут добавлены здесь -->
-                </div>
-            </div>
+                <div class="tier-row">
+                    <div class="tier-label tier-c">
+                        C
+                    </div>
 
-            <div class="tier-row">
-                <div class="tier-label tier-e">
-                    E
-                </div>
-
-                <div class="games-container" id="tier-E">
-                    <!-- Игры уровня E будут добавлены здесь -->
-                </div>
-            </div>
-
-            <div class="tier-row">
-                <div class="tier-label tier-f">
-                    F
+                    <div
+                        class="games-container"
+                        id="tier-C"
+                    >
+                        <!-- Игры уровня C будут добавлены здесь -->
+                    </div>
                 </div>
 
-                <div class="games-container" id="tier-F">
-                    <!-- Игры уровня F будут добавлены здесь -->
-                </div>
-            </div>
+                <div class="tier-row">
+                    <div class="tier-label tier-d">
+                        D
+                    </div>
 
-        </section>
+                    <div
+                        class="games-container"
+                        id="tier-D"
+                    >
+                        <!-- Игры уровня D будут добавлены здесь -->
+                    </div>
+                </div>
+
+                <div class="tier-row">
+                    <div class="tier-label tier-e">
+                        E
+                    </div>
+
+                    <div
+                        class="games-container"
+                        id="tier-E"
+                    >
+                        <!-- Игры уровня E будут добавлены здесь -->
+                    </div>
+                </div>
+
+                <div class="tier-row">
+                    <div class="tier-label tier-f">
+                        F
+                    </div>
+
+                    <div
+                        class="games-container"
+                        id="tier-F"
+                    >
+                        <!-- Игры уровня F будут добавлены здесь -->
+                    </div>
+                </div>
+
+            </section>
+
+            <aside
+                class="selected-video-panel"
+                id="selected-video-panel"
+                aria-hidden="true"
+            >
+                <!-- Выбранное видео будет добавлено через script.js -->
+            </aside>
+
+        </div>
 
     </main>
 
@@ -123,7 +175,7 @@
             Все обзоры доступны на
             <a
                 class="channel-link"
-                href="https://www.youtube.com/channel/UCv5RBB0q8-ko62H5HT8BRag"
+                href="https://www.youtube.com/@Raider_VG"
                 target="_blank"
                 rel="noopener noreferrer"
             >
@@ -132,7 +184,7 @@
         </p>
     </footer>
 
-
     <script src="script.js"></script>
 </body>
 </html>
+
