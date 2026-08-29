@@ -254,7 +254,9 @@ function renderGames() {
         }
     });
 
+    updateVideoFilterState(selectedVideo);
     renderSelectedVideo(selectedVideo);
+
 }
 
 function clearTierContainers() {
@@ -286,6 +288,20 @@ function getSelectedVideo() {
 
     return videoFilter ? videoFilter.value : '';
 }
+
+function updateVideoFilterState(selectedVideo) {
+    const layout = document.querySelector('.tier-list-layout');
+
+    if (!layout) {
+        return;
+    }
+
+    layout.classList.toggle(
+        'video-filter-active',
+        selectedVideo !== ''
+    );
+}
+
 
 function gameMatchesFilters(
     game,
