@@ -4,13 +4,23 @@ const SHEET_GID = '0';
 const SHEET_URL =
     `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=${SHEET_GID}`;
 
-const tierNames = ['S', 'A', 'B', 'C', 'D', 'E', 'F'];
+const TIER_NAMES = ['S', 'A', 'B', 'C', 'D', 'E', 'F'];
+const HIDDEN_PREVIEW_CLASS = 'preview-closed';
+const ACTIVE_ROW_CLASS = 'tier-row-active';
 
 let games = [];
 
-document.addEventListener('DOMContentLoaded', () => {
-    loadGames();
+document.addEventListener('DOMContentLoaded', init);
 
+document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') {
+        closeAllPreviews();
+    }
+});
+
+window.addEventListener('pageshow', closeAllPreviews);
+
+function init() {
     const searchInput = document.querySelector('#search');
     const tagFilter = document.querySelector('#tag-filter');
 
@@ -21,17 +31,9 @@ document.addEventListener('DOMContentLoaded', () => {
     if (tagFilter) {
         tagFilter.addEventListener('change', renderGames);
     }
-});
 
-document.addEventListener('visibilitychange', () => {
-    if (document.visibilityState === 'visible') {
-        closeAllPreviews();
-    }
-});
-
-window.addEventListener('pageshow', () => {
-    closeAllPreviews();
-});
+    loadGames();
+}
 
 async function loadGames() {
     try {
@@ -51,17 +53,22 @@ async function loadGames() {
         renderGames();
     } catch (error) {
         console.error(error);
-
-        const tierList = document.querySelector('.tier-list');
-
-        if (tierList) {
-            tierList.innerHTML = `
-                <p class="loading-error">
-                    Не удалось загрузить данные из Google Sheets.
-                </p>
-            `;
-        }
+        showLoadingError();
     }
+}
+
+function showLoadingError() {
+    const tierList = document.querySelector('.tier-list');
+
+    if (!tierList) {
+        return;
+    }
+
+    tierList.innerHTML = `
+        <p class="loading-error">
+            Не удалось загрузить данные из Google Sheets.
+        </p>
+    `;
 }
 
 function parseCSV(text) {
@@ -70,9 +77,9 @@ function parseCSV(text) {
     let value = '';
     let insideQuotes = false;
 
-    for (let i = 0; i < text.length; i++) {
-        const character = text[i];
-        const nextCharacter = text[i + 1];
+    for (let index = 0; index < text.length; index++) {
+        const character = text[index];
+        const nextCharacter = text[index + 1];
 
         if (
             character === '"' &&
@@ -80,18 +87,27 @@ function parseCSV(text) {
             nextCharacter === '"'
         ) {
             value += '"';
-            i++;
-        } else if (character === '"') {
+            index++;
+            continue;
+        }
+
+        if (character === '"') {
             insideQuotes = !insideQuotes;
-        } else if (character === ',' && !insideQuotes) {
+            continue;
+        }
+
+        if (character === ',' && !insideQuotes) {
             row.push(value.trim());
             value = '';
-        } else if (
+            continue;
+        }
+
+        if (
             (character === '\n' || character === '\r') &&
             !insideQuotes
         ) {
             if (character === '\r' && nextCharacter === '\n') {
-                i++;
+                index++;
             }
 
             row.push(value.trim());
@@ -102,9 +118,10 @@ function parseCSV(text) {
             }
 
             row = [];
-        } else {
-            value += character;
+            continue;
         }
+
+        value += character;
     }
 
     if (value.length > 0 || row.length > 0) {
@@ -167,50 +184,20 @@ function fillTagFilter() {
 }
 
 function renderGames() {
-    tierNames.forEach(tier => {
-        const container = document.querySelector(`#tier-${tier}`);
+    clearTierContainers();
 
-        if (container) {
-            container.innerHTML = '';
-        }
-    });
+    const searchValue = getSearchValue();
+    const selectedTag = getSelectedTag();
 
-    const searchInput = document.querySelector('#search');
-    const tagFilter = document.querySelector('#tag-filter');
-
-    const searchValue = searchInput
-        ? searchInput.value.trim().toLowerCase()
-        : '';
-
-    const selectedTag = tagFilter
-        ? tagFilter.value
-        : '';
-
-    const filteredGames = games.filter(game => {
-        const name = String(game['Name'] || '')
-            .trim()
-            .toLowerCase();
-
-        const gameTags = getGameTags(game);
-
-        const matchesSearch = name.includes(searchValue);
-
-        const matchesTag =
-            selectedTag === '' ||
-            gameTags.includes(selectedTag);
-
-        return matchesSearch && matchesTag;
-    });
-
-    filteredGames.sort((firstGame, secondGame) => {
-        const firstOrder =
-            Number(firstGame['Order']) || 999999;
-
-        const secondOrder =
-            Number(secondGame['Order']) || 999999;
-
-        return firstOrder - secondOrder;
-    });
+    const filteredGames = games
+        .filter(game =>
+            gameMatchesFilters(
+                game,
+                searchValue,
+                selectedTag
+            )
+        )
+        .sort(compareGamesByOrder);
 
     filteredGames.forEach(game => {
         const tier = normalizeTier(game['Tier']);
@@ -222,12 +209,62 @@ function renderGames() {
     });
 }
 
+function clearTierContainers() {
+    TIER_NAMES.forEach(tier => {
+        const container = document.querySelector(`#tier-${tier}`);
+
+        if (container) {
+            container.innerHTML = '';
+        }
+    });
+}
+
+function getSearchValue() {
+    const searchInput = document.querySelector('#search');
+
+    return searchInput
+        ? searchInput.value.trim().toLowerCase()
+        : '';
+}
+
+function getSelectedTag() {
+    const tagFilter = document.querySelector('#tag-filter');
+
+    return tagFilter ? tagFilter.value : '';
+}
+
+function gameMatchesFilters(game, searchValue, selectedTag) {
+    const name = String(game['Name'] || '')
+        .trim()
+        .toLowerCase();
+
+    const gameTags = getGameTags(game);
+
+    const matchesSearch = name.includes(searchValue);
+
+    const matchesTag =
+        selectedTag === '' ||
+        gameTags.includes(selectedTag);
+
+    return matchesSearch && matchesTag;
+}
+
+function compareGamesByOrder(firstGame, secondGame) {
+    const firstOrder =
+        Number(firstGame['Order']) || 999999;
+
+    const secondOrder =
+        Number(secondGame['Order']) || 999999;
+
+    return firstOrder - secondOrder;
+}
+
 function normalizeTier(tier) {
     const normalizedTier = String(tier || '')
         .trim()
         .toUpperCase();
 
-    return tierNames.includes(normalizedTier)
+    return TIER_NAMES.includes(normalizedTier)
         ? normalizedTier
         : 'F';
 }
@@ -248,139 +285,189 @@ function createGameCard(game) {
     const steamImage = getSteamImage(steamLink);
     const imageUrl = cover || steamImage;
 
-    card.addEventListener('mouseenter', () => {
-        card.classList.remove('preview-closed');
-    
-        const tierRow = card.closest('.tier-row');
-    
-        if (tierRow) {
-            tierRow.classList.add('tier-row-active');
-        }
-    });
-    
-    card.addEventListener('mouseleave', () => {
-        card.classList.add('preview-closed');
-    
-        const tierRow = card.closest('.tier-row');
-    
-        if (tierRow) {
-            tierRow.classList.remove('tier-row-active');
-        }
-    });
+    setupCardHover(card);
+    setupCardSteamLink(card, steamLink, name);
 
-
-
-    if (steamLink) {
-        card.classList.add('game-card-clickable');
-
-        card.setAttribute('role', 'link');
-        card.setAttribute('tabindex', '0');
-        card.setAttribute(
-            'aria-label',
-            `Открыть страницу игры ${name} в Steam`
+    if (imageUrl) {
+        card.appendChild(
+            createGameCover(
+                imageUrl,
+                cover,
+                steamImage,
+                name
+            )
         );
+    }
+
+    card.appendChild(createGameTitle(name));
+
+    if (gameTags.length > 0) {
+        card.appendChild(createGameTagsElement(gameTags));
+    }
+
+    if (description) {
+        card.appendChild(
+            createTextElement(
+                'game-description',
+                description
+            )
+        );
+    }
+
+    if (comment) {
+        card.appendChild(
+            createTextElement(
+                'game-comment',
+                comment
+            )
+        );
+    }
+
+    if (steamLink || video) {
+        card.appendChild(
+            createPreviewPopup({
+                name,
+                cover,
+                steamLink,
+                video,
+                steamImage
+            })
+        );
+    }
+
+    return card;
+}
+
+function setupCardHover(card) {
+    card.addEventListener('mouseenter', () => {
+        card.classList.remove(HIDDEN_PREVIEW_CLASS);
+        setTierRowActive(card, true);
+    });
+
+    card.addEventListener('mouseleave', () => {
+        card.classList.add(HIDDEN_PREVIEW_CLASS);
+        setTierRowActive(card, false);
+    });
+
+    card.addEventListener('focusin', () => {
+        card.classList.remove(HIDDEN_PREVIEW_CLASS);
+        setTierRowActive(card, true);
+    });
+
+    card.addEventListener('focusout', event => {
+        if (!card.contains(event.relatedTarget)) {
+            card.classList.add(HIDDEN_PREVIEW_CLASS);
+            setTierRowActive(card, false);
+        }
+    });
+}
+
+function setTierRowActive(card, isActive) {
+    const tierRow = card.closest('.tier-row');
+
+    if (!tierRow) {
+        return;
+    }
+
+    tierRow.classList.toggle(ACTIVE_ROW_CLASS, isActive);
+}
+
+function setupCardSteamLink(card, steamLink, name) {
+    if (!steamLink) {
+        return;
+    }
+
+    card.classList.add('game-card-clickable');
+
+    card.setAttribute('role', 'link');
+    card.setAttribute('tabindex', '0');
+    card.setAttribute(
+        'aria-label',
+        `Открыть страницу игры ${name} в Steam`
+    );
 
     card.addEventListener('click', () => {
         closeAllPreviews();
         openExternalLink(steamLink);
     });
 
-    
-    
     card.addEventListener('keydown', event => {
-        if (event.key === 'Enter' || event.key === ' ') {
-            event.preventDefault();
-    
-            closeAllPreviews();
-            openExternalLink(steamLink);
+        if (event.key !== 'Enter' && event.key !== ' ') {
+            return;
+        }
+
+        event.preventDefault();
+
+        closeAllPreviews();
+        openExternalLink(steamLink);
+    });
+}
+
+function createGameCover(
+    imageUrl,
+    cover,
+    steamImage,
+    name
+) {
+    const image = document.createElement('img');
+
+    image.className = 'game-cover';
+    image.src = imageUrl;
+    image.alt = name;
+    image.loading = 'lazy';
+
+    image.addEventListener('error', () => {
+        console.warn(
+            `Не удалось загрузить обложку игры: ${name}`
+        );
+
+        if (
+            cover &&
+            steamImage &&
+            image.src !== steamImage
+        ) {
+            image.src = steamImage;
+        } else {
+            image.remove();
         }
     });
 
+    return image;
+}
 
-    }
-
-    if (imageUrl) {
-        const image = document.createElement('img');
-
-        image.className = 'game-cover';
-        image.src = imageUrl;
-        image.alt = name;
-        image.loading = 'lazy';
-
-        image.addEventListener('error', () => {
-            console.warn(
-                `Не удалось загрузить обложку игры: ${name}`
-            );
-
-            if (
-                cover &&
-                steamImage &&
-                image.src !== steamImage
-            ) {
-                image.src = steamImage;
-            } else {
-                image.remove();
-            }
-        });
-
-        card.appendChild(image);
-    }
-
+function createGameTitle(name) {
     const title = document.createElement('h3');
 
     title.className = 'game-title';
     title.textContent = name;
 
-    card.appendChild(title);
+    return title;
+}
 
-    if (gameTags.length > 0) {
-        const tagsContainer = document.createElement('div');
+function createGameTagsElement(tags) {
+    const tagsContainer = document.createElement('div');
 
-        tagsContainer.className = 'game-tags';
+    tagsContainer.className = 'game-tags';
 
-        gameTags.forEach(tag => {
-            const tagElement = document.createElement('span');
+    tags.forEach(tag => {
+        const tagElement = document.createElement('span');
 
-            tagElement.className = 'game-tag';
-            tagElement.textContent = tag;
+        tagElement.className = 'game-tag';
+        tagElement.textContent = tag;
 
-            tagsContainer.appendChild(tagElement);
-        });
+        tagsContainer.appendChild(tagElement);
+    });
 
-        card.appendChild(tagsContainer);
-    }
+    return tagsContainer;
+}
 
-    if (description) {
-        const descriptionElement = document.createElement('p');
+function createTextElement(className, text) {
+    const element = document.createElement('p');
 
-        descriptionElement.className = 'game-description';
-        descriptionElement.textContent = description;
+    element.className = className;
+    element.textContent = text;
 
-        card.appendChild(descriptionElement);
-    }
-
-    if (comment) {
-        const commentElement = document.createElement('p');
-
-        commentElement.className = 'game-comment';
-        commentElement.textContent = comment;
-
-        card.appendChild(commentElement);
-    }
-
-    if (steamLink || video) {
-        const previewPopup = createPreviewPopup({
-            name,
-            cover,
-            steamLink,
-            video,
-            steamImage
-        });
-
-        card.appendChild(previewPopup);
-    }
-
-    return card;
+    return element;
 }
 
 function createPreviewPopup({
@@ -397,144 +484,158 @@ function createPreviewPopup({
     popup.addEventListener('click', event => {
         event.stopPropagation();
         closeAllPreviews();
-    
-        const card = popup.closest('.game-card');
-    
-        if (card) {
-            card.classList.add('preview-closed');
-        }
     });
-
 
     popup.addEventListener('keydown', event => {
         event.stopPropagation();
     });
 
     if (steamLink) {
-        const steamPreview = document.createElement('a');
-
-        steamPreview.className = 'preview-link';
-        steamPreview.href = steamLink;
-        steamPreview.target = '_blank';
-        steamPreview.rel = 'noopener noreferrer';
-        steamPreview.title = `Открыть ${name} в Steam`;
-
-        const steamImageElement = document.createElement('img');
-
-        steamImageElement.className = 'preview-image';
-        steamImageElement.src = cover || steamImage;
-        steamImageElement.alt = `${name} — страница в Steam`;
-        steamImageElement.loading = 'lazy';
-
-        steamImageElement.addEventListener('error', () => {
-            if (
-                cover &&
-                steamImage &&
-                steamImageElement.src !== steamImage
-            ) {
-                steamImageElement.src = steamImage;
-            }
-        });
-
-        const steamLabel = document.createElement('span');
-
-        steamLabel.className = 'preview-label';
-        steamLabel.textContent = 'Открыть в Steam';
-
-        steamPreview.appendChild(steamImageElement);
-        steamPreview.appendChild(steamLabel);
-
-        popup.appendChild(steamPreview);
+        popup.appendChild(
+            createSteamPreview({
+                name,
+                cover,
+                steamLink,
+                steamImage
+            })
+        );
     }
 
     if (video) {
-        const videoThumbnail = getYouTubeThumbnail(video);
-        const videoPreview = document.createElement('a');
-
-        videoPreview.className = 'preview-link';
-        videoPreview.href = video;
-        videoPreview.target = '_blank';
-        videoPreview.rel = 'noopener noreferrer';
-        videoPreview.title = `Смотреть обзор игры ${name}`;
-
-        if (videoThumbnail) {
-            const videoImage = document.createElement('img');
-
-            videoImage.className = 'preview-image';
-            videoImage.src = videoThumbnail;
-            videoImage.alt = `${name} — видеообзор`;
-            videoImage.loading = 'lazy';
-
-            videoPreview.appendChild(videoImage);
-        } else {
-            const videoPlaceholder = document.createElement('div');
-
-            videoPlaceholder.className =
-                'preview-image preview-image-placeholder';
-
-            videoPlaceholder.textContent = '▶';
-
-            videoPreview.appendChild(videoPlaceholder);
-        }
-
-        const videoLabel = document.createElement('span');
-
-        videoLabel.className = 'preview-label';
-        videoLabel.textContent = 'Смотреть обзор';
-
-        videoPreview.appendChild(videoLabel);
-
-        popup.appendChild(videoPreview);
+        popup.appendChild(
+            createVideoPreview(name, video)
+        );
     }
 
     return popup;
 }
 
-function closeAllPreviews() {
-    document
-        .querySelectorAll('.game-card.preview-closed')
-        .forEach(card => {
-            card.classList.remove('preview-closed');
-        });
+function createSteamPreview({
+    name,
+    cover,
+    steamLink,
+    steamImage
+}) {
+    const preview = document.createElement('a');
 
+    preview.className = 'preview-link';
+    preview.href = steamLink;
+    preview.target = '_blank';
+    preview.rel = 'noopener noreferrer';
+    preview.title = `Открыть ${name} в Steam`;
+
+    const image = document.createElement('img');
+
+    image.className = 'preview-image';
+    image.src = cover || steamImage;
+    image.alt = `${name} — страница в Steam`;
+    image.loading = 'lazy';
+
+    image.addEventListener('error', () => {
+        if (
+            cover &&
+            steamImage &&
+            image.src !== steamImage
+        ) {
+            image.src = steamImage;
+        }
+    });
+
+    const label = document.createElement('span');
+
+    label.className = 'preview-label';
+    label.textContent = 'Открыть в Steam';
+
+    preview.appendChild(image);
+    preview.appendChild(label);
+
+    return preview;
+}
+
+function createVideoPreview(name, video) {
+    const preview = document.createElement('a');
+
+    preview.className = 'preview-link';
+    preview.href = video;
+    preview.target = '_blank';
+    preview.rel = 'noopener noreferrer';
+    preview.title = `Смотреть обзор игры ${name}`;
+
+    const thumbnail = getYouTubeThumbnail(video);
+
+    if (thumbnail) {
+        const image = document.createElement('img');
+
+        image.className = 'preview-image';
+        image.src = thumbnail;
+        image.alt = `${name} — видеообзор`;
+        image.loading = 'lazy';
+
+        preview.appendChild(image);
+    } else {
+        const placeholder = document.createElement('div');
+
+        placeholder.className =
+            'preview-image preview-image-placeholder';
+
+        placeholder.textContent = '▶';
+
+        preview.appendChild(placeholder);
+    }
+
+    const label = document.createElement('span');
+
+    label.className = 'preview-label';
+    label.textContent = 'Смотреть обзор';
+
+    preview.appendChild(label);
+
+    return preview;
+}
+
+function closeAllPreviews() {
     document
         .querySelectorAll('.game-card')
         .forEach(card => {
-            card.classList.add('preview-closed');
+            card.classList.add(HIDDEN_PREVIEW_CLASS);
         });
 
     document
-        .querySelectorAll('.tier-row-active')
+        .querySelectorAll(`.${ACTIVE_ROW_CLASS}`)
         .forEach(tierRow => {
-            tierRow.classList.remove('tier-row-active');
+            tierRow.classList.remove(ACTIVE_ROW_CLASS);
         });
 }
 
 function getYouTubeThumbnail(videoUrl) {
     const url = String(videoUrl || '').trim();
 
-    const matches = [
-        url.match(
-            /youtube\.com\/watch\?v=([a-zA-Z0-9_-]+)/i
-        ),
-        url.match(
-            /youtu\.be\/([a-zA-Z0-9_-]+)/i
-        ),
-        url.match(
-            /youtube\.com\/embed\/([a-zA-Z0-9_-]+)/i
-        ),
-        url.match(
-            /youtube\.com\/shorts\/([a-zA-Z0-9_-]+)/i
-        )
-    ];
-
-    const videoId = matches.find(match => match)?.[1];
+    const videoId = getYouTubeVideoId(url);
 
     if (!videoId) {
         return '';
     }
 
     return `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
+}
+
+function getYouTubeVideoId(videoUrl) {
+    const patterns = [
+        /youtube\.com\/watch\?[^#]*v=([a-zA-Z0-9_-]+)/i,
+        /youtu\.be\/([a-zA-Z0-9_-]+)/i,
+        /youtube\.com\/embed\/([a-zA-Z0-9_-]+)/i,
+        /youtube\.com\/shorts\/([a-zA-Z0-9_-]+)/i
+    ];
+
+    for (const pattern of patterns) {
+        const match = videoUrl.match(pattern);
+
+        if (match) {
+            return match[1];
+        }
+    }
+
+    return '';
 }
 
 function getSteamImage(steamLink) {
