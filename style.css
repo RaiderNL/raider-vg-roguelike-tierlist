@@ -208,6 +208,37 @@ body {
     transform: translateY(-3px);
     box-shadow: 0 5px 12px rgb(0 0 0 / 20%);
 }
+/*
+ * При выборе конкретного видео
+ * всплывающие превью отключаются.
+ */
+.tier-list-layout.video-filter-active
+.game-preview-popup {
+    display: none !important;
+}
+
+/*
+ * При активном видеофильтре отключаем
+ * визуальный эффект наведения на карточку.
+ */
+.tier-list-layout.video-filter-active
+.game-card:hover,
+.tier-list-layout.video-filter-active
+.game-card:focus-within {
+    z-index: 1;
+
+    transform: none;
+    box-shadow: 0 2px 6px rgb(0 0 0 / 12%);
+}
+
+/*
+ * Не поднимаем строку тир-листа при наведении,
+ * если выбран конкретный ролик.
+ */
+.tier-list-layout.video-filter-active
+.tier-row-active {
+    z-index: 1;
+}
 
 
 .game-card-clickable {
