@@ -238,8 +238,25 @@ function createGameCard(game) {
     const steamImage = getSteamImage(steamLink);
     const imageUrl = cover || steamImage;
 
+    card.addEventListener('mouseenter', () => {
+        const tierRow = card.closest('.tier-row');
+
+        if (tierRow) {
+            tierRow.classList.add('tier-row-active');
+        }
+    });
+
+    card.addEventListener('mouseleave', () => {
+        const tierRow = card.closest('.tier-row');
+
+        if (tierRow) {
+            tierRow.classList.remove('tier-row-active');
+        }
+    });
+
     if (steamLink) {
         card.classList.add('game-card-clickable');
+
         card.setAttribute('role', 'link');
         card.setAttribute('tabindex', '0');
         card.setAttribute(
@@ -354,7 +371,6 @@ function createPreviewPopup({
 
     popup.className = 'game-preview-popup';
 
-    // Клик по превью не должен срабатывать как клик по карточке.
     popup.addEventListener('click', event => {
         event.stopPropagation();
     });
@@ -396,6 +412,7 @@ function createPreviewPopup({
 
         steamPreview.appendChild(steamImageElement);
         steamPreview.appendChild(steamLabel);
+
         popup.appendChild(steamPreview);
     }
 
@@ -435,6 +452,7 @@ function createPreviewPopup({
         videoLabel.textContent = 'Смотреть обзор';
 
         videoPreview.appendChild(videoLabel);
+
         popup.appendChild(videoPreview);
     }
 
