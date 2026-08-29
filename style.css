@@ -307,12 +307,13 @@ body {
 }
 
 .game-card.preview-closed .game-preview-popup {
-    visibility: hidden;
-    opacity: 0;
-    pointer-events: none;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
 
-    transform: translate(-50%, 8px);
+    transform: translate(-50%, 8px) !important;
 }
+
 
 
 /*
