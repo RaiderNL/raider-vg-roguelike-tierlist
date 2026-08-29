@@ -317,9 +317,8 @@ body {
     visibility: hidden !important;
     opacity: 0 !important;
     pointer-events: none !important;
-
-    transform: translate(-50%, 8px) !important;
 }
+
 
 /*
  * Всплывающее меню отображается над карточкой.
@@ -354,6 +353,61 @@ body {
         transform 0.2s ease,
         visibility 0.2s ease;
 }
+/*
+ * Превью справа от карточки.
+ */
+.game-preview-popup.preview-position-right {
+    top: 50%;
+    right: auto;
+    bottom: auto;
+    left: calc(100% + 10px);
+
+    transform: translateY(-50%);
+}
+
+/*
+ * Превью слева от карточки.
+ */
+.game-preview-popup.preview-position-left {
+    top: 50%;
+    right: calc(100% + 10px);
+    bottom: auto;
+    left: auto;
+
+    transform: translateY(-50%);
+}
+
+/*
+ * Превью снизу карточки.
+ */
+.game-preview-popup.preview-position-bottom {
+    top: calc(100% + 10px);
+    right: auto;
+    bottom: auto;
+    left: 50%;
+
+    transform: translateX(-50%);
+}
+.game-card:hover
+.game-preview-popup.preview-position-right,
+.game-card:focus-within
+.game-preview-popup.preview-position-right {
+    transform: translateY(-50%);
+}
+
+.game-card:hover
+.game-preview-popup.preview-position-left,
+.game-card:focus-within
+.game-preview-popup.preview-position-left {
+    transform: translateY(-50%);
+}
+
+.game-card:hover
+.game-preview-popup.preview-position-bottom,
+.game-card:focus-within
+.game-preview-popup.preview-position-bottom {
+    transform: translateX(-50%);
+}
 
 .game-card:hover .game-preview-popup,
 .game-card:focus-within .game-preview-popup {
@@ -386,6 +440,31 @@ body {
 
     background: transparent;
     pointer-events: auto;
+}
+/*
+ * Мостик для превью справа.
+ */
+.game-preview-popup.preview-position-right::after {
+    top: 0;
+    right: auto;
+    bottom: 0;
+    left: -14px;
+
+    width: 14px;
+    height: auto;
+}
+
+/*
+ * Мостик для превью слева.
+ */
+.game-preview-popup.preview-position-left::after {
+    top: 0;
+    right: -14px;
+    bottom: 0;
+    left: auto;
+
+    width: 14px;
+    height: auto;
 }
 
 .preview-link {
