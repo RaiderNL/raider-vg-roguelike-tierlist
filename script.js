@@ -2,7 +2,7 @@ const SHEET_ID = '1WOZWwc-DohQsz6wwEOOF7xaVv2Y2MHCi_4kOq7yOK1s';
 const SHEET_GID = '0';
 
 const SHEET_URL =
-    https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=${SHEET_GID};
+    'https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=${SHEET_GID}';
 
 const tierNames = ['S', 'A', 'B', 'C', 'D', 'E', 'F'];
 
@@ -23,7 +23,7 @@ async function loadGames() {
         const response = await fetch(SHEET_URL);
 
         if (!response.ok) {
-            throw new Error(Ошибка загрузки таблицы: ${response.status});
+            throw new Error('Ошибка загрузки таблицы: ${response.status}');
         }
 
         const csvText = await response.text();
