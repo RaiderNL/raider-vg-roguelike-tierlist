@@ -227,3 +227,65 @@ function createGameCard(game) {
         tagElement.textContent = tag;
 
         card.appendChild(tagElement);
+    }
+
+    if (description) {
+        const descriptionElement = document.createElement('p');
+
+        descriptionElement.className = 'game-description';
+        descriptionElement.textContent = description;
+
+        card.appendChild(descriptionElement);
+    }
+
+    if (comment) {
+        const commentElement = document.createElement('p');
+
+        commentElement.className = 'game-comment';
+        commentElement.textContent = comment;
+
+        card.appendChild(commentElement);
+    }
+
+    const links = document.createElement('div');
+
+    links.className = 'game-links';
+
+    if (video) {
+        links.appendChild(createLink(video, 'Видео'));
+    }
+
+    if (steamLink) {
+        links.appendChild(createLink(steamLink, 'Steam'));
+    }
+
+    if (links.children.length > 0) {
+        card.appendChild(links);
+    }
+
+    return card;
+}
+
+function createLink(url, text) {
+    const link = document.createElement('a');
+
+    link.href = url;
+    link.textContent = text;
+    link.target = '_blank';
+    link.rel = 'noopener noreferrer';
+
+    return link;
+}
+
+function getSteamImage(steamLink) {
+    const match = String(steamLink || '').match(/\/app\/(\d+)/i);
+
+    if (!match) {
+        return '';
+    }
+
+    const appId = match[1];
+
+    return https://cdn.cloudflare.steamstatic.com/steam/apps/${appId}/header.jpg;
+}
+
