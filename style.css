@@ -79,9 +79,11 @@ body {
 }
 
 .tier-row {
+    position: relative;
+
     display: flex;
     min-height: 150px;
-    overflow: hidden;
+    overflow: visible;
 
     background: #fff;
     border-radius: 8px;
@@ -89,6 +91,9 @@ body {
 }
 
 .tier-label {
+    position: relative;
+    z-index: 2;
+
     display: flex;
     flex: 0 0 90px;
     align-items: center;
@@ -96,6 +101,8 @@ body {
 
     font-size: 32px;
     font-weight: 700;
+
+    border-radius: 8px 0 0 8px;
 }
 
 .tier-s {
@@ -127,6 +134,9 @@ body {
 }
 
 .games-container {
+    position: relative;
+    z-index: 1;
+
     display: flex;
     flex: 1;
     flex-wrap: wrap;
@@ -137,17 +147,15 @@ body {
     padding: 16px;
 }
 
-/*
- * Карточка имеет квадратную форму.
- * Изображение занимает верхние 2/3 карточки.
- */
+/* Квадратная карточка */
 .game-card {
+    position: relative;
+
     display: flex;
     flex-direction: column;
 
     width: 150px;
     aspect-ratio: 1 / 1;
-    overflow: hidden;
 
     background: #fff;
     border: 1px solid #e1e3e8;
@@ -160,6 +168,8 @@ body {
 }
 
 .game-card:hover {
+    z-index: 20;
+
     transform: translateY(-3px);
     box-shadow: 0 5px 12px rgb(0 0 0 / 20%);
 }
@@ -169,8 +179,9 @@ body {
 }
 
 .game-card-clickable:focus {
+    z-index: 20;
     outline: 3px solid #2563eb;
-    outline-offset: 2px;
+    outline-offset: 3px;
 }
 
 .game-card-clickable:active {
@@ -178,8 +189,8 @@ body {
 }
 
 /*
- * Исходное изображение имеет пропорции 460 × 215.
- * Оно вписывается в верхние 2/3 карточки без искажения.
+ * Иллюстрация занимает 2/3 квадратной карточки.
+ * object-fit: cover полностью заполняет доступную область.
  */
 .game-cover {
     display: block;
@@ -189,14 +200,14 @@ body {
     height: 66.666%;
     min-height: 0;
 
-    padding: 0;
-
     object-fit: cover;
     object-position: center;
 
     background: #e5e7eb;
+    border-radius: 7px 7px 0 0;
 }
 
+/* Название игры */
 .game-title {
     display: -webkit-box;
     flex: 0 0 auto;
@@ -214,6 +225,7 @@ body {
     -webkit-line-clamp: 2;
 }
 
+/* Список меток */
 .game-tags {
     display: flex;
     flex: 0 0 auto;
@@ -241,11 +253,107 @@ body {
 }
 
 /*
- * Описание и комментарий не выводятся в компактной карточке.
+ * Описание и комментарий не показываются внутри
+ * компактной квадратной карточки.
  */
 .game-description,
 .game-comment {
     display: none;
+}
+
+/*
+ * Всплывающее окно с двумя превью.
+ * Превью располагаются вертикально.
+ */
+.game-preview-popup {
+    position: absolute;
+    z-index: 100;
+
+    top: calc(100% + 10px);
+    left: 50%;
+
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+    width: 220px;
+    padding: 8px;
+
+    visibility: hidden;
+    opacity: 0;
+    pointer-events: none;
+
+    background: #20232a;
+    border: 1px solid rgb(255 255 255 / 15%);
+    border-radius: 10px;
+    box-shadow: 0 10px 30px rgb(0 0 0 / 35%);
+
+    transform: translate(-50%, -8px);
+    transition:
+        opacity 0.2s ease,
+        transform 0.2s ease,
+        visibility 0.2s ease;
+}
+
+.game-card:hover .game-preview-popup,
+.game-card:focus-within .game-preview-popup {
+    visibility: visible;
+    opacity: 1;
+    pointer-events: auto;
+
+    transform: translate(-50%, 0);
+}
+
+/* Ссылка-превью */
+.preview-link {
+    display: block;
+    overflow: hidden;
+
+    color: #fff;
+    text-decoration: none;
+
+    background: #30343d;
+    border-radius: 7px;
+
+    transition: background 0.2s ease;
+}
+
+.preview-link:hover {
+    background: #3b414c;
+}
+
+/* Изображение превью */
+.preview-image {
+    display: block;
+
+    width: 100%;
+    height: 92px;
+
+    object-fit: cover;
+    object-position: center;
+
+    background: #3b414c;
+}
+
+/* Заглушка, если не удалось получить превью YouTube */
+.preview-image-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    color: #fff;
+    font-size: 32px;
+}
+
+/* Подпись под превью */
+.preview-label {
+    display: block;
+
+    padding: 7px 8px;
+
+    font-size: 12px;
+    font-weight: 700;
+    text-align: center;
 }
 
 .loading-error {
@@ -307,12 +415,6 @@ body {
         width: 125px;
     }
 
-    .game-cover {
-        flex-basis: 66.666%;
-        height: 66.666%;
-        padding: 6px;
-    }
-
     .game-title {
         margin: 6px 6px 3px;
         font-size: 13px;
@@ -327,6 +429,19 @@ body {
     .game-tag {
         padding: 2px 5px;
         font-size: 10px;
+    }
+
+    .game-preview-popup {
+        width: 190px;
+    }
+
+    .preview-image {
+        height: 78px;
+    }
+
+    .preview-label {
+        padding: 6px;
+        font-size: 11px;
     }
 }
 
@@ -345,9 +460,12 @@ body {
         width: calc(50% - 3px);
     }
 
+    /*
+     * Для карточек разной ширины сохраняем область
+     * изображения равной двум третям карточки.
+     */
     .game-cover {
         flex-basis: 66.666%;
         height: 66.666%;
-        padding: 6px;
     }
 }
