@@ -1,0 +1,156 @@
+css
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    min-width: 320px;
+
+    font-family: Arial, sans-serif;
+    color: #222;
+    background: #f3f4f6;
+}
+
+.site-header {
+    padding: 32px 20px;
+    text-align: center;
+    color: white;
+    background: #20232a;
+}
+
+.site-header h1 {
+    margin: 0 0 10px;
+    font-size: 32px;
+}
+
+.site-header p {
+    margin: 0;
+    color: #d7d9df;
+}
+
+.container {
+    width: min(1200px, calc(100% - 32px));
+    margin: 24px auto;
+}
+
+.controls {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+
+    margin-bottom: 24px;
+    padding: 16px;
+
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgb(0 0 0 / 8%);
+}
+
+.controls label {
+    font-weight: bold;
+}
+
+.controls input,
+.controls select {
+    min-height: 38px;
+    padding: 8px 10px;
+
+    font-size: 15px;
+    border: 1px solid #cfd2d8;
+    border-radius: 6px;
+}
+
+.tier-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.tier-row {
+    display: flex;
+    min-height: 150px;
+
+    overflow: hidden;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgb(0 0 0 / 8%);
+}
+
+.tier-label {
+    display: flex;
+    flex: 0 0 90px;
+
+    align-items: center;
+    justify-content: center;
+
+    font-size: 32px;
+    font-weight: bold;
+}
+
+.tier-s {
+    background: #ffdf72;
+}
+
+.tier-a {
+    background: #ffd28a;
+}
+
+.tier-b {
+    background: #c9e8ae;
+}
+
+.tier-c {
+    background: #a9d9e8;
+}
+
+.tier-d {
+    background: #b8c7dc;
+}
+
+.tier-e {
+    background: #e8b6b6;
+}
+
+.tier-f {
+    background: #d9a5a5;
+}
+
+.games-container {
+    display: flex;
+    flex: 1;
+
+    gap: 12px;
+    align-items: flex-start;
+    flex-wrap: wrap;
+
+    padding: 16px;
+}
+
+.site-footer {
+    padding: 24px;
+    text-align: center;
+    color: #666;
+}
+
+@media (max-width: 600px) {
+    .site-header h1 {
+        font-size: 25px;
+    }
+
+    .tier-label {
+        flex-basis: 55px;
+        font-size: 24px;
+    }
+
+    .controls {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .controls input,
+    .controls select {
+        width: 100%;
+    }
+}
