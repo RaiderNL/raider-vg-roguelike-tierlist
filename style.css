@@ -536,7 +536,8 @@ body {
 }
 
 @media (max-width: 900px) {
-    .tier-list-layout {
+    .tier-list-layout,
+    .tier-list-layout:has(.selected-video-panel.is-visible) {
         display: block;
     }
 
@@ -547,6 +548,8 @@ body {
         margin-top: 16px;
     }
 }
+
+
 
 @media (max-width: 600px) {
     .site-header {
