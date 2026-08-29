@@ -107,7 +107,6 @@ body {
 
 .tier-row {
     position: relative;
-    z-index: 1;
 
     display: flex;
     min-height: 150px;
@@ -119,8 +118,9 @@ body {
 }
 
 .tier-row-active {
-    z-index: 100;
+    z-index: 10000;
 }
+
 
 .tier-label {
     position: relative;
