@@ -256,6 +256,18 @@ body {
     color: #666;
     text-align: center;
 }
+.game-card-clickable {
+    cursor: pointer;
+}
+
+.game-card-clickable:focus {
+    outline: 3px solid #2563eb;
+    outline-offset: 2px;
+}
+
+.game-card-clickable:active {
+    transform: translateY(-1px);
+}
 
 @media (max-width: 600px) {
     .site-header {
@@ -325,6 +337,7 @@ body {
         padding: 4px 6px;
         font-size: 11px;
     }
+    
 }
 
 @media (max-width: 400px) {
