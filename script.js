@@ -2,7 +2,7 @@ const SHEET_ID = '1WOZWwc-DohQsz6wwEOOF7xaVv2Y2MHCi_4kOq7yOK1s';
 const SHEET_GID = '0';
 
 const SHEET_URL =
-    'https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=${SHEET_GID}';
+    https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=${SHEET_GID};
 
 const tierNames = ['S', 'A', 'B', 'C', 'D', 'E', 'F'];
 
@@ -23,7 +23,7 @@ async function loadGames() {
         const response = await fetch(SHEET_URL);
 
         if (!response.ok) {
-            throw new Error('Ошибка загрузки таблицы: ${response.status}');
+            throw new Error(Ошибка загрузки таблицы: ${response.status});
         }
 
         const csvText = await response.text();
@@ -61,7 +61,10 @@ function parseCSV(text) {
         } else if (character === ',' && !insideQuotes) {
             row.push(value.trim());
             value = '';
-        } else if ((character === '\n' || character === '\r') && !insideQuotes) {
+        } else if (
+            (character === '\n' || character === '\r') &&
+            !insideQuotes
+        ) {
             if (character === '\r' && nextCharacter === '\n') {
                 i++;
             }
@@ -77,9 +80,9 @@ function parseCSV(text) {
         } else {
             value += character;
         }
-    }
+        }
 
-    if (value.length > 0 || row.length > 0) {
+    if (value.length > 0  row.length > 0) {
         row.push(value.trim());
         rows.push(row);
     }
@@ -94,7 +97,7 @@ function parseCSV(text) {
         const game = {};
 
         headers.forEach((header, index) => {
-            game[header] = columns[index] || '';
+            game[header] = columns[index]  '';
         });
 
         return game;
@@ -106,7 +109,7 @@ function fillTagFilter() {
 
     const tags = [...new Set(
         games
-            .map(game => game['Tag'])
+            .map(game => game['Tag']  '')
             .filter(tag => tag.trim() !== '')
     )].sort();
 
@@ -131,8 +134,7 @@ function renderGames() {
         }
     });
 
-    const
-      searchValue = document
+    const searchValue = document
         .querySelector('#search')
         .value
         .trim()
@@ -189,18 +191,17 @@ function createGameCard(game) {
     const description = game['Description']  '';
     const comment = game['Comment']  '';
 
-    
     const steamImage = getSteamImage(steamLink);
-    const imageUrl = cover || steamImage;
-    
+    const imageUrl = cover  steamImage;
+
     if (imageUrl) {
         const image = document.createElement('img');
-    
+
         image.className = 'game-cover';
         image.src = imageUrl;
         image.alt = name;
         image.loading = 'lazy';
-    
+
         image.addEventListener('error', () => {
             if (cover && steamImage && image.src !== steamImage) {
                 image.src = steamImage;
@@ -208,10 +209,9 @@ function createGameCard(game) {
                 image.remove();
             }
         });
-    
+
         card.appendChild(image);
     }
-
 
     const title = document.createElement('h3');
 
@@ -227,64 +227,3 @@ function createGameCard(game) {
         tagElement.textContent = tag;
 
         card.appendChild(tagElement);
-    }
-
-    if (description) {
-        const descriptionElement = document.createElement('p');
-
-        descriptionElement.className = 'game-description';
-        descriptionElement.textContent = description;
-
-        card.appendChild(descriptionElement);
-    }
-
-    if (comment) {
-        const commentElement = document.createElement('p');
-
-        commentElement.className = 'game-comment';
-        commentElement.textContent = comment;
-
-        card.appendChild(commentElement);
-    }
-
-    const links = document.createElement('div');
-    links.className = 'game-links';
-
-    if (video) {
-        links.appendChild(createLink(video, 'Видео'));
-    }
-
-    if (steamLink) {
-        links.appendChild(createLink(steamLink, 'Steam'));
-    }
-
-    if (links.children.length > 0) {
-        card.appendChild(links);
-    }
-
-    return card;
-}
-
-function createLink(url, text) {
-    const link = document.createElement('a');
-
-    link.href = url;
-    link.textContent = text;
-    link.target = '_blank';
-    link.rel = 'noopener noreferrer';
-
-    return link;
-}
-
-function getSteamImage(steamLink) {
-    const match = String(steamLink || '').match(/\/app\/(\d+)/i);
-
-    if (!match) {
-        return '';
-    }
-
-    const appId = match[1];
-
-    return https://cdn.cloudflare.steamstatic.com/steam/apps/${appId}/header.jpg;
-}
-
