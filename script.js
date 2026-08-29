@@ -172,7 +172,9 @@ function renderGames() {
         ? searchInput.value.trim().toLowerCase()
         : '';
 
-    const selectedTag = tagFilter ? tagFilter.value : '';
+    const selectedTag = tagFilter
+        ? tagFilter.value
+        : '';
 
     const filteredGames = games.filter(game => {
         const name = String(game['Name'] || '')
@@ -222,11 +224,13 @@ function normalizeTier(tier) {
 
 function createGameCard(game) {
     const card = document.createElement('article');
+
     card.className = 'game-card';
 
     const name = game['Name'] || 'Без названия';
     const cover = game['Cover'] || '';
     const steamLink = game['Steam Link'] || '';
+    const video = game['Video'] || '';
     const description = game['Description'] || '';
     const comment = game['Comment'] || '';
 
@@ -244,22 +248,13 @@ function createGameCard(game) {
         );
 
         card.addEventListener('click', () => {
-            window.open(
-                steamLink,
-                '_blank',
-                'noopener,noreferrer'
-            );
+            openExternalLink(steamLink);
         });
 
         card.addEventListener('keydown', event => {
             if (event.key === 'Enter' || event.key === ' ') {
                 event.preventDefault();
-
-                window.open(
-                    steamLink,
-                    '_blank',
-                    'noopener,noreferrer'
-                );
+                openExternalLink(steamLink);
             }
         });
     }
@@ -333,7 +328,144 @@ function createGameCard(game) {
         card.appendChild(commentElement);
     }
 
+    if (steamLink || video) {
+        const previewPopup = createPreviewPopup({
+            name,
+            cover,
+            steamLink,
+            video,
+            steamImage
+        });
+
+        card.appendChild(previewPopup);
+    }
+
     return card;
+}
+
+function createPreviewPopup({
+    name,
+    cover,
+    steamLink,
+    video,
+    steamImage
+}) {
+    const popup = document.createElement('div');
+
+    popup.className = 'game-preview-popup';
+
+    // Клик по превью не должен срабатывать как клик по карточке.
+    popup.addEventListener('click', event => {
+        event.stopPropagation();
+    });
+
+    popup.addEventListener('keydown', event => {
+        event.stopPropagation();
+    });
+
+    if (steamLink) {
+        const steamPreview = document.createElement('a');
+
+        steamPreview.className = 'preview-link';
+        steamPreview.href = steamLink;
+        steamPreview.target = '_blank';
+        steamPreview.rel = 'noopener noreferrer';
+        steamPreview.title = `Открыть ${name} в Steam`;
+
+        const steamImageElement = document.createElement('img');
+
+        steamImageElement.className = 'preview-image';
+        steamImageElement.src = cover || steamImage;
+        steamImageElement.alt = `${name} — страница в Steam`;
+        steamImageElement.loading = 'lazy';
+
+        steamImageElement.addEventListener('error', () => {
+            if (
+                cover &&
+                steamImage &&
+                steamImageElement.src !== steamImage
+            ) {
+                steamImageElement.src = steamImage;
+            }
+        });
+
+        const steamLabel = document.createElement('span');
+
+        steamLabel.className = 'preview-label';
+        steamLabel.textContent = 'Открыть в Steam';
+
+        steamPreview.appendChild(steamImageElement);
+        steamPreview.appendChild(steamLabel);
+        popup.appendChild(steamPreview);
+    }
+
+    if (video) {
+        const videoThumbnail = getYouTubeThumbnail(video);
+        const videoPreview = document.createElement('a');
+
+        videoPreview.className = 'preview-link';
+        videoPreview.href = video;
+        videoPreview.target = '_blank';
+        videoPreview.rel = 'noopener noreferrer';
+        videoPreview.title = `Смотреть обзор игры ${name}`;
+
+        if (videoThumbnail) {
+            const videoImage = document.createElement('img');
+
+            videoImage.className = 'preview-image';
+            videoImage.src = videoThumbnail;
+            videoImage.alt = `${name} — видеообзор`;
+            videoImage.loading = 'lazy';
+
+            videoPreview.appendChild(videoImage);
+        } else {
+            const videoPlaceholder = document.createElement('div');
+
+            videoPlaceholder.className =
+                'preview-image preview-image-placeholder';
+
+            videoPlaceholder.textContent = '▶';
+
+            videoPreview.appendChild(videoPlaceholder);
+        }
+
+        const videoLabel = document.createElement('span');
+
+        videoLabel.className = 'preview-label';
+        videoLabel.textContent = 'Смотреть обзор';
+
+        videoPreview.appendChild(videoLabel);
+        popup.appendChild(videoPreview);
+    }
+
+    return popup;
+}
+
+function getYouTubeThumbnail(videoUrl) {
+    const url = String(videoUrl || '').trim();
+
+    const matches = [
+        url.match(
+            /youtube\.com\/watch\?v=([a-zA-Z0-9_-]+)/i
+        ),
+        url.match(
+            /youtu\.be\/([a-zA-Z0-9_-]+)/i
+        ),
+        url.match(
+            /youtube\.com\/embed\/([a-zA-Z0-9_-]+)/i
+        ),
+        url.match(
+            /youtube\.com\/shorts\/([a-zA-Z0-9_-]+)/i
+        )
+    ];
+
+    const videoId = matches.find(match => match)?.[1];
+
+    if (!videoId) {
+        return '';
+    }
+
+    return `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
 }
 
 function getSteamImage(steamLink) {
@@ -348,4 +480,16 @@ function getSteamImage(steamLink) {
     const appId = match[1];
 
     return `https://cdn.cloudflare.steamstatic.com/steam/apps/${appId}/header.jpg`;
+}
+
+function openExternalLink(url) {
+    const newWindow = window.open(
+        url,
+        '_blank',
+        'noopener,noreferrer'
+    );
+
+    if (newWindow) {
+        newWindow.opener = null;
+    }
 }
