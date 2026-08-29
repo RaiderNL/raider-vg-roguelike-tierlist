@@ -5,7 +5,8 @@ const SHEET_URL =
     `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=${SHEET_GID}`;
 
 const TIER_NAMES = ['S', 'A', 'B', 'C', 'D', 'E', 'F'];
-const HIDDEN_PREVIEW_CLASS = 'preview-closed';
+
+const PREVIEW_CLOSED_CLASS = 'preview-closed';
 const ACTIVE_ROW_CLASS = 'tier-row-active';
 
 let games = [];
@@ -18,11 +19,14 @@ document.addEventListener('visibilitychange', () => {
     }
 });
 
-window.addEventListener('pageshow', closeAllPreviews);
+window.addEventListener('pageshow', () => {
+    closeAllPreviews();
+});
 
 function init() {
     const searchInput = document.querySelector('#search');
     const tagFilter = document.querySelector('#tag-filter');
+    const videoFilter = document.querySelector('#video-filter');
 
     if (searchInput) {
         searchInput.addEventListener('input', renderGames);
@@ -30,6 +34,10 @@ function init() {
 
     if (tagFilter) {
         tagFilter.addEventListener('change', renderGames);
+    }
+
+    if (videoFilter) {
+        videoFilter.addEventListener('change', renderGames);
     }
 
     loadGames();
@@ -50,6 +58,7 @@ async function loadGames() {
         games = parseCSV(csvText);
 
         fillTagFilter();
+        fillVideoFilter();
         renderGames();
     } catch (error) {
         console.error(error);
@@ -171,7 +180,9 @@ function fillTagFilter() {
         firstTag.localeCompare(secondTag, 'ru')
     );
 
-    tagFilter.innerHTML = '<option value="">Все жанры</option>';
+    tagFilter.innerHTML = `
+        <option value="">Все жанры</option>
+    `;
 
     tags.forEach(tag => {
         const option = document.createElement('option');
@@ -183,18 +194,53 @@ function fillTagFilter() {
     });
 }
 
+function fillVideoFilter() {
+    const videoFilter = document.querySelector('#video-filter');
+
+    if (!videoFilter) {
+        return;
+    }
+
+    const videoTitles = [
+        ...new Set(
+            games
+                .map(game =>
+                    String(game['Video Title'] || '').trim()
+                )
+                .filter(Boolean)
+        )
+    ].sort((firstTitle, secondTitle) =>
+        firstTitle.localeCompare(secondTitle, 'ru')
+    );
+
+    videoFilter.innerHTML = `
+        <option value="">Все ролики</option>
+    `;
+
+    videoTitles.forEach(videoTitle => {
+        const option = document.createElement('option');
+
+        option.value = videoTitle;
+        option.textContent = videoTitle;
+
+        videoFilter.appendChild(option);
+    });
+}
+
 function renderGames() {
     clearTierContainers();
 
     const searchValue = getSearchValue();
     const selectedTag = getSelectedTag();
+    const selectedVideo = getSelectedVideo();
 
     const filteredGames = games
         .filter(game =>
             gameMatchesFilters(
                 game,
                 searchValue,
-                selectedTag
+                selectedTag,
+                selectedVideo
             )
         )
         .sort(compareGamesByOrder);
@@ -207,6 +253,8 @@ function renderGames() {
             container.appendChild(createGameCard(game));
         }
     });
+
+    renderSelectedVideo(selectedVideo);
 }
 
 function clearTierContainers() {
@@ -233,10 +281,24 @@ function getSelectedTag() {
     return tagFilter ? tagFilter.value : '';
 }
 
-function gameMatchesFilters(game, searchValue, selectedTag) {
+function getSelectedVideo() {
+    const videoFilter = document.querySelector('#video-filter');
+
+    return videoFilter ? videoFilter.value : '';
+}
+
+function gameMatchesFilters(
+    game,
+    searchValue,
+    selectedTag,
+    selectedVideo
+) {
     const name = String(game['Name'] || '')
         .trim()
         .toLowerCase();
+
+    const videoTitle = String(game['Video Title'] || '')
+        .trim();
 
     const gameTags = getGameTags(game);
 
@@ -246,7 +308,15 @@ function gameMatchesFilters(game, searchValue, selectedTag) {
         selectedTag === '' ||
         gameTags.includes(selectedTag);
 
-    return matchesSearch && matchesTag;
+    const matchesVideo =
+        selectedVideo === '' ||
+        videoTitle === selectedVideo;
+
+    return (
+        matchesSearch &&
+        matchesTag &&
+        matchesVideo
+    );
 }
 
 function compareGamesByOrder(firstGame, secondGame) {
@@ -273,6 +343,7 @@ function createGameCard(game) {
     const card = document.createElement('article');
 
     card.className = 'game-card';
+    card.classList.add(PREVIEW_CLOSED_CLASS);
 
     const name = game['Name'] || 'Без названия';
     const cover = game['Cover'] || '';
@@ -340,23 +411,23 @@ function createGameCard(game) {
 
 function setupCardHover(card) {
     card.addEventListener('mouseenter', () => {
-        card.classList.remove(HIDDEN_PREVIEW_CLASS);
+        card.classList.remove(PREVIEW_CLOSED_CLASS);
         setTierRowActive(card, true);
     });
 
     card.addEventListener('mouseleave', () => {
-        card.classList.add(HIDDEN_PREVIEW_CLASS);
+        card.classList.add(PREVIEW_CLOSED_CLASS);
         setTierRowActive(card, false);
     });
 
     card.addEventListener('focusin', () => {
-        card.classList.remove(HIDDEN_PREVIEW_CLASS);
+        card.classList.remove(PREVIEW_CLOSED_CLASS);
         setTierRowActive(card, true);
     });
 
     card.addEventListener('focusout', event => {
         if (!card.contains(event.relatedTarget)) {
-            card.classList.add(HIDDEN_PREVIEW_CLASS);
+            card.classList.add(PREVIEW_CLOSED_CLASS);
             setTierRowActive(card, false);
         }
     });
@@ -386,13 +457,21 @@ function setupCardSteamLink(card, steamLink, name) {
         `Открыть страницу игры ${name} в Steam`
     );
 
-    card.addEventListener('click', () => {
+    card.addEventListener('click', event => {
+        if (event.target.closest('.game-preview-popup')) {
+            return;
+        }
+
         closeAllPreviews();
         openExternalLink(steamLink);
     });
 
     card.addEventListener('keydown', event => {
         if (event.key !== 'Enter' && event.key !== ' ') {
+            return;
+        }
+
+        if (event.target.closest('.game-preview-popup')) {
             return;
         }
 
@@ -597,7 +676,7 @@ function closeAllPreviews() {
     document
         .querySelectorAll('.game-card')
         .forEach(card => {
-            card.classList.add(HIDDEN_PREVIEW_CLASS);
+            card.classList.add(PREVIEW_CLOSED_CLASS);
         });
 
     document
@@ -607,10 +686,99 @@ function closeAllPreviews() {
         });
 }
 
-function getYouTubeThumbnail(videoUrl) {
-    const url = String(videoUrl || '').trim();
+function renderSelectedVideo(selectedVideoTitle) {
+    const panel = document.querySelector(
+        '#selected-video-panel'
+    );
 
-    const videoId = getYouTubeVideoId(url);
+    if (!panel) {
+        return;
+    }
+
+    panel.innerHTML = '';
+
+    if (!selectedVideoTitle) {
+        panel.classList.remove('is-visible');
+        panel.setAttribute('aria-hidden', 'true');
+
+        return;
+    }
+
+    const game = games.find(item => {
+        const videoTitle = String(
+            item['Video Title'] || ''
+        ).trim();
+
+        return videoTitle === selectedVideoTitle;
+    });
+
+    if (!game) {
+        panel.classList.remove('is-visible');
+        panel.setAttribute('aria-hidden', 'true');
+
+        return;
+    }
+
+    const videoUrl = String(game['Video'] || '').trim();
+
+    if (!videoUrl) {
+        panel.classList.remove('is-visible');
+        panel.setAttribute('aria-hidden', 'true');
+
+        return;
+    }
+
+    const videoThumbnail = getYouTubeThumbnail(videoUrl);
+
+    const title = document.createElement('h2');
+
+    title.className = 'selected-video-title';
+    title.textContent = selectedVideoTitle;
+
+    const link = document.createElement('a');
+
+    link.className = 'selected-video-link';
+    link.href = videoUrl;
+    link.target = '_blank';
+    link.rel = 'noopener noreferrer';
+    link.title = 'Открыть видео на YouTube';
+
+    if (videoThumbnail) {
+        const image = document.createElement('img');
+
+        image.className = 'selected-video-image';
+        image.src = videoThumbnail;
+        image.alt = selectedVideoTitle;
+        image.loading = 'lazy';
+
+        link.appendChild(image);
+    } else {
+        const placeholder = document.createElement('div');
+
+        placeholder.className =
+            'selected-video-placeholder';
+
+        placeholder.textContent = '▶';
+
+        link.appendChild(placeholder);
+    }
+
+    const caption = document.createElement('span');
+
+    caption.className = 'selected-video-caption';
+    caption.textContent = 'Открыть видео на YouTube';
+
+    link.appendChild(caption);
+
+    panel.appendChild(title);
+    panel.appendChild(link);
+
+    panel.classList.add('is-visible');
+    panel.setAttribute('aria-hidden', 'false');
+}
+
+function getYouTubeThumbnail(videoUrl) {
+    const videoId = getYouTubeVideoId(videoUrl);
 
     if (!videoId) {
         return '';
@@ -620,6 +788,8 @@ function getYouTubeThumbnail(videoUrl) {
 }
 
 function getYouTubeVideoId(videoUrl) {
+    const url = String(videoUrl || '').trim();
+
     const patterns = [
         /youtube\.com\/watch\?[^#]*v=([a-zA-Z0-9_-]+)/i,
         /youtu\.be\/([a-zA-Z0-9_-]+)/i,
@@ -628,7 +798,7 @@ function getYouTubeVideoId(videoUrl) {
     ];
 
     for (const pattern of patterns) {
-        const match = videoUrl.match(pattern);
+        const match = url.match(pattern);
 
         if (match) {
             return match[1];
