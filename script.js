@@ -23,6 +23,16 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
+document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') {
+        closeAllPreviews();
+    }
+});
+
+window.addEventListener('pageshow', () => {
+    closeAllPreviews();
+});
+
 async function loadGames() {
     try {
         const response = await fetch(SHEET_URL);
