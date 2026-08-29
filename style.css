@@ -79,11 +79,24 @@ body {
  * правая имеет фиксированную ширину 320px.
  */
 .tier-list-layout {
+    display: block;
+}
+
+.tier-list-layout .tier-list {
+    min-width: 0;
+}
+
+/*
+ * Две колонки создаются только после выбора
+ * конкретного YouTube-ролика.
+ */
+.tier-list-layout:has(.selected-video-panel.is-visible) {
     display: grid;
     grid-template-columns: minmax(0, 1fr) 320px;
     align-items: start;
     gap: 16px;
 }
+
 
 .tier-list {
     display: flex;
