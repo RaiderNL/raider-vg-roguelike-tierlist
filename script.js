@@ -14,8 +14,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const searchInput = document.querySelector('#search');
     const tagFilter = document.querySelector('#tag-filter');
 
-    searchInput.addEventListener('input', renderGames);
-    tagFilter.addEventListener('change', renderGames);
+    if (searchInput) {
+        searchInput.addEventListener('input', renderGames);
+    }
+
+    if (tagFilter) {
+        tagFilter.addEventListener('change', renderGames);
+    }
 });
 
 async function loadGames() {
@@ -23,7 +28,9 @@ async function loadGames() {
         const response = await fetch(SHEET_URL);
 
         if (!response.ok) {
-            throw new Error(`Ошибка загрузки таблицы: ${response.status}`);
+            throw new Error(
+                `Ошибка загрузки таблицы: ${response.status}`
+            );
         }
 
         const csvText = await response.text();
@@ -35,11 +42,15 @@ async function loadGames() {
     } catch (error) {
         console.error(error);
 
-        document.querySelector('.tier-list').innerHTML = `
-            <p class="loading-error">
-                Не удалось загрузить данные из Google Sheets.
-            </p>
-        `;
+        const tierList = document.querySelector('.tier-list');
+
+        if (tierList) {
+            tierList.innerHTML = `
+                <p class="loading-error">
+                    Не удалось загрузить данные из Google Sheets.
+                </p>
+            `;
+        }
     }
 }
 
@@ -53,7 +64,11 @@ function parseCSV(text) {
         const character = text[i];
         const nextCharacter = text[i + 1];
 
-        if (character === '"' && insideQuotes && nextCharacter === '"') {
+        if (
+            character === '"' &&
+            insideQuotes &&
+            nextCharacter === '"'
+        ) {
             value += '"';
             i++;
         } else if (character === '"') {
@@ -84,7 +99,10 @@ function parseCSV(text) {
 
     if (value.length > 0 || row.length > 0) {
         row.push(value.trim());
-        rows.push(row);
+
+        if (row.some(cell => cell !== '')) {
+            rows.push(row);
+        }
     }
 
     if (rows.length === 0) {
@@ -104,16 +122,41 @@ function parseCSV(text) {
     });
 }
 
+/*
+ * Разделяет несколько меток в одной ячейке.
+ *
+ * Поддерживаются разделители:
+ * ,  запятая
+ * ;  точка с запятой
+ * |  вертикальная черта
+ * /  слеш
+ *
+ * Например:
+ * "Экшен, RPG"
+ * превратится в:
+ * ["Экшен", "RPG"]
+ */
+function getGameTags(game) {
+    return String(game['Tag'] || '')
+        .split(/[,;|/]+/)
+        .map(tag => tag.trim())
+        .filter(Boolean);
+}
+
 function fillTagFilter() {
     const tagFilter = document.querySelector('#tag-filter');
 
+    if (!tagFilter) {
+        return;
+    }
+
     const tags = [
         ...new Set(
-            games
-                .map(game => game['Tag'])
-                .filter(tag => tag.trim() !== '')
+            games.flatMap(game => getGameTags(game))
         )
-    ].sort();
+    ].sort((firstTag, secondTag) =>
+        firstTag.localeCompare(secondTag, 'ru')
+    );
 
     tagFilter.innerHTML = '<option value="">Все жанры</option>';
 
@@ -136,28 +179,37 @@ function renderGames() {
         }
     });
 
-    const searchValue = document
-        .querySelector('#search')
-        .value
-        .trim()
-        .toLowerCase();
+    const searchInput = document.querySelector('#search');
+    const tagFilter = document.querySelector('#tag-filter');
 
-    const selectedTag = document.querySelector('#tag-filter').value;
+    const searchValue = searchInput
+        ? searchInput.value.trim().toLowerCase()
+        : '';
+
+    const selectedTag = tagFilter ? tagFilter.value : '';
 
     const filteredGames = games.filter(game => {
-        const name = (game['Name'] || '').toLowerCase();
-        const tag = game['Tag'] || '';
+        const name = String(game['Name'] || '')
+            .trim()
+            .toLowerCase();
+
+        const gameTags = getGameTags(game);
 
         const matchesSearch = name.includes(searchValue);
+
         const matchesTag =
-            selectedTag === '' || tag === selectedTag;
+            selectedTag === '' ||
+            gameTags.includes(selectedTag);
 
         return matchesSearch && matchesTag;
     });
 
     filteredGames.sort((firstGame, secondGame) => {
-        const firstOrder = Number(firstGame['Order']) || 999999;
-        const secondOrder = Number(secondGame['Order']) || 999999;
+        const firstOrder =
+            Number(firstGame['Order']) || 999999;
+
+        const secondOrder =
+            Number(secondGame['Order']) || 999999;
 
         return firstOrder - secondOrder;
     });
@@ -190,10 +242,10 @@ function createGameCard(game) {
     const cover = game['Cover'] || '';
     const video = game['Video'] || '';
     const steamLink = game['Steam Link'] || '';
-    const tag = game['Tag'] || '';
     const description = game['Description'] || '';
     const comment = game['Comment'] || '';
 
+    const gameTags = getGameTags(game);
     const steamImage = getSteamImage(steamLink);
     const imageUrl = cover || steamImage;
 
@@ -206,7 +258,15 @@ function createGameCard(game) {
         image.loading = 'lazy';
 
         image.addEventListener('error', () => {
-            if (cover && steamImage && image.src !== steamImage) {
+            console.warn(
+                `Не удалось загрузить обложку игры: ${name}`
+            );
+
+            if (
+                cover &&
+                steamImage &&
+                image.src !== steamImage
+            ) {
                 image.src = steamImage;
             } else {
                 image.remove();
@@ -217,18 +277,27 @@ function createGameCard(game) {
     }
 
     const title = document.createElement('h3');
+
     title.className = 'game-title';
     title.textContent = name;
 
     card.appendChild(title);
 
-    if (tag) {
-        const tagElement = document.createElement('div');
+    if (gameTags.length > 0) {
+        const tagsContainer = document.createElement('div');
 
-        tagElement.className = 'game-tag';
-        tagElement.textContent = tag;
+        tagsContainer.className = 'game-tags';
 
-        card.appendChild(tagElement);
+        gameTags.forEach(tag => {
+            const tagElement = document.createElement('span');
+
+            tagElement.className = 'game-tag';
+            tagElement.textContent = tag;
+
+            tagsContainer.appendChild(tagElement);
+        });
+
+        card.appendChild(tagsContainer);
     }
 
     if (description) {
@@ -279,7 +348,9 @@ function createLink(url, text) {
 }
 
 function getSteamImage(steamLink) {
-    const match = String(steamLink || '').match(/\/app\/(\d+)/i);
+    const match = String(steamLink || '').match(
+        /(?:store\.steampowered\.com|steamcommunity\.com)\/app\/(\d+)/i
+    );
 
     if (!match) {
         return '';
