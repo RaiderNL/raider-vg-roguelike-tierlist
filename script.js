@@ -122,20 +122,6 @@ function parseCSV(text) {
     });
 }
 
-/*
- * Разделяет несколько меток в одной ячейке.
- *
- * Поддерживаются разделители:
- * ,  запятая
- * ;  точка с запятой
- * |  вертикальная черта
- * /  слеш
- *
- * Например:
- * "Экшен, RPG"
- * превратится в:
- * ["Экшен", "RPG"]
- */
 function getGameTags(game) {
     return String(game['Tag'] || '')
         .split(/[,;|/]+/)
@@ -248,11 +234,14 @@ function createGameCard(game) {
     const steamImage = getSteamImage(steamLink);
     const imageUrl = cover || steamImage;
 
-    // Если есть Steam-ссылка — карточка становится кликабельной
     if (steamLink) {
         card.classList.add('game-card-clickable');
         card.setAttribute('role', 'link');
         card.setAttribute('tabindex', '0');
+        card.setAttribute(
+            'aria-label',
+            `Открыть страницу игры ${name} в Steam`
+        );
 
         card.addEventListener('click', () => {
             window.open(
@@ -345,18 +334,6 @@ function createGameCard(game) {
     }
 
     return card;
-}
-
-
-function createLink(url, text) {
-    const link = document.createElement('a');
-
-    link.href = url;
-    link.textContent = text;
-    link.target = '_blank';
-    link.rel = 'noopener noreferrer';
-
-    return link;
 }
 
 function getSteamImage(steamLink) {
