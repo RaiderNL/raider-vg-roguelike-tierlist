@@ -32,9 +32,12 @@ export const VIDEO_FILTER_ACTIVE_CLASS =
     'video-filter-active';
 
 export const PREVIEW_CLOSE_DELAY = 120;
+
 export const PREVIEW_FADE_DURATION = 200;
+
 export const PREVIEW_LAYER_CLEANUP_DELAY =
     PREVIEW_FADE_DURATION + 20;
 
 export const SCREEN_PADDING = 8;
+
 export const PREVIEW_GAP = 10;
