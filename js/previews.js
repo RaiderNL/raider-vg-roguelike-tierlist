@@ -31,6 +31,10 @@ export function setupCardHover(
         return;
     }
 
+    card.classList.add(
+        'game-card-clickable'
+    );
+
     card.setAttribute(
         'role',
         'button'
@@ -46,7 +50,6 @@ export function setupCardHover(
         `Открыть меню игры ${name}`
     );
 
-
     const cancelClose = () => {
         if (closeTimer) {
             clearTimeout(closeTimer);
@@ -58,7 +61,6 @@ export function setupCardHover(
             layerCleanupTimer = null;
         }
     };
-
 
     const openPreview = () => {
         cancelClose();
@@ -100,7 +102,6 @@ export function setupCardHover(
         });
     };
 
-
     const scheduleLayerCleanup = () => {
         if (layerCleanupTimer) {
             clearTimeout(layerCleanupTimer);
@@ -127,7 +128,6 @@ export function setupCardHover(
             layerCleanupTimer = null;
         }, PREVIEW_LAYER_CLEANUP_DELAY);
     };
-
 
     const closePreview = (
         respectFocus = true
@@ -163,14 +163,12 @@ export function setupCardHover(
         }, PREVIEW_CLOSE_DELAY);
     };
 
-
     popup.addEventListener(
         'mouseenter',
         () => {
             cancelClose();
         }
     );
-
 
     popup.addEventListener(
         'mouseleave',
@@ -186,7 +184,6 @@ export function setupCardHover(
         }
     );
 
-
     card.addEventListener(
         'click',
         event => {
@@ -201,7 +198,6 @@ export function setupCardHover(
             openPreview();
         }
     );
-
 
     card.addEventListener(
         'keydown',
@@ -227,7 +223,6 @@ export function setupCardHover(
         }
     );
 
-
     card.addEventListener(
         'mouseleave',
         event => {
@@ -242,7 +237,6 @@ export function setupCardHover(
         }
     );
 
-
     card.addEventListener(
         'focusin',
         () => {
@@ -253,7 +247,6 @@ export function setupCardHover(
             }
         }
     );
-
 
     card.addEventListener(
         'focusout',
@@ -267,7 +260,6 @@ export function setupCardHover(
             closePreview();
         }
     );
-
 
     card._cancelPreviewClose =
         cancelClose;
@@ -337,26 +329,8 @@ export function createPreviewPopup({
     );
 
     /*
-     * Описание располагается справа от ссылок
-     * и выглядит как квадратная цитата.
-     */
-    if (hasDescription) {
-        const descriptionElement =
-            document.createElement('blockquote');
-
-        descriptionElement.className =
-            'preview-description';
-
-        descriptionElement.textContent =
-            description;
-
-        popup.appendChild(
-            descriptionElement
-        );
-    }
-
-    /*
-     * Ссылки объединены в левую колонку popup.
+     * Ссылки создаются первыми:
+     * это левая колонка в двухколоночном popup.
      */
     if (hasActions) {
         const actions =
@@ -388,6 +362,25 @@ export function createPreviewPopup({
         popup.appendChild(actions);
     }
 
+    /*
+     * Description располагается справа
+     * и CSS отображает его в виде цитаты.
+     */
+    if (hasDescription) {
+        const descriptionElement =
+            document.createElement('blockquote');
+
+        descriptionElement.className =
+            'preview-description';
+
+        descriptionElement.textContent =
+            description;
+
+        popup.appendChild(
+            descriptionElement
+        );
+    }
+
     popup.addEventListener(
         'click',
         event => {
@@ -404,6 +397,7 @@ export function createPreviewPopup({
 
     return popup;
 }
+
 
 function createSteamPreview({
     name,
