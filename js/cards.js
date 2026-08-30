@@ -23,44 +23,61 @@ export function createGameCard(game) {
             'article'
         );
 
+
     card.className =
         'game-card';
+
 
     card.classList.add(
         PREVIEW_CLOSED_CLASS
     );
 
+
     const name =
         game['Name'] ||
         'Без названия';
+
 
     const cover =
         game['Cover'] ||
         '';
 
+
     const steamLink =
         game['Steam Link'] ||
         '';
+
 
     const video =
         game['Video'] ||
         '';
 
+
     const description =
         game['Description'] ||
         '';
 
+
     const gameTags =
-        getGameTags(game);
+        getGameTags(
+            game
+        );
+
 
     const steamImage =
-        getSteamImage(steamLink);
+        getSteamImage(
+            steamLink
+        );
+
 
     const imageUrl =
         cover ||
         steamImage;
 
-    if (imageUrl) {
+
+    if (
+        imageUrl
+    ) {
         card.appendChild(
             createGameCover(
                 imageUrl,
@@ -71,17 +88,24 @@ export function createGameCard(game) {
         );
     }
 
+
     card.appendChild(
-        createGameTitle(name)
+        createGameTitle(
+            name
+        )
     );
 
-    if (gameTags.length > 0) {
+
+    if (
+        gameTags.length > 0
+    ) {
         card.appendChild(
             createGameTagsElement(
                 gameTags
             )
         );
     }
+
 
     /*
      * Описание, Steam-ссылка или ролик
@@ -104,15 +128,25 @@ export function createGameCard(game) {
         );
     }
 
+
     setupCardHover(
         card,
         name
     );
 
+
+    /*
+     * Регистрируем карточку независимо
+     * от состояния режима отображения цен.
+     *
+     * steam-price.js загрузит prices.json
+     * сразу при открытии сайта.
+     */
     registerPriceCard(
         card,
         game
     );
+
 
     return card;
 }
@@ -129,17 +163,22 @@ export function createGameCover(
             'img'
         );
 
+
     image.className =
         'game-cover';
+
 
     image.src =
         imageUrl;
 
+
     image.alt =
         name;
 
+
     image.loading =
         'lazy';
+
 
     image.addEventListener(
         'error',
@@ -147,6 +186,7 @@ export function createGameCover(
             console.warn(
                 `Не удалось загрузить обложку игры: ${name}`
             );
+
 
             if (
                 cover &&
@@ -156,41 +196,53 @@ export function createGameCover(
                 image.src =
                     steamImage;
 
+
                 return;
             }
+
 
             image.remove();
         }
     );
 
+
     return image;
 }
 
 
-export function createGameTitle(name) {
+export function createGameTitle(
+    name
+) {
     const title =
         document.createElement(
             'h3'
         );
 
+
     title.className =
         'game-title';
 
+
     title.textContent =
         name;
+
 
     return title;
 }
 
 
-export function createGameTagsElement(tags) {
+export function createGameTagsElement(
+    tags
+) {
     const tagsContainer =
         document.createElement(
             'div'
         );
 
+
     tagsContainer.className =
         'game-tags';
+
 
     tags.forEach(tag => {
         const tagElement =
@@ -198,16 +250,20 @@ export function createGameTagsElement(tags) {
                 'span'
             );
 
+
         tagElement.className =
             'game-tag';
 
+
         tagElement.textContent =
             tag;
+
 
         tagsContainer.appendChild(
             tagElement
         );
     });
+
 
     return tagsContainer;
 }
@@ -222,11 +278,14 @@ export function createTextElement(
             'p'
         );
 
+
     element.className =
         className;
 
+
     element.textContent =
         text;
+
 
     return element;
 }
