@@ -1,13 +1,22 @@
+const STEAM_PROXY_URL =
+    'https://script.google.com/macros/s/AKfycbyUwe-rY-sOYJIuWNvQQJQa1mP50rkzcihHfZOqjrUTO9oyew4JKz_3cfNfsIveczDJ/exec';
+
+
 const priceCache =
     new Map();
 
+
 const priceRequestCache =
     new Map();
+
 
 let priceModeEnabled =
     false;
 
 
+/*
+ * Включение или выключение режима отображения цен.
+ */
 export function setPriceMode(
     isEnabled
 ) {
@@ -29,6 +38,10 @@ export function setPriceMode(
 }
 
 
+/*
+ * Регистрация карточки игры
+ * для последующего получения цены.
+ */
 export function registerPriceCard(
     card,
     game
@@ -42,12 +55,22 @@ export function registerPriceCard(
 }
 
 
-async function updateCardPrice(card) {
+/*
+ * Обновление цены конкретной карточки.
+ */
+async function updateCardPrice(
+    card
+) {
     let priceElement =
         card.querySelector(
             '.game-price'
         );
 
+
+    /*
+     * Если режим цен выключен,
+     * удаляем цену с карточки.
+     */
     if (!priceModeEnabled) {
         if (priceElement) {
             priceElement.remove();
@@ -56,19 +79,30 @@ async function updateCardPrice(card) {
         return;
     }
 
+
     const game =
         card._priceGame;
+
 
     if (!game) {
         return;
     }
 
-    const steamLink =
-        game['Steam Link'] || '';
 
+    const steamLink =
+        String(
+            game['Steam Link'] || ''
+        ).trim();
+
+
+    /*
+     * Если Steam-ссылка отсутствует,
+     * цену получить невозможно.
+     */
     if (!steamLink) {
         return;
     }
+
 
     if (!priceElement) {
         priceElement =
@@ -79,30 +113,45 @@ async function updateCardPrice(card) {
         );
     }
 
+
     priceElement.classList.remove(
-        'game-price-loading',
         'game-price-unavailable'
     );
 
+    priceElement.classList.add(
+        'game-price-loading'
+    );
+
     priceElement.innerHTML =
-        '<span class="game-price-loading-text">Загрузка…</span>';
+        '<span class="game-price-loading-text">' +
+        'Загрузка…' +
+        '</span>';
+
 
     const priceData =
         await getSteamPrice(
             steamLink
         );
 
+
     /*
-     * Режим мог быть выключен,
-     * пока выполнялся запрос.
+     * Пока выполнялся запрос,
+     * пользователь мог выключить режим цен.
      */
     if (!priceModeEnabled) {
-        priceElement.remove();
+        if (priceElement) {
+            priceElement.remove();
+        }
 
         return;
     }
 
+
     if (!priceData) {
+        priceElement.classList.remove(
+            'game-price-loading'
+        );
+
         priceElement.classList.add(
             'game-price-unavailable'
         );
@@ -115,6 +164,12 @@ async function updateCardPrice(card) {
         return;
     }
 
+
+    priceElement.classList.remove(
+        'game-price-loading',
+        'game-price-unavailable'
+    );
+
     renderPrice(
         priceElement,
         priceData
@@ -122,6 +177,9 @@ async function updateCardPrice(card) {
 }
 
 
+/*
+ * Создание контейнера цены.
+ */
 function createPriceElement() {
     const element =
         document.createElement(
@@ -135,12 +193,17 @@ function createPriceElement() {
 }
 
 
+/*
+ * Отображение текущей цены,
+ * старой цены и скидки.
+ */
 function renderPrice(
     priceElement,
     priceData
 ) {
     priceElement.innerHTML =
         '';
+
 
     const currentPrice =
         document.createElement(
@@ -153,9 +216,11 @@ function renderPrice(
     currentPrice.textContent =
         priceData.finalFormatted;
 
+
     priceElement.appendChild(
         currentPrice
     );
+
 
     if (
         priceData.discountPercent > 0
@@ -171,6 +236,7 @@ function renderPrice(
         oldPrice.textContent =
             priceData.initialFormatted;
 
+
         const discount =
             document.createElement(
                 'span'
@@ -181,6 +247,7 @@ function renderPrice(
 
         discount.textContent =
             `−${priceData.discountPercent}%`;
+
 
         priceElement.appendChild(
             oldPrice
@@ -193,6 +260,10 @@ function renderPrice(
 }
 
 
+/*
+ * Получение цены с использованием
+ * Google Apps Script-прокси.
+ */
 async function getSteamPrice(
     steamLink
 ) {
@@ -201,16 +272,32 @@ async function getSteamPrice(
             steamLink
         );
 
+
     if (!appId) {
+        console.warn(
+            'Не удалось определить App ID из ссылки:',
+            steamLink
+        );
+
         return null;
     }
 
+
+    /*
+     * Если цена уже была получена,
+     * используем кеш.
+     */
     if (priceCache.has(appId)) {
         return priceCache.get(
             appId
         );
     }
 
+
+    /*
+     * Если такой запрос уже выполняется,
+     * используем его результат.
+     */
     if (
         priceRequestCache.has(appId)
     ) {
@@ -219,17 +306,23 @@ async function getSteamPrice(
         );
     }
 
+
     const request =
-        fetchSteamPrice(appId);
+        fetchSteamPrice(
+            appId
+        );
+
 
     priceRequestCache.set(
         appId,
         request
     );
 
+
     try {
         const result =
             await request;
+
 
         if (result) {
             priceCache.set(
@@ -237,6 +330,7 @@ async function getSteamPrice(
                 result
             );
         }
+
 
         return result;
     } finally {
@@ -247,71 +341,141 @@ async function getSteamPrice(
 }
 
 
-async function fetchSteamPrice(appId) {
+/*
+ * Запрос цены через Apps Script.
+ */
+async function fetchSteamPrice(
+    appId
+) {
     const apiUrl =
-        'https://store.steampowered.com/api/appdetails' +
-        `?appids=${encodeURIComponent(appId)}` +
+        `${STEAM_PROXY_URL}` +
+        `?appid=${encodeURIComponent(appId)}` +
         '&cc=ru' +
         '&l=russian';
 
+
     try {
         const response =
-            await fetch(apiUrl);
+            await fetch(
+                apiUrl,
+                {
+                    method: 'GET',
+                    cache: 'no-store'
+                }
+            );
+
 
         if (!response.ok) {
+            console.error(
+                'Google Apps Script вернул ошибку:',
+                response.status,
+                apiUrl
+            );
+
             return null;
         }
+
 
         const result =
             await response.json();
 
+
+        /*
+         * Ошибка самого прокси.
+         */
+        if (
+            result?.error ||
+            result?.success === false
+        ) {
+            console.error(
+                'Ошибка Google Apps Script:',
+                result.error
+            );
+
+            return null;
+        }
+
+
         const appResult =
             result?.[appId];
 
+
         if (
-            !appResult?.success ||
+            !appResult ||
+            !appResult.success ||
             !appResult.data
+        ) {
+            console.warn(
+                `Steam не вернул данные для App ID ${appId}:`,
+                result
+            );
+
+            return null;
+        }
+
+
+        const gameData =
+            appResult.data;
+
+
+        /*
+         * Бесплатная игра.
+         */
+        if (
+            gameData.is_free
+        ) {
+            return {
+                finalFormatted:
+                    'Бесплатно',
+
+                initialFormatted:
+                    '',
+
+                discountPercent:
+                    0
+            };
+        }
+
+
+        const priceOverview =
+            gameData.price_overview;
+
+
+        /*
+         * У игры может не быть цены:
+         * например, демоверсия, удалённая игра
+         * или ещё не вышедший проект.
+         */
+        if (
+            !priceOverview
         ) {
             return null;
         }
 
-        const data =
-            appResult.data;
-
-        if (data.is_free) {
-            return {
-                finalFormatted: 'Бесплатно',
-                initialFormatted: '',
-                discountPercent: 0
-            };
-        }
-
-        const price =
-            data.price_overview;
-
-        if (!price) {
-            return null;
-        }
 
         return {
             finalFormatted:
-                price.final_formatted,
+                priceOverview.final_formatted ||
+                formatPrice(
+                    priceOverview.final
+                ),
 
             initialFormatted:
-                price.initial_formatted,
+                priceOverview.initial_formatted ||
+                formatPrice(
+                    priceOverview.initial
+                ),
 
             discountPercent:
-                price.discount_percent
+                Number(
+                    priceOverview.discount_percent
+                ) || 0
         };
-
     } catch (error) {
         console.error(
-            `Ошибка запроса Steam для appid ${appId}:`,
+            `Не удалось получить цену Steam ` +
+            `для appid ${appId}:`,
             error
-        );
-
-        alert(
-            `Ошибка Steam: ${error.message}`
         );
 
         return null;
@@ -319,17 +483,61 @@ async function fetchSteamPrice(appId) {
 }
 
 
-function getSteamAppId(steamLink) {
-    if (!steamLink) {
+/*
+ * Извлечение App ID из Steam-ссылки.
+ *
+ * Поддерживаются ссылки:
+ * https://store.steampowered.com/app/3632670/
+ * https://steamcommunity.com/app/3632670/
+ */
+function getSteamAppId(
+    steamLink
+) {
+    const link =
+        String(
+            steamLink || ''
+        ).trim();
+
+
+    if (!link) {
         return null;
     }
 
+
     const match =
-        String(steamLink).match(
-            /\/app\/(\d+)/
+        link.match(
+            /(?:store\.steampowered\.com|steamcommunity\.com)\/app\/(\d+)/i
         );
 
-    return match
-        ? match[1]
-        : null;
+
+    if (!match) {
+        return null;
+    }
+
+
+    return match[1];
+}
+
+
+/*
+ * Запасное форматирование цены,
+ * если Steam не прислал formatted-значение.
+ */
+function formatPrice(
+    priceInCents
+) {
+    const price =
+        Number(
+            priceInCents
+        );
+
+
+    if (
+        !Number.isFinite(price)
+    ) {
+        return '';
+    }
+
+
+    return `${(price / 100).toFixed(2)} руб.`;
 }
