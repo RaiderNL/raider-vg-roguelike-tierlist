@@ -87,9 +87,15 @@ body {
 }
 
 .search-group {
-    flex: 1 1 260px;
-    min-width: 220px;
+    flex: 0 0 180px;
+    width: 180px;
+    min-width: 180px;
 }
+
+.search-group input {
+    width: 180px;
+}
+
 
 .filter-group {
     flex: 0 0 180px;
