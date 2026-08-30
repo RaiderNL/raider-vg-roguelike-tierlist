@@ -5,8 +5,7 @@ import {
 
 import {
     setupCardHover,
-    createPreviewPopup,
-    closeAllPreviews
+    createPreviewPopup
 } from './previews.js';
 
 import {
@@ -53,13 +52,6 @@ export function createGameCard(game) {
     const imageUrl =
         cover || steamImage;
 
-    setupCardHover(card);
-
-    setupCardSteamLink(
-        card,
-        steamLink,
-        name
-    );
 
     if (imageUrl) {
         card.appendChild(
@@ -100,6 +92,11 @@ export function createGameCard(game) {
         );
     }
 
+    /*
+     * Popup добавляется до настройки интерактивности
+     * карточки. Благодаря этому setupCardHover()
+     * сразу видит popup.
+     */
     if (steamLink || video) {
         card.appendChild(
             createPreviewPopup({
@@ -112,87 +109,17 @@ export function createGameCard(game) {
         );
     }
 
+    /*
+     * Теперь setupCardHover() отвечает не только
+     * за закрытие popup при уходе мыши, но и за
+     * открытие popup по клику.
+     */
+    setupCardHover(
+        card,
+        name
+    );
+
     return card;
-}
-
-
-// Настройка перехода на страницу игры в Steam
-export function setupCardSteamLink(
-    card,
-    steamLink,
-    name
-) {
-    if (!steamLink) {
-        return;
-    }
-
-    card.classList.add(
-        'game-card-clickable'
-    );
-
-    card.setAttribute(
-        'role',
-        'link'
-    );
-
-    card.setAttribute(
-        'tabindex',
-        '0'
-    );
-
-    card.setAttribute(
-        'aria-label',
-        `Открыть страницу игры ${name} в Steam`
-    );
-
-    card.addEventListener(
-        'click',
-        event => {
-            /*
-             * Клик внутри popup не должен
-             * открывать Steam-ссылку карточки.
-             */
-            if (
-                event.target.closest(
-                    '.game-preview-popup'
-                )
-            ) {
-                return;
-            }
-
-            closeAllPreviews();
-            openExternalLink(steamLink);
-        }
-    );
-
-    card.addEventListener(
-        'keydown',
-        event => {
-            if (
-                event.key !== 'Enter' &&
-                event.key !== ' '
-            ) {
-                return;
-            }
-
-            /*
-             * Клавиатурное событие внутри popup
-             * не должно открывать Steam-ссылку.
-             */
-            if (
-                event.target.closest(
-                    '.game-preview-popup'
-                )
-            ) {
-                return;
-            }
-
-            event.preventDefault();
-
-            closeAllPreviews();
-            openExternalLink(steamLink);
-        }
-    );
 }
 
 
@@ -306,20 +233,4 @@ export function createTextElement(
         text;
 
     return element;
-}
-
-
-// Открытие внешней ссылки
-function openExternalLink(url) {
-    const newWindow =
-        window.open(
-            url,
-            '_blank',
-            'noopener,noreferrer'
-        );
-
-    if (newWindow) {
-        newWindow.opener =
-            null;
-    }
 }
