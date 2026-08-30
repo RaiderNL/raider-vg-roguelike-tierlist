@@ -33,64 +33,63 @@
     <main class="container">
 
         <section class="controls">
-           <div class="video-filter-controls">
+    <div class="control-group search-group">
+        <label for="search">
+            Поиск игры
+        </label>
+
+        <input
+            type="search"
+            id="search"
+            placeholder="Введите название игры..."
+        >
+    </div>
+
+    <div class="control-group filter-group">
+        <label for="tag-filter">
+            Жанр
+        </label>
+
+        <select id="tag-filter">
+            <option value="">
+                Все жанры
+            </option>
+        </select>
+    </div>
+
+    <div class="video-filter-controls">
         <div class="control-group filter-group">
             <label for="video-filter">
                 Видео
             </label>
-    
+
             <select id="video-filter">
                 <option value="">
                     Все ролики
                 </option>
             </select>
         </div>
-    
+
         <label class="price-mode-toggle">
             <input
                 id="price-mode-toggle"
                 type="checkbox"
             >
-    
+
             <span
                 class="price-switch"
                 aria-hidden="true"
             >
                 <span class="price-switch-thumb"></span>
             </span>
-    
+
             <span class="price-mode-label">
                 Показывать цены
             </span>
         </label>
     </div>
+</section>
 
-    
-        <div class="control-group filter-group">
-
-            <label for="tag-filter">
-                Жанр
-            </label>
-    
-            <select id="tag-filter">
-                <option value="">
-                    Все жанры
-                </option>
-            </select>
-        </div>
-    
-        <div class="control-group filter-group">
-            <label for="video-filter">
-                Видео
-            </label>
-    
-            <select id="video-filter">
-                <option value="">
-                    Все ролики
-                </option>
-            </select>
-        </div>
-    </section>
 
 
         <div class="tier-list-layout">
