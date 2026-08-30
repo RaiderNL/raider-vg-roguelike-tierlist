@@ -31,15 +31,15 @@ body {
 }
 
 .container {
-    width: min(1375px, calc(100% - 32px));
+    width: min(1350px, calc(100% - 32px));
     margin: 24px auto;
 }
 
 .controls {
     display: flex;
     flex-wrap: wrap;
-    align-items: center;
-    gap: 12px;
+    align-items: flex-end;
+    gap: 16px;
 
     margin-bottom: 24px;
     padding: 16px;
@@ -49,12 +49,21 @@ body {
     box-shadow: 0 2px 8px rgb(0 0 0 / 8%);
 }
 
-.controls label {
+.control-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+
+    min-width: 180px;
+}
+
+.control-group label {
     font-weight: 700;
 }
 
-.controls input,
-.controls select {
+.control-group input,
+.control-group select {
+    width: 100%;
     min-height: 38px;
     padding: 8px 10px;
 
@@ -66,18 +75,12 @@ body {
     outline: none;
 }
 
-.controls input:focus,
-.controls select:focus {
+.control-group input:focus,
+.control-group select:focus {
     border-color: #2563eb;
     box-shadow: 0 0 0 3px rgb(37 99 235 / 15%);
 }
 
-/*
- * Общая область тир-листа и выбранного видео.
- *
- * Левая колонка занимает всё свободное место,
- * правая имеет фиксированную ширину 320px.
- */
 .tier-list-layout {
     display: block;
 }
@@ -86,17 +89,12 @@ body {
     min-width: 0;
 }
 
-/*
- * Две колонки создаются только после выбора
- * конкретного YouTube-ролика.
- */
 .tier-list-layout:has(.selected-video-panel.is-visible) {
     display: grid;
     grid-template-columns: minmax(0, 1fr) 320px;
     align-items: start;
     gap: 16px;
 }
-
 
 .tier-list {
     display: flex;
@@ -120,7 +118,6 @@ body {
 .tier-row-active {
     z-index: 10000;
 }
-
 
 .tier-label {
     position: relative;
@@ -177,15 +174,11 @@ body {
     overflow: visible;
 }
 
-/*
- * Квадратная карточка.
- */
 .game-card {
     position: relative;
 
     display: flex;
     flex-direction: column;
-
 
     width: 150px;
     aspect-ratio: 1 / 1;
@@ -207,27 +200,6 @@ body {
     transform: translateY(-3px);
     box-shadow: 0 5px 12px rgb(0 0 0 / 20%);
 }
-/*
- * При выборе конкретного видео
- * всплывающие превью отключаются.
- */
-.tier-list-layout.video-filter-active
-.game-preview-popup {
-    display: none !important;
-}
-
-/*
- * При активном видеофильтре отключаем
- * визуальный эффект наведения на карточку.
- */
-
-
-/*
- * Не поднимаем строку тир-листа при наведении,
- * если выбран конкретный ролик.
- */
-
-
 
 .game-card-clickable {
     cursor: pointer;
@@ -242,10 +214,6 @@ body {
     transform: translateY(-1px);
 }
 
-/*
- * Иллюстрация занимает верхние 2/3 карточки
- * и полностью заполняет доступное пространство.
- */
 .game-cover {
     display: block;
     flex: 0 0 66.666%;
@@ -310,36 +278,28 @@ body {
 }
 
 /*
- * Принудительно скрывает ховер после клика
- * по одной из ссылок в превью.
+ * При выборе конкретного видео
+ * скрываем только popup, но оставляем
+ * анимацию самой карточки.
  */
-.game-card.preview-closed .game-preview-popup {
-    visibility: hidden !important;
-    opacity: 0 !important;
-    pointer-events: none !important;
-
-    transform: translate(-50%, 8px) !important;
+.tier-list-layout.video-filter-active
+.game-preview-popup {
+    display: none !important;
 }
 
-
-
-/*
- * Всплывающее меню отображается над карточкой.
- */
 .game-preview-popup {
     position: absolute;
-    z-index: 2000;
+    z-index: 30000;
 
-    bottom: calc(100% + 10px);
-    left: 50%;
+    top: 0;
+    left: 0;
 
     display: flex;
     flex-direction: column;
     gap: 12px;
 
-    width: 330px;
+    width: min(330px, calc(100vw - 16px));
     padding: 12px;
-
 
     visibility: hidden;
     opacity: 0;
@@ -350,123 +310,83 @@ body {
     border-radius: 10px;
     box-shadow: 0 10px 30px rgb(0 0 0 / 35%);
 
-    transform: translate(-50%, 0);
     transition:
         opacity 0.2s ease,
         visibility 0.2s ease;
-
-}
-/*
- * Превью справа от карточки.
- */
-.game-preview-popup.preview-position-right {
-    top: 50%;
-    right: auto;
-    bottom: auto;
-    left: calc(100% + 10px);
-
-    transform: translateY(-50%);
 }
 
-/*
- * Превью слева от карточки.
- */
-.game-preview-popup.preview-position-left {
-    top: 50%;
-    right: calc(100% + 10px);
-    bottom: auto;
-    left: auto;
-
-    transform: translateY(-50%);
-}
-
-/*
- * Превью снизу карточки.
- */
-.game-preview-popup.preview-position-bottom {
-    top: calc(100% + 10px);
-    right: auto;
-    bottom: auto;
-    left: 50%;
-
-    transform: translateX(-50%);
-}
-.game-card:hover
-.game-preview-popup.preview-position-right,
-.game-card:focus-within
-.game-preview-popup.preview-position-right {
-    transform: translateY(-50%);
-}
-
-.game-card:hover
-.game-preview-popup.preview-position-left,
-.game-card:focus-within
-.game-preview-popup.preview-position-left {
-    transform: translateY(-50%);
-}
-
-.game-card:hover
-.game-preview-popup.preview-position-bottom,
-.game-card:focus-within
-.game-preview-popup.preview-position-bottom {
-    transform: translateX(-50%);
-}
-
-.game-card:hover .game-preview-popup,
-.game-card:focus-within .game-preview-popup {
+.game-card.preview-position-ready
+.game-preview-popup:not(.game-card.preview-closed
+.game-preview-popup),
+.game-card:not(.preview-closed)
+.game-preview-popup {
     visibility: visible;
     opacity: 1;
     pointer-events: auto;
 }
 
-
-.game-card.preview-closed:hover .game-preview-popup,
-.game-card.preview-closed:focus-within .game-preview-popup {
+.game-card.preview-closed .game-preview-popup {
     visibility: hidden !important;
     opacity: 0 !important;
     pointer-events: none !important;
 }
 
 /*
- * Невидимый мост между карточкой и всплывающим окном.
+ * Боковые варианты не используют transform.
+ * Координаты задаются через JavaScript.
+ */
+.game-preview-popup.preview-position-right,
+.game-preview-popup.preview-position-left,
+.game-preview-popup.preview-position-bottom {
+    transform: none;
+}
+
+/*
+ * Невидимый мост между карточкой и popup.
  */
 .game-preview-popup::after {
     content: '';
 
     position: absolute;
+
+    background: transparent;
+    pointer-events: auto;
+}
+
+.game-preview-popup:not(.preview-position-right)
+:not(.preview-position-left)
+:not(.preview-position-bottom)::after {
     right: 0;
     bottom: -14px;
     left: 0;
 
     height: 14px;
-
-    background: transparent;
-    pointer-events: auto;
 }
-/*
- * Мостик для превью справа.
- */
+
 .game-preview-popup.preview-position-right::after {
-    top: 0;
+    top: -12px;
     right: auto;
-    bottom: 0;
-    left: -14px;
+    bottom: -12px;
+    left: -18px;
 
-    width: 14px;
-    height: auto;
+    width: 18px;
 }
 
-/*
- * Мостик для превью слева.
- */
 .game-preview-popup.preview-position-left::after {
-    top: 0;
-    right: -14px;
-    bottom: 0;
+    top: -12px;
+    right: -18px;
+    bottom: -12px;
     left: auto;
 
-    width: 14px;
-    height: auto;
+    width: 18px;
+}
+
+.game-preview-popup.preview-position-bottom::after {
+    top: -14px;
+    right: 0;
+    left: 0;
+
+    height: 14px;
 }
 
 .preview-link {
@@ -498,7 +418,6 @@ body {
     background: #3b414d;
 }
 
-
 .preview-image-placeholder {
     display: flex;
     align-items: center;
@@ -518,10 +437,6 @@ body {
     text-align: center;
 }
 
-
-/*
- * Панель выбранного YouTube-ролика.
- */
 .selected-video-panel {
     position: sticky;
     top: 16px;
@@ -651,8 +566,6 @@ body {
     }
 }
 
-
-
 @media (max-width: 600px) {
     .site-header {
         padding: 24px 16px;
@@ -674,9 +587,9 @@ body {
         margin-bottom: 16px;
     }
 
-    .controls input,
-    .controls select {
+    .control-group {
         width: 100%;
+        min-width: 0;
     }
 
     .tier-row {
@@ -714,17 +627,17 @@ body {
     }
 
     .game-preview-popup {
-        width: 190px;
+        width: min(285px, calc(100vw - 16px));
+        padding: 10px;
     }
 
     .preview-image {
-        height: 78px;
+        height: 117px;
     }
 
     .preview-label {
-        padding: 6px;
-
-        font-size: 11px;
+        padding: 9px 10px;
+        font-size: 13px;
     }
 
     .selected-video-panel {
