@@ -68,11 +68,13 @@ export function createGameCard(game) {
         createGameTitle(name)
     );
 
+
     if (gameTags.length > 0) {
         card.appendChild(
             createGameTagsElement(gameTags)
         );
     }
+
 
     if (description) {
         card.appendChild(
@@ -83,6 +85,7 @@ export function createGameCard(game) {
         );
     }
 
+
     if (comment) {
         card.appendChild(
             createTextElement(
@@ -92,10 +95,11 @@ export function createGameCard(game) {
         );
     }
 
+
     /*
-     * Popup добавляется до настройки интерактивности
-     * карточки. Благодаря этому setupCardHover()
-     * сразу видит popup.
+     * Popup должен быть добавлен до вызова
+     * setupCardHover(), потому что setupCardHover()
+     * получает ссылку на уже существующий popup.
      */
     if (steamLink || video) {
         card.appendChild(
@@ -109,10 +113,11 @@ export function createGameCard(game) {
         );
     }
 
+
     /*
-     * Теперь setupCardHover() отвечает не только
-     * за закрытие popup при уходе мыши, но и за
-     * открытие popup по клику.
+     * Карточка открывает popup по клику.
+     * Переход на Steam выполняется только
+     * через ссылку внутри popup.
      */
     setupCardHover(
         card,
