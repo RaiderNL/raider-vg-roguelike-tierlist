@@ -116,14 +116,9 @@ body {
     box-shadow: 0 2px 8px rgb(0 0 0 / 8%);
 }
 
-.game-card-preview-active {
-    z-index: 100001 !important;
-}
-
 .tier-row-active {
     z-index: 100000;
 }
-
 
 .tier-label {
     position: relative;
@@ -210,7 +205,6 @@ body {
 .game-card-preview-active {
     z-index: 100001 !important;
 }
-
 
 .game-card-clickable {
     cursor: pointer;
@@ -326,13 +320,11 @@ body {
         visibility 0.2s ease;
 }
 
-
 .game-card:not(.preview-closed) .game-preview-popup {
     visibility: visible;
     opacity: 1;
     pointer-events: auto;
 }
-
 
 .game-card.preview-closed .game-preview-popup {
     visibility: hidden !important;
