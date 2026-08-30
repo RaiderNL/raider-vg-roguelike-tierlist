@@ -22,16 +22,18 @@ body {
 
 .site-header h1 {
     margin: 0 0 10px;
+
     font-size: 32px;
 }
 
 .site-header p {
     margin: 0;
+
     color: #d7d9df;
 }
 
 .container {
-    width: min(1300px, calc(100% - 32px));
+    width: min(1350px, calc(100% - 32px));
     margin: 24px auto;
 }
 
@@ -100,6 +102,7 @@ body {
     display: flex;
     flex-direction: column;
     gap: 8px;
+
     min-width: 0;
 }
 
@@ -175,6 +178,23 @@ body {
     overflow: visible;
 }
 
+/*
+ * В тирах D–F четыре уменьшенные карточки
+ * занимают примерно столько же места,
+ * сколько три стандартные карточки.
+ *
+ * Стандартный ряд:
+ * 3 × 190px + 2 × 8px = 586px
+ *
+ * Уменьшенный ряд:
+ * 4 × 142px + 3 × 6px = 586px
+ */
+#tier-D,
+#tier-E,
+#tier-F {
+    gap: 6px;
+}
+
 .game-card {
     position: relative;
 
@@ -184,7 +204,6 @@ body {
     width: 190px;
     aspect-ratio: 1 / 1;
 
-
     background: #fff;
     border: 1px solid #e1e3e8;
     border-radius: 8px;
@@ -193,6 +212,12 @@ body {
     transition:
         transform 0.2s ease,
         box-shadow 0.2s ease;
+}
+
+#tier-D .game-card,
+#tier-E .game-card,
+#tier-F .game-card {
+    width: 142px;
 }
 
 .game-card:hover,
@@ -285,8 +310,7 @@ body {
 
 /*
  * При выборе конкретного видео
- * скрываем только popup, но оставляем
- * анимацию самой карточки.
+ * скрываем popup карточек.
  */
 .tier-list-layout.video-filter-active
 .game-preview-popup {
@@ -321,13 +345,15 @@ body {
         visibility 0.2s ease;
 }
 
-.game-card:not(.preview-closed) .game-preview-popup {
+.game-card:not(.preview-closed)
+.game-preview-popup {
     visibility: visible;
     opacity: 1;
     pointer-events: auto;
 }
 
-.game-card.preview-closed .game-preview-popup {
+.game-card.preview-closed
+.game-preview-popup {
     visibility: hidden !important;
     opacity: 0 !important;
     pointer-events: none !important;
@@ -612,20 +638,40 @@ body {
         width: 145px;
     }
 
+    /*
+     * Мобильный расчёт:
+     *
+     * 3 × 145px + 2 × 8px = 451px
+     * 4 × 108px + 3 × 6px = 450px
+     */
+    #tier-D,
+    #tier-E,
+    #tier-F {
+        gap: 6px;
+    }
+
+    #tier-D .game-card,
+    #tier-E .game-card,
+    #tier-F .game-card {
+        width: 108px;
+    }
 
     .game-title {
         margin: 6px 6px 3px;
+
         font-size: 13px;
     }
 
     .game-tags {
         gap: 3px;
+
         max-height: 30px;
         margin: 0 6px 5px;
     }
 
     .game-tag {
         padding: 2px 5px;
+
         font-size: 10px;
     }
 
@@ -640,6 +686,7 @@ body {
 
     .preview-label {
         padding: 9px 10px;
+
         font-size: 13px;
     }
 
@@ -663,7 +710,21 @@ body {
         padding: 8px;
     }
 
-    .game-card {
+    /*
+     * На очень узких экранах карточки
+     * занимают две колонки независимо
+     * от уровня тира.
+     */
+    .game-card,
+    #tier-D .game-card,
+    #tier-E .game-card,
+    #tier-F .game-card {
         width: calc(50% - 3px);
+    }
+
+    #tier-D,
+    #tier-E,
+    #tier-F {
+        gap: 6px;
     }
 }
