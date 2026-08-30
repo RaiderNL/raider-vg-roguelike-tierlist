@@ -129,16 +129,29 @@ export function setupCardHover(
     };
 
 
-    const closePreview = () => {
+    const closePreview = (
+        respectFocus = true
+    ) => {
         if (closeTimer) {
             clearTimeout(closeTimer);
         }
 
         closeTimer = setTimeout(() => {
+            /*
+             * При закрытии мышью учитываем
+             * только положение мыши.
+             *
+             * Фокус, который карточка получила
+             * после клика, не должен блокировать
+             * закрытие popup.
+             */
             if (
                 card.matches(':hover') ||
                 popup.matches(':hover') ||
-                card.matches(':focus-within')
+                (
+                    respectFocus &&
+                    card.matches(':focus-within')
+                )
             ) {
                 closeTimer = null;
                 return;
@@ -153,8 +166,8 @@ export function setupCardHover(
             );
 
             /*
-             * Высокий z-index сохраняется
-             * на время fade-out.
+             * Высокий слой сохраняется во время
+             * fade-out popup.
              */
             scheduleLayerCleanup();
 
@@ -165,7 +178,7 @@ export function setupCardHover(
 
     /*
      * Если мышь вошла в popup, отменяем
-     * ранее запланированное закрытие.
+     * отложенное закрытие.
      */
     popup.addEventListener(
         'mouseenter',
@@ -176,15 +189,15 @@ export function setupCardHover(
 
 
     /*
-     * Если мышь ушла из popup за пределы
-     * карточки и popup, запускаем закрытие.
+     * Обрабатываем уход мыши непосредственно
+     * с popup.
      */
     popup.addEventListener(
         'mouseleave',
         event => {
             /*
-             * Переход из popup обратно
-             * на карточку не закрывает popup.
+             * Переход с popup обратно на карточку
+             * не должен закрывать popup.
              */
             if (
                 event.relatedTarget &&
@@ -193,7 +206,11 @@ export function setupCardHover(
                 return;
             }
 
-            closePreview();
+            /*
+             * При уходе мыши игнорируем
+             * focus-within.
+             */
+            closePreview(false);
         }
     );
 
@@ -206,8 +223,8 @@ export function setupCardHover(
         'click',
         event => {
             /*
-             * Клики по ссылкам внутри popup
-             * обрабатываются самими ссылками.
+             * Ссылки внутри popup должны
+             * работать самостоятельно.
              */
             if (
                 event.target.closest(
@@ -236,7 +253,7 @@ export function setupCardHover(
             }
 
             /*
-             * Клавиши внутри popup не должны
+             * Ссылки внутри popup не должны
              * повторно открывать popup карточки.
              */
             if (
@@ -255,14 +272,14 @@ export function setupCardHover(
 
 
     /*
-     * Уход мыши с карточки.
+     * Обрабатываем уход мыши с карточки.
      */
     card.addEventListener(
         'mouseleave',
         event => {
             /*
              * Переход с карточки на popup
-             * не закрывает popup.
+             * не должен закрывать popup.
              */
             if (
                 event.relatedTarget &&
@@ -271,13 +288,17 @@ export function setupCardHover(
                 return;
             }
 
-            closePreview();
+            /*
+             * При уходе мыши focus-within
+             * не должен блокировать закрытие.
+             */
+            closePreview(false);
         }
     );
 
 
     /*
-     * Фокус на самой карточке открывает popup.
+     * Фокус на карточке открывает popup.
      */
     card.addEventListener(
         'focusin',
@@ -292,12 +313,16 @@ export function setupCardHover(
 
 
     /*
-     * Если фокус переместился внутри
-     * карточки или popup, ничего не закрываем.
+     * Если фокус переместился наружу,
+     * закрываем popup.
      */
     card.addEventListener(
         'focusout',
         event => {
+            /*
+             * Переход фокуса между карточкой
+             * и элементом внутри popup не закрывает его.
+             */
             if (
                 card.contains(event.relatedTarget)
             ) {
@@ -310,7 +335,7 @@ export function setupCardHover(
 
 
     /*
-     * Эти методы используются функцией
+     * Методы используются функцией
      * closeAllPreviews().
      */
     card._cancelPreviewClose =
@@ -328,8 +353,8 @@ export function setupCardHover(
         );
 
         /*
-         * Высокий слой сохраняется во время
-         * анимации исчезновения.
+         * Сохраняем высокий слой на время
+         * fade-out popup.
          */
         scheduleLayerCleanup();
     };
@@ -379,7 +404,7 @@ export function createPreviewPopup({
     );
 
     /*
-     * Клавиатурные события ссылок внутри popup
+     * Клавиатурные события внутри popup
      * не должны обрабатываться карточкой.
      */
     popup.addEventListener(
