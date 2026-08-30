@@ -52,7 +52,9 @@ export function renderSelectedVideo(
     panel.innerHTML = '';
 
     if (!selectedVideoTitle) {
-        hideSelectedVideoPanel(panel);
+        hideSelectedVideoPanel(
+            panel
+        );
 
         return;
     }
@@ -65,27 +67,36 @@ export function renderSelectedVideo(
                 ).trim();
 
             return (
-                videoTitle === selectedVideoTitle
+                videoTitle ===
+                selectedVideoTitle
             );
         });
 
     if (!game) {
-        hideSelectedVideoPanel(panel);
+        hideSelectedVideoPanel(
+            panel
+        );
 
         return;
     }
 
     const videoUrl =
-        String(game['Video'] || '').trim();
+        String(
+            game['Video'] || ''
+        ).trim();
 
     if (!videoUrl) {
-        hideSelectedVideoPanel(panel);
+        hideSelectedVideoPanel(
+            panel
+        );
 
         return;
     }
 
     const thumbnailUrl =
-        getYouTubeThumbnail(videoUrl);
+        getYouTubeThumbnail(
+            videoUrl
+        );
 
     const title =
         document.createElement('h2');
@@ -130,7 +141,9 @@ export function renderSelectedVideo(
         image.loading =
             'lazy';
 
-        link.appendChild(image);
+        link.appendChild(
+            image
+        );
     } else {
         const placeholder =
             document.createElement('div');
@@ -155,7 +168,9 @@ export function renderSelectedVideo(
     caption.textContent =
         'Открыть видео на YouTube';
 
-    link.appendChild(caption);
+    link.appendChild(
+        caption
+    );
 
     panel.appendChild(title);
     panel.appendChild(link);
