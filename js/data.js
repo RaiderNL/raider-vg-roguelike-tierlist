@@ -368,9 +368,10 @@ export function getVideoLabel(
                 : 'Без номера';
 
     return title
-        ? `${prefix}. ${title}`
+        ? `${prefix} ${title}`
         : prefix;
 }
+
 
 
 export function getSteamImage(
