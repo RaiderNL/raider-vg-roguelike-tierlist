@@ -303,10 +303,15 @@ async function fetchSteamPrice(appId) {
             discountPercent:
                 price.discount_percent
         };
+
     } catch (error) {
-        console.warn(
-            `Не удалось получить цену Steam для appid ${appId}:`,
+        console.error(
+            `Ошибка запроса Steam для appid ${appId}:`,
             error
+        );
+
+        alert(
+            `Ошибка Steam: ${error.message}`
         );
 
         return null;
