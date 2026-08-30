@@ -181,8 +181,9 @@ body {
     display: flex;
     flex-direction: column;
 
-    width: 150px;
+    width: 190px;
     aspect-ratio: 1 / 1;
+
 
     background: #fff;
     border: 1px solid #e1e3e8;
@@ -608,8 +609,9 @@ body {
     }
 
     .game-card {
-        width: 125px;
+        width: 145px;
     }
+
 
     .game-title {
         margin: 6px 6px 3px;
