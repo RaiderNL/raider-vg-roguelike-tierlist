@@ -25,6 +25,12 @@ const PRICE_UNAVAILABLE_CLASS =
 const PRICE_RELOAD_INTERVAL =
     24 * 60 * 60 * 1000;
 
+const PRICE_HIDE_DURATION =
+    220;
+
+const priceRemovalTimers =
+    new WeakMap();
+
 
 let pricesLoaded =
     false;
@@ -329,6 +335,9 @@ export function renderAllPrices() {
 function renderPriceForCard(
     card
 ) {
+    cancelPriceRemoval(
+    card
+);
     const game =
         card._steamPriceGame;
 
@@ -641,6 +650,39 @@ function renderPrice(
     }
 }
 
+function cancelPriceRemoval(
+    card
+) {
+    const timer =
+        priceRemovalTimers.get(
+            card
+        );
+
+    if (
+        timer
+    ) {
+        clearTimeout(
+            timer
+        );
+
+        priceRemovalTimers.delete(
+            card
+        );
+    }
+
+    const priceElement =
+        card.querySelector(
+            `.${PRICE_ELEMENT_CLASS}`
+        );
+
+    if (
+        priceElement
+    ) {
+        priceElement.classList.remove(
+            'game-price-hiding'
+        );
+    }
+}
 
 /*
  * Удаление отображения цен при выключении режима.
@@ -652,11 +694,34 @@ function hideAllPrices() {
                 `.${PRICE_ELEMENT_CLASS}`
             );
 
-
         if (
-            priceElement
+            !priceElement
         ) {
-            priceElement.remove();
+            return;
         }
+
+        cancelPriceRemoval(
+            card
+        );
+
+        priceElement.classList.add(
+            'game-price-hiding'
+        );
+
+        const timer =
+            setTimeout(() => {
+                priceElement.remove();
+
+                priceRemovalTimers.delete(
+                    card
+                );
+            }, PRICE_HIDE_DURATION);
+
+        priceRemovalTimers.set(
+            card,
+            timer
+        );
     });
 }
+
+
