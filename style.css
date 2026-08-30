@@ -1111,10 +1111,21 @@ body {
  * Плавное появление плашки цены.
  */
 .game-price {
+    position: absolute;
     overflow: hidden;
 
     animation: price-panel-appear 280ms ease-out both;
 }
+
+.game-price.game-price-hiding {
+    animation: price-panel-disappear 220ms ease-in both;
+}
+
+.game-price.game-price-hiding::after {
+    animation: none;
+    opacity: 0;
+}
+
 
 .game-price::after {
     content: '';
@@ -1147,6 +1158,18 @@ body {
     to {
         opacity: 1;
         transform: translateY(0) scale(1);
+    }
+}
+
+@keyframes price-panel-disappear {
+    from {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+
+    to {
+        opacity: 0;
+        transform: translateY(6px) scale(0.97);
     }
 }
 
