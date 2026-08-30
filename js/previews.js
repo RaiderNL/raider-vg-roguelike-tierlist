@@ -15,9 +15,45 @@ import {
 } from './video.js';
 
 
-export function setupCardHover(card) {
+export function setupCardHover(
+    card,
+    name
+) {
     let closeTimer = null;
     let layerCleanupTimer = null;
+
+    const popup =
+        card.querySelector(
+            '.game-preview-popup'
+        );
+
+    /*
+     * Если у игры нет ни Steam-ссылки,
+     * ни видео, popup не создаётся.
+     */
+    if (!popup) {
+        return;
+    }
+
+    /*
+     * Карточка теперь является кнопкой,
+     * открывающей popup.
+     */
+    card.setAttribute(
+        'role',
+        'button'
+    );
+
+    card.setAttribute(
+        'tabindex',
+        '0'
+    );
+
+    card.setAttribute(
+        'aria-label',
+        `Открыть меню игры ${name}`
+    );
+
 
     const cancelClose = () => {
         if (closeTimer) {
@@ -31,6 +67,7 @@ export function setupCardHover(card) {
         }
     };
 
+
     const openPreview = () => {
         cancelClose();
 
@@ -39,6 +76,10 @@ export function setupCardHover(card) {
                 '.tier-list-layout'
             );
 
+        /*
+         * При выбранном видео popup карточек
+         * не используется.
+         */
         if (
             layout?.classList.contains(
                 VIDEO_FILTER_ACTIVE_CLASS
@@ -47,18 +88,9 @@ export function setupCardHover(card) {
             return;
         }
 
-        const popup =
-            card.querySelector(
-                '.game-preview-popup'
-            );
-
-        if (!popup) {
-            return;
-        }
-
         /*
-         * Активный слой добавляется до начала
-         * отображения popup.
+         * Активный слой устанавливается
+         * до показа popup.
          */
         card.classList.remove(
             PREVIEW_CLOSED_CLASS
@@ -68,12 +100,15 @@ export function setupCardHover(card) {
             ACTIVE_CARD_CLASS
         );
 
-        setTierRowActive(card, true);
+        setTierRowActive(
+            card,
+            true
+        );
 
         /*
-         * Сначала браузер применяет состояние
-         * открытой карточки, затем вычисляется
-         * размер и позиция popup.
+         * Даём браузеру сначала применить
+         * новый stacking context, затем
+         * рассчитываем позицию popup.
          */
         requestAnimationFrame(() => {
             if (
@@ -86,6 +121,7 @@ export function setupCardHover(card) {
         });
     };
 
+
     const scheduleLayerCleanup = () => {
         if (layerCleanupTimer) {
             clearTimeout(layerCleanupTimer);
@@ -93,9 +129,8 @@ export function setupCardHover(card) {
 
         layerCleanupTimer = setTimeout(() => {
             /*
-             * Если за время fade-out пользователь
-             * снова навёл мышь на карточку,
-             * высокий слой сохраняется.
+             * Если пользователь снова открыл popup
+             * или навёлся на карточку, слой не убираем.
              */
             if (
                 card.classList.contains(
@@ -108,12 +143,16 @@ export function setupCardHover(card) {
                     ACTIVE_CARD_CLASS
                 );
 
-                setTierRowActive(card, false);
+                setTierRowActive(
+                    card,
+                    false
+                );
             }
 
             layerCleanupTimer = null;
         }, PREVIEW_LAYER_CLEANUP_DELAY);
     };
+
 
     const closePreview = () => {
         if (closeTimer) {
@@ -121,18 +160,14 @@ export function setupCardHover(card) {
         }
 
         closeTimer = setTimeout(() => {
-            const popup =
-                card.querySelector(
-                    '.game-preview-popup'
-                );
-
             /*
-             * Карточка или popup всё ещё находятся
-             * под курсором — закрывать нельзя.
+             * Если курсор всё ещё находится
+             * на карточке или popup, закрытие
+             * отменяется.
              */
             if (
                 card.matches(':hover') ||
-                (popup && popup.matches(':hover')) ||
+                popup.matches(':hover') ||
                 card.matches(':focus-within')
             ) {
                 closeTimer = null;
@@ -140,7 +175,8 @@ export function setupCardHover(card) {
             }
 
             /*
-             * Fade-out начинается сразу.
+             * Сначала запускаем fade-out.
+             * Высокий z-index пока сохраняется.
              */
             card.classList.add(
                 PREVIEW_CLOSED_CLASS
@@ -152,9 +188,8 @@ export function setupCardHover(card) {
 
             /*
              * ACTIVE_CARD_CLASS и ACTIVE_ROW_CLASS
-             * пока остаются. Благодаря этому popup
-             * находится поверх остальных элементов
-             * до полного завершения fade-out.
+             * будут удалены только после завершения
+             * анимации исчезновения.
              */
             scheduleLayerCleanup();
 
@@ -162,17 +197,80 @@ export function setupCardHover(card) {
         }, PREVIEW_CLOSE_DELAY);
     };
 
+
+    /*
+     * Открытие popup по клику на карточку.
+     */
     card.addEventListener(
-        'mouseenter',
-        openPreview
+        'click',
+        event => {
+            /*
+             * Клик по ссылке Steam или YouTube
+             * не должен повторно открывать popup.
+             */
+            if (
+                event.target.closest(
+                    '.game-preview-popup'
+                )
+            ) {
+                return;
+            }
+
+            openPreview();
+        }
     );
 
+
+    /*
+     * Открытие popup клавишами Enter и Space.
+     */
+    card.addEventListener(
+        'keydown',
+        event => {
+            if (
+                event.key !== 'Enter' &&
+                event.key !== ' '
+            ) {
+                return;
+            }
+
+            /*
+             * Ссылки внутри popup должны
+             * обрабатываться браузером самостоятельно.
+             */
+            if (
+                event.target.closest(
+                    '.game-preview-popup'
+                )
+            ) {
+                return;
+            }
+
+            event.preventDefault();
+
+            openPreview();
+        }
+    );
+
+
+    /*
+     * Наведение popup не открывает его.
+     * Popup уже открыт кликом и просто остаётся
+     * видимым при перемещении мыши внутри карточки.
+     */
+
+
+    /*
+     * Уход мыши за пределы карточки вместе
+     * со всем её содержимым закрывает popup.
+     */
     card.addEventListener(
         'mouseleave',
         event => {
             /*
-             * Переход с карточки на popup считается
-             * переходом внутри одной карточки.
+             * Переход между карточкой и popup
+             * считается перемещением внутри одной
+             * интерактивной области.
              */
             if (
                 event.relatedTarget &&
@@ -185,27 +283,53 @@ export function setupCardHover(card) {
         }
     );
 
+
+    /*
+     * Поддержка клавиатурной навигации.
+     */
     card.addEventListener(
         'focusin',
-        openPreview
-    );
-
-    card.addEventListener(
-        'focusout',
-        event => {
+        () => {
+            /*
+             * Фокус на самой карточке открывает popup.
+             * Фокус на ссылках popup не вызывает
+             * повторное открытие.
+             */
             if (
-                !card.contains(event.relatedTarget)
+                document.activeElement === card
             ) {
-                closePreview();
+                openPreview();
             }
         }
     );
 
+
+    card.addEventListener(
+        'focusout',
+        event => {
+            /*
+             * Если фокус перешёл с карточки
+             * на ссылку внутри popup, popup
+             * не закрываем.
+             */
+            if (
+                card.contains(event.relatedTarget)
+            ) {
+                return;
+            }
+
+            closePreview();
+        }
+    );
+
+
     /*
-     * Эти методы используются функцией
-     * closeAllPreviews().
+     * Эти методы используются
+     * closeAllPreviews() из main.js
+     * и обработчиком popup.
      */
-    card._cancelPreviewClose = cancelClose;
+    card._cancelPreviewClose =
+        cancelClose;
 
     card._closePreviewImmediately = () => {
         cancelClose();
@@ -219,15 +343,17 @@ export function setupCardHover(card) {
         );
 
         /*
-         * Даже при принудительном закрытии
-         * оставляем высокий слой на время fade-out.
+         * Слой сохраняется на время fade-out.
          */
         scheduleLayerCleanup();
     };
 }
 
 
-function setTierRowActive(card, isActive) {
+function setTierRowActive(
+    card,
+    isActive
+) {
     const tierRow =
         card.closest('.tier-row');
 
@@ -256,19 +382,20 @@ export function createPreviewPopup({
         'game-preview-popup';
 
     /*
-     * Popup не меняет классы самостоятельно.
-     * Состоянием полностью управляет карточка
-     * через setupCardHover().
+     * Клик внутри popup не должен
+     * всплывать до обработчика карточки.
      */
-
     popup.addEventListener(
         'click',
         event => {
             event.stopPropagation();
-            closeAllPreviews();
         }
     );
 
+    /*
+     * Клавиатурные события ссылок
+     * не должны обрабатываться карточкой.
+     */
     popup.addEventListener(
         'keydown',
         event => {
@@ -362,14 +489,22 @@ function createSteamPreview({
     label.textContent =
         'Открыть в Steam';
 
-    preview.appendChild(image);
-    preview.appendChild(label);
+    preview.appendChild(
+        image
+    );
+
+    preview.appendChild(
+        label
+    );
 
     return preview;
 }
 
 
-function createVideoPreview(name, video) {
+function createVideoPreview(
+    name,
+    video
+) {
     const preview =
         document.createElement('a');
 
@@ -407,7 +542,9 @@ function createVideoPreview(name, video) {
         image.loading =
             'lazy';
 
-        preview.appendChild(image);
+        preview.appendChild(
+            image
+        );
     } else {
         const placeholder =
             document.createElement('div');
@@ -432,7 +569,9 @@ function createVideoPreview(name, video) {
     label.textContent =
         'Смотреть обзор';
 
-    preview.appendChild(label);
+    preview.appendChild(
+        label
+    );
 
     return preview;
 }
@@ -516,6 +655,7 @@ function positionPreview(card) {
     let popupLeft;
     let popupTop;
 
+
     if (fitsAbove) {
         popupLeft = clamp(
             centeredLeft,
@@ -581,6 +721,7 @@ function positionPreview(card) {
             );
     }
 
+
     popup.style.left =
         `${popupLeft - cardRect.left}px`;
 
@@ -625,13 +766,10 @@ export function closeAllPreviews() {
                 card._closePreviewImmediately
             ) {
                 card._closePreviewImmediately();
+
                 return;
             }
 
-            /*
-             * Запасной вариант для карточек,
-             * созданных до инициализации обработчиков.
-             */
             if (
                 card._cancelPreviewClose
             ) {
@@ -649,7 +787,11 @@ export function closeAllPreviews() {
 }
 
 
-function clamp(value, min, max) {
+function clamp(
+    value,
+    min,
+    max
+) {
     return Math.min(
         Math.max(value, min),
         max
