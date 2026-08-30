@@ -33,7 +33,7 @@ body {
 }
 
 .container {
-    width: min(1300px, calc(100% - 32px));
+    width: min(1350px, calc(100% - 32px));
     margin: 24px auto;
 }
 
@@ -179,9 +179,20 @@ body {
 }
 
 /*
- * В тирах D–F четыре уменьшенные карточки
- * занимают примерно столько же места,
- * сколько три стандартные карточки.
+ * В тирах S и A карточки увеличены,
+ * чтобы в один ряд помещалось пять игр.
+ *
+ * Расчёт:
+ * 5 × 230px + 4 × 8px = 1182px
+ */
+#tier-S .game-card,
+#tier-A .game-card {
+    width: 230px;
+}
+
+/*
+ * В тирах D, E и F карточки и промежутки
+ * уменьшены одним коэффициентом.
  *
  * Стандартный ряд:
  * 3 × 190px + 2 × 8px = 586px
@@ -193,6 +204,12 @@ body {
 #tier-E,
 #tier-F {
     gap: 6px;
+}
+
+#tier-D .game-card,
+#tier-E .game-card,
+#tier-F .game-card {
+    width: 142px;
 }
 
 .game-card {
@@ -212,12 +229,6 @@ body {
     transition:
         transform 0.2s ease,
         box-shadow 0.2s ease;
-}
-
-#tier-D .game-card,
-#tier-E .game-card,
-#tier-F .game-card {
-    width: 142px;
 }
 
 .game-card:hover,
@@ -639,7 +650,16 @@ body {
     }
 
     /*
-     * Мобильный расчёт:
+     * На мобильных S и A также выделяются
+     * увеличенным размером карточек.
+     */
+    #tier-S .game-card,
+    #tier-A .game-card {
+        width: 165px;
+    }
+
+    /*
+     * Мобильный расчёт для D–F:
      *
      * 3 × 145px + 2 × 8px = 451px
      * 4 × 108px + 3 × 6px = 450px
@@ -712,10 +732,11 @@ body {
 
     /*
      * На очень узких экранах карточки
-     * занимают две колонки независимо
-     * от уровня тира.
+     * занимают две колонки.
      */
     .game-card,
+    #tier-S .game-card,
+    #tier-A .game-card,
     #tier-D .game-card,
     #tier-E .game-card,
     #tier-F .game-card {
