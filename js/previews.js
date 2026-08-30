@@ -320,11 +320,27 @@ export function createPreviewPopup({
     popup.className =
         'game-preview-popup';
 
+    const hasDescription =
+        Boolean(description);
+
+    const hasActions =
+        Boolean(steamLink || video);
+
+    popup.classList.toggle(
+        'game-preview-popup-with-description',
+        hasDescription
+    );
+
+    popup.classList.toggle(
+        'game-preview-popup-with-actions',
+        hasActions
+    );
+
     /*
-     * Description из таблицы отображается
-     * в popup как стилизованная цитата.
+     * Описание располагается справа от ссылок
+     * и выглядит как квадратная цитата.
      */
-    if (description) {
+    if (hasDescription) {
         const descriptionElement =
             document.createElement('blockquote');
 
@@ -337,6 +353,39 @@ export function createPreviewPopup({
         popup.appendChild(
             descriptionElement
         );
+    }
+
+    /*
+     * Ссылки объединены в левую колонку popup.
+     */
+    if (hasActions) {
+        const actions =
+            document.createElement('div');
+
+        actions.className =
+            'preview-actions';
+
+        if (steamLink) {
+            actions.appendChild(
+                createSteamPreview({
+                    name,
+                    cover,
+                    steamLink,
+                    steamImage
+                })
+            );
+        }
+
+        if (video) {
+            actions.appendChild(
+                createVideoPreview(
+                    name,
+                    video
+                )
+            );
+        }
+
+        popup.appendChild(actions);
     }
 
     popup.addEventListener(
@@ -353,29 +402,8 @@ export function createPreviewPopup({
         }
     );
 
-    if (steamLink) {
-        popup.appendChild(
-            createSteamPreview({
-                name,
-                cover,
-                steamLink,
-                steamImage
-            })
-        );
-    }
-
-    if (video) {
-        popup.appendChild(
-            createVideoPreview(
-                name,
-                video
-            )
-        );
-    }
-
     return popup;
 }
-
 
 function createSteamPreview({
     name,
