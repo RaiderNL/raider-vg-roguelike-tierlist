@@ -20,16 +20,20 @@ export function setupCardHover(
     name,
     steamLink
 ) {
- 
-    let closeTimer = null;
-    let layerCleanupTimer = null;
+    let closeTimer =
+        null;
+
+    let layerCleanupTimer =
+        null;
 
     const popup =
         card.querySelector(
             '.game-preview-popup'
         );
 
-    if (!popup) {
+    if (
+        !popup
+    ) {
         return;
     }
 
@@ -53,18 +57,62 @@ export function setupCardHover(
     );
 
     const cancelClose = () => {
-        if (closeTimer) {
-            clearTimeout(closeTimer);
-            closeTimer = null;
+        if (
+            closeTimer
+        ) {
+            clearTimeout(
+                closeTimer
+            );
+
+            closeTimer =
+                null;
         }
 
-        if (layerCleanupTimer) {
+        if (
+            layerCleanupTimer
+        ) {
             clearTimeout(
                 layerCleanupTimer
             );
 
-            layerCleanupTimer = null;
+            layerCleanupTimer =
+                null;
         }
+    };
+
+    /*
+     * При активном фильтре видео popup карточки
+     * скрывается, поэтому клик по карточке открывает
+     * страницу игры в Steam.
+     */
+    const openSteamPageForSelectedVideo = () => {
+        const layout =
+            document.querySelector(
+                '.tier-list-layout'
+            );
+
+        const isVideoFilterActive =
+            layout?.classList.contains(
+                VIDEO_FILTER_ACTIVE_CLASS
+            );
+
+        const normalizedSteamLink =
+            String(
+                steamLink || ''
+            ).trim();
+
+        if (
+            !isVideoFilterActive ||
+            !normalizedSteamLink
+        ) {
+            return false;
+        }
+
+        window.location.assign(
+            normalizedSteamLink
+        );
+
+        return true;
     };
 
     const openPreview = () => {
@@ -96,82 +144,110 @@ export function setupCardHover(
             true
         );
 
-        requestAnimationFrame(() => {
-            if (
-                !card.classList.contains(
-                    PREVIEW_CLOSED_CLASS
-                )
-            ) {
-                positionPreview(card);
+        requestAnimationFrame(
+            () => {
+                if (
+                    !card.classList.contains(
+                        PREVIEW_CLOSED_CLASS
+                    )
+                ) {
+                    positionPreview(
+                        card
+                    );
+                }
             }
-        });
+        );
     };
 
     const scheduleLayerCleanup = () => {
-        if (layerCleanupTimer) {
+        if (
+            layerCleanupTimer
+        ) {
             clearTimeout(
                 layerCleanupTimer
             );
         }
 
         layerCleanupTimer =
-            setTimeout(() => {
-                if (
-                    card.classList.contains(
-                        PREVIEW_CLOSED_CLASS
-                    ) &&
-                    !card.matches(':hover') &&
-                    !card.matches(':focus-within')
-                ) {
-                    card.classList.remove(
-                        ACTIVE_CARD_CLASS
-                    );
+            setTimeout(
+                () => {
+                    if (
+                        card.classList.contains(
+                            PREVIEW_CLOSED_CLASS
+                        ) &&
+                        !card.matches(
+                            ':hover'
+                        ) &&
+                        !card.matches(
+                            ':focus-within'
+                        )
+                    ) {
+                        card.classList.remove(
+                            ACTIVE_CARD_CLASS
+                        );
 
-                    setTierRowActive(
-                        card,
-                        false
-                    );
-                }
+                        setTierRowActive(
+                            card,
+                            false
+                        );
+                    }
 
-                layerCleanupTimer = null;
-            }, PREVIEW_LAYER_CLEANUP_DELAY);
+                    layerCleanupTimer =
+                        null;
+                },
+                PREVIEW_LAYER_CLEANUP_DELAY
+            );
     };
 
     const closePreview = (
         respectFocus = true
     ) => {
-        if (closeTimer) {
+        if (
+            closeTimer
+        ) {
             clearTimeout(
                 closeTimer
             );
         }
 
         closeTimer =
-            setTimeout(() => {
-                if (
-                    card.matches(':hover') ||
-                    popup.matches(':hover') ||
-                    (
-                        respectFocus &&
-                        card.matches(':focus-within')
-                    )
-                ) {
-                    closeTimer = null;
-                    return;
-                }
+            setTimeout(
+                () => {
+                    if (
+                        card.matches(
+                            ':hover'
+                        ) ||
+                        popup.matches(
+                            ':hover'
+                        ) ||
+                        (
+                            respectFocus &&
+                            card.matches(
+                                ':focus-within'
+                            )
+                        )
+                    ) {
+                        closeTimer =
+                            null;
 
-                card.classList.add(
-                    PREVIEW_CLOSED_CLASS
-                );
+                        return;
+                    }
 
-                card.classList.remove(
-                    PREVIEW_READY_CLASS
-                );
+                    card.classList.add(
+                        PREVIEW_CLOSED_CLASS
+                    );
 
-                scheduleLayerCleanup();
+                    card.classList.remove(
+                        PREVIEW_READY_CLASS
+                    );
 
-                closeTimer = null;
-            }, PREVIEW_CLOSE_DELAY);
+                    scheduleLayerCleanup();
+
+                    closeTimer =
+                        null;
+                },
+                PREVIEW_CLOSE_DELAY
+            );
     };
 
     popup.addEventListener(
@@ -191,7 +267,9 @@ export function setupCardHover(
                 return;
             }
 
-            closePreview(false);
+            closePreview(
+                false
+            );
         }
     );
 
@@ -215,7 +293,6 @@ export function setupCardHover(
             openPreview();
         }
     );
-
 
     card.addEventListener(
         'keydown',
@@ -247,8 +324,6 @@ export function setupCardHover(
         }
     );
 
-
-
     card.addEventListener(
         'mouseleave',
         event => {
@@ -261,7 +336,9 @@ export function setupCardHover(
                 return;
             }
 
-            closePreview(false);
+            closePreview(
+                false
+            );
         }
     );
 
@@ -320,7 +397,9 @@ function setTierRowActive(
             '.tier-row'
         );
 
-    if (!tierRow) {
+    if (
+        !tierRow
+    ) {
         return;
     }
 
@@ -348,7 +427,9 @@ export function createPreviewPopup({
         'game-preview-popup';
 
     const hasDescription =
-        Boolean(description);
+        Boolean(
+            description
+        );
 
     const hasActions =
         Boolean(
@@ -366,7 +447,9 @@ export function createPreviewPopup({
         hasActions
     );
 
-    if (hasActions) {
+    if (
+        hasActions
+    ) {
         const actions =
             document.createElement(
                 'div'
@@ -375,7 +458,9 @@ export function createPreviewPopup({
         actions.className =
             'preview-actions';
 
-        if (steamLink) {
+        if (
+            steamLink
+        ) {
             actions.appendChild(
                 createSteamPreview({
                     name,
@@ -386,7 +471,9 @@ export function createPreviewPopup({
             );
         }
 
-        if (video) {
+        if (
+            video
+        ) {
             actions.appendChild(
                 createVideoPreview(
                     name,
@@ -400,7 +487,9 @@ export function createPreviewPopup({
         );
     }
 
-    if (hasDescription) {
+    if (
+        hasDescription
+    ) {
         const descriptionElement =
             document.createElement(
                 'blockquote'
@@ -504,8 +593,13 @@ function createSteamPreview({
     label.textContent =
         'Открыть в Steam';
 
-    preview.appendChild(image);
-    preview.appendChild(label);
+    preview.appendChild(
+        image
+    );
+
+    preview.appendChild(
+        label
+    );
 
     return preview;
 }
@@ -536,9 +630,13 @@ function createVideoPreview(
         `Смотреть обзор игры ${name}`;
 
     const thumbnail =
-        getYouTubeThumbnail(video);
+        getYouTubeThumbnail(
+            video
+        );
 
-    if (thumbnail) {
+    if (
+        thumbnail
+    ) {
         const image =
             document.createElement(
                 'img'
@@ -595,13 +693,17 @@ function createVideoPreview(
 }
 
 
-function positionPreview(card) {
+function positionPreview(
+    card
+) {
     const popup =
         card.querySelector(
             '.game-preview-popup'
         );
 
-    if (!popup) {
+    if (
+        !popup
+    ) {
         return;
     }
 
@@ -657,7 +759,8 @@ function positionPreview(card) {
         PREVIEW_GAP;
 
     const fitsAbove =
-        topPosition >= SCREEN_PADDING;
+        topPosition >=
+        SCREEN_PADDING;
 
     const fitsRight =
         rightPosition +
@@ -666,7 +769,8 @@ function positionPreview(card) {
         SCREEN_PADDING;
 
     const fitsLeft =
-        leftPosition >= SCREEN_PADDING;
+        leftPosition >=
+        SCREEN_PADDING;
 
     const fitsBelow =
         bottomPosition +
@@ -677,18 +781,23 @@ function positionPreview(card) {
     let popupLeft;
     let popupTop;
 
-    if (fitsAbove) {
-        popupLeft = clamp(
-            centeredLeft,
-            SCREEN_PADDING,
-            viewportWidth -
-                popupWidth -
-                SCREEN_PADDING
-        );
+    if (
+        fitsAbove
+    ) {
+        popupLeft =
+            clamp(
+                centeredLeft,
+                SCREEN_PADDING,
+                viewportWidth -
+                    popupWidth -
+                    SCREEN_PADDING
+            );
 
         popupTop =
             topPosition;
-    } else if (fitsRight) {
+    } else if (
+        fitsRight
+    ) {
         popup.classList.add(
             'preview-position-right'
         );
@@ -696,14 +805,17 @@ function positionPreview(card) {
         popupLeft =
             rightPosition;
 
-        popupTop = clamp(
-            centeredTop,
-            SCREEN_PADDING,
-            viewportHeight -
-                popupHeight -
-                SCREEN_PADDING
-        );
-    } else if (fitsLeft) {
+        popupTop =
+            clamp(
+                centeredTop,
+                SCREEN_PADDING,
+                viewportHeight -
+                    popupHeight -
+                    SCREEN_PADDING
+            );
+    } else if (
+        fitsLeft
+    ) {
         popup.classList.add(
             'preview-position-left'
         );
@@ -711,35 +823,38 @@ function positionPreview(card) {
         popupLeft =
             leftPosition;
 
-        popupTop = clamp(
-            centeredTop,
-            SCREEN_PADDING,
-            viewportHeight -
-                popupHeight -
-                SCREEN_PADDING
-        );
-    } else {
-        popup.classList.add(
-            'preview-position-bottom'
-        );
-
-        popupLeft = clamp(
-            centeredLeft,
-            SCREEN_PADDING,
-            viewportWidth -
-                popupWidth -
-                SCREEN_PADDING
-        );
-
-        popupTop = fitsBelow
-            ? bottomPosition
-            : clamp(
-                topPosition,
+        popupTop =
+            clamp(
+                centeredTop,
                 SCREEN_PADDING,
                 viewportHeight -
                     popupHeight -
                     SCREEN_PADDING
             );
+    } else {
+        popup.classList.add(
+            'preview-position-bottom'
+        );
+
+        popupLeft =
+            clamp(
+                centeredLeft,
+                SCREEN_PADDING,
+                viewportWidth -
+                    popupWidth -
+                    SCREEN_PADDING
+            );
+
+        popupTop =
+            fitsBelow
+                ? bottomPosition
+                : clamp(
+                    topPosition,
+                    SCREEN_PADDING,
+                    viewportHeight -
+                        popupHeight -
+                        SCREEN_PADDING
+                );
     }
 
     popup.style.left =
@@ -765,16 +880,22 @@ export function updateVisiblePreviewPositions() {
         .querySelectorAll(
             `.game-card:not(.${PREVIEW_CLOSED_CLASS})`
         )
-        .forEach(card => {
-            const popup =
-                card.querySelector(
-                    '.game-preview-popup'
-                );
+        .forEach(
+            card => {
+                const popup =
+                    card.querySelector(
+                        '.game-preview-popup'
+                    );
 
-            if (popup) {
-                positionPreview(card);
+                if (
+                    popup
+                ) {
+                    positionPreview(
+                        card
+                    );
+                }
             }
-        });
+        );
 }
 
 
@@ -783,29 +904,31 @@ export function closeAllPreviews() {
         .querySelectorAll(
             '.game-card'
         )
-        .forEach(card => {
-            if (
-                card._closePreviewImmediately
-            ) {
-                card._closePreviewImmediately();
+        .forEach(
+            card => {
+                if (
+                    card._closePreviewImmediately
+                ) {
+                    card._closePreviewImmediately();
 
-                return;
+                    return;
+                }
+
+                if (
+                    card._cancelPreviewClose
+                ) {
+                    card._cancelPreviewClose();
+                }
+
+                card.classList.add(
+                    PREVIEW_CLOSED_CLASS
+                );
+
+                card.classList.remove(
+                    PREVIEW_READY_CLASS
+                );
             }
-
-            if (
-                card._cancelPreviewClose
-            ) {
-                card._cancelPreviewClose();
-            }
-
-            card.classList.add(
-                PREVIEW_CLOSED_CLASS
-            );
-
-            card.classList.remove(
-                PREVIEW_READY_CLASS
-            );
-        });
+        );
 }
 
 
@@ -815,7 +938,10 @@ function clamp(
     max
 ) {
     return Math.min(
-        Math.max(value, min),
+        Math.max(
+            value,
+            min
+        ),
         max
     );
 }
