@@ -315,15 +315,12 @@ body {
         visibility 0.2s ease;
 }
 
-.game-card.preview-position-ready
-.game-preview-popup:not(.game-card.preview-closed
-.game-preview-popup),
-.game-card:not(.preview-closed)
-.game-preview-popup {
+.game-card:not(.preview-closed) .game-preview-popup {
     visibility: visible;
     opacity: 1;
     pointer-events: auto;
 }
+
 
 .game-card.preview-closed .game-preview-popup {
     visibility: hidden !important;
