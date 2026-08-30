@@ -31,131 +31,15 @@ body {
 
     color: #d7d9df;
 }
-.price-mode-toggle {
-    position: relative;
-
-    display: inline-flex;
-    flex: 0 0 auto;
-    align-items: center;
-    gap: 10px;
-
-    min-height: 38px;
-    padding: 7px 12px;
-
-    color: #374151;
-    font-size: 14px;
-    font-weight: 700;
-    line-height: 1;
-
-    cursor: pointer;
-    user-select: none;
-
-    background: linear-gradient(
-        135deg,
-        #fffdf5 0%,
-        #f8f1d8 100%
-    );
-    border: 1px solid #e8c766;
-    border-radius: 10px;
-    box-shadow:
-        0 2px 5px rgb(0 0 0 / 10%),
-        inset 0 1px 0 rgb(255 255 255 / 80%);
-
-    transition:
-        transform 0.2s ease,
-        box-shadow 0.2s ease,
-        border-color 0.2s ease;
-}
-
-.price-mode-toggle:hover {
-    border-color: #c99f25;
-    box-shadow:
-        0 4px 10px rgb(0 0 0 / 15%),
-        inset 0 1px 0 rgb(255 255 255 / 80%);
-    transform: translateY(-1px);
-}
-
-.price-mode-toggle:has(input:focus-visible) {
-    outline: 3px solid rgb(37 99 235 / 25%);
-    outline-offset: 2px;
-}
-
-.price-mode-toggle input {
-    position: absolute;
-
-    width: 1px;
-    height: 1px;
-
-    opacity: 0;
-    pointer-events: none;
-}
-
-.price-switch {
-    position: relative;
-
-    display: inline-flex;
-    flex: 0 0 40px;
-    align-items: center;
-
-    width: 40px;
-    height: 22px;
-    padding: 3px;
-
-    background: #9ca3af;
-    border-radius: 999px;
-
-    transition:
-        background 0.2s ease,
-        box-shadow 0.2s ease;
-}
-
-.price-switch-thumb {
-    display: block;
-
-    width: 16px;
-    height: 16px;
-
-    background: #fff;
-    border-radius: 50%;
-    box-shadow: 0 1px 3px rgb(0 0 0 / 30%);
-
-    transition: transform 0.2s ease;
-}
-
-.price-mode-toggle input:checked + .price-switch {
-    background: #d29f22;
-    box-shadow: 0 0 0 3px rgb(210 159 34 / 18%);
-}
-
-.price-mode-toggle input:checked + .price-switch
-.price-switch-thumb {
-    transform: translateX(18px);
-}
-
-.price-mode-label {
-    white-space: nowrap;
-}
-
-
-.price-mode-toggle:hover {
-    background: #3b414c;
-}
-
-.price-mode-toggle input {
-    width: 16px;
-    height: 16px;
-
-    margin: 0;
-
-    cursor: pointer;
-    accent-color: #e8c766;
-}
 
 .container {
     width: min(1300px, calc(100% - 32px));
     margin: 24px auto;
 }
 
+/*
+ * Панель управления.
+ */
 .controls {
     display: flex;
     flex-wrap: wrap;
@@ -202,20 +86,11 @@ body {
     box-shadow: 0 0 0 3px rgb(37 99 235 / 15%);
 }
 
-.tier-list-layout {
-    display: block;
+.search-group {
+    flex: 1 1 260px;
+    min-width: 220px;
 }
 
-.tier-list-layout .tier-list {
-    min-width: 0;
-}
-
-.tier-list-layout:has(.selected-video-panel.is-visible) {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) 320px;
-    align-items: start;
-    gap: 16px;
-}
 .filter-group {
     flex: 0 0 180px;
     width: 180px;
@@ -233,6 +108,144 @@ body {
     gap: 12px;
 }
 
+/*
+ * Переключатель отображения цен.
+ */
+.price-mode-toggle {
+    position: relative;
+
+    display: inline-flex;
+    flex: 0 0 auto;
+    align-items: center;
+    gap: 10px;
+
+    min-height: 38px;
+    padding: 7px 12px;
+
+    color: #374151 !important;
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 1;
+    white-space: nowrap;
+
+    cursor: pointer;
+    user-select: none;
+
+    background: linear-gradient(
+        135deg,
+        #fffdf5 0%,
+        #f8f1d8 100%
+    ) !important;
+    border: 1px solid #e8c766;
+    border-radius: 10px;
+    box-shadow:
+        0 2px 5px rgb(0 0 0 / 10%),
+        inset 0 1px 0 rgb(255 255 255 / 80%);
+
+    transition:
+        transform 0.2s ease,
+        color 0.2s ease,
+        background 0.2s ease,
+        box-shadow 0.2s ease,
+        border-color 0.2s ease;
+}
+
+.price-mode-toggle:hover {
+    color: #1f2937 !important;
+
+    background: linear-gradient(
+        135deg,
+        #fffef8 0%,
+        #f6ebc3 100%
+    ) !important;
+    border-color: #c99f25;
+    box-shadow:
+        0 4px 10px rgb(0 0 0 / 15%),
+        inset 0 1px 0 rgb(255 255 255 / 80%);
+    transform: translateY(-1px);
+}
+
+.price-mode-toggle:has(input:focus-visible) {
+    outline: 3px solid rgb(37 99 235 / 25%);
+    outline-offset: 2px;
+}
+
+.price-mode-toggle input {
+    position: absolute;
+
+    width: 1px;
+    height: 1px;
+
+    margin: 0;
+
+    opacity: 0;
+    pointer-events: none;
+}
+
+.price-switch {
+    position: relative;
+
+    display: inline-flex;
+    flex: 0 0 40px;
+    align-items: center;
+
+    width: 40px;
+    height: 22px;
+    padding: 3px;
+
+    background: #9ca3af;
+    border-radius: 999px;
+
+    transition:
+        background 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.price-switch-thumb {
+    display: block;
+
+    width: 16px;
+    height: 16px;
+
+    background: #fff;
+    border-radius: 50%;
+    box-shadow: 0 1px 3px rgb(0 0 0 / 30%);
+
+    transition: transform 0.2s ease;
+}
+
+.price-mode-toggle input:checked + .price-switch {
+    background: #d29f22;
+    box-shadow: 0 0 0 3px rgb(210 159 34 / 18%);
+}
+
+.price-mode-toggle input:checked
++ .price-switch
+.price-switch-thumb {
+    transform: translateX(18px);
+}
+
+.price-mode-label {
+    color: inherit !important;
+}
+
+/*
+ * Компоновка тир-листа и панели выбранного видео.
+ */
+.tier-list-layout {
+    display: block;
+}
+
+.tier-list-layout .tier-list {
+    min-width: 0;
+}
+
+.tier-list-layout:has(.selected-video-panel.is-visible) {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 320px;
+    align-items: start;
+    gap: 16px;
+}
 
 .tier-list {
     display: flex;
@@ -256,16 +269,12 @@ body {
 }
 
 /*
- * Открытый popup должен быть выше всех остальных тиров.
- * :has служит страховкой, даже если класс из config.js
- * отличается от .tier-row-active.
+ * Открытый popup должен быть выше остальных тиров.
  */
 .tier-row-active,
 .tier-row:has(.game-card:not(.preview-closed)) {
     z-index: 100000;
 }
-
-
 
 .tier-label {
     position: relative;
@@ -346,6 +355,9 @@ body {
     width: 142px;
 }
 
+/*
+ * Карточка игры.
+ */
 .game-card {
     position: relative;
 
@@ -447,6 +459,7 @@ body {
     background: #f0f2f5;
     border-radius: 4px;
 }
+
 .game-price {
     position: absolute;
     right: 5px;
@@ -457,8 +470,8 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 5px;
     flex-wrap: wrap;
+    gap: 5px;
 
     min-height: 24px;
     padding: 4px 6px;
@@ -544,13 +557,6 @@ body {
         visibility 0.2s ease;
 }
 
-/*
- * Popup с Description и хотя бы одной ссылкой:
- * ссылки находятся слева, цитата справа.
- *
- * Классы записываются без пробелов, потому что
- * оба класса находятся на одном элементе popup.
- */
 .game-preview-popup.game-preview-popup-with-description.game-preview-popup-with-actions {
     flex-direction: row;
     align-items: stretch;
@@ -558,17 +564,10 @@ body {
     width: min(670px, calc(100vw - 16px));
 }
 
-/*
- * Popup, содержащий только Description,
- * остаётся квадратной областью.
- */
 .game-preview-popup.game-preview-popup-with-description:not(.game-preview-popup-with-actions) {
     width: min(330px, calc(100vw - 16px));
 }
 
-/*
- * При выборе видео popup карточек скрываются.
- */
 .tier-list-layout.video-filter-active
 .game-preview-popup {
     display: none !important;
@@ -588,9 +587,6 @@ body {
     pointer-events: none !important;
 }
 
-/*
- * JavaScript задаёт позицию через left и top.
- */
 .game-preview-popup.preview-position-right,
 .game-preview-popup.preview-position-left,
 .game-preview-popup.preview-position-bottom {
@@ -598,8 +594,7 @@ body {
 }
 
 /*
- * Прозрачный мост не даёт popup закрыться,
- * когда курсор перемещается от карточки к нему.
+ * Прозрачный мост между карточкой и popup.
  */
 .game-preview-popup::after {
     content: '';
@@ -645,7 +640,7 @@ body {
 }
 
 /*
- * Левая колонка: Steam и YouTube.
+ * Ссылки Steam и YouTube.
  */
 .preview-actions {
     display: flex;
@@ -656,9 +651,6 @@ body {
     min-width: 0;
 }
 
-/*
- * Правая квадратная зона с Description.
- */
 .preview-description {
     position: relative;
 
@@ -684,11 +676,6 @@ body {
     border-radius: 7px;
 }
 
-/*
- * Цитата имеет одинаковую ширину и высоту,
- * если Description выводится отдельно или
- * находится справа от ссылок.
- */
 .game-preview-popup.game-preview-popup-with-description
 .preview-description {
     aspect-ratio: 1 / 1;
@@ -768,6 +755,9 @@ body {
     text-align: center;
 }
 
+/*
+ * Панель выбранного видео.
+ */
 .selected-video-panel {
     position: sticky;
     top: 16px;
@@ -851,6 +841,9 @@ body {
     text-align: center;
 }
 
+/*
+ * Сообщение об ошибке загрузки.
+ */
 .loading-error {
     width: 100%;
     padding: 20px;
@@ -859,6 +852,9 @@ body {
     text-align: center;
 }
 
+/*
+ * Подвал.
+ */
 .site-footer {
     padding: 24px;
 
@@ -883,6 +879,9 @@ body {
     border-radius: 3px;
 }
 
+/*
+ * Планшеты.
+ */
 @media (max-width: 900px) {
     .tier-list-layout,
     .tier-list-layout:has(.selected-video-panel.is-visible) {
@@ -897,6 +896,9 @@ body {
     }
 }
 
+/*
+ * Мобильные устройства.
+ */
 @media (max-width: 600px) {
     .site-header {
         padding: 24px 16px;
@@ -922,7 +924,9 @@ body {
         width: 100%;
         min-width: 0;
     }
-        .filter-group {
+
+    .search-group,
+    .filter-group {
         flex: 0 0 auto;
         width: 100%;
         min-width: 0;
@@ -939,10 +943,13 @@ body {
         gap: 10px;
     }
 
+    .video-filter-controls .filter-group {
+        width: 100%;
+    }
+
     .price-mode-toggle {
         align-self: flex-start;
     }
-
 
     .tier-row {
         min-height: 120px;
@@ -999,7 +1006,8 @@ body {
 
         font-size: 10px;
     }
-        .game-price {
+
+    .game-price {
         right: 4px;
         bottom: 4px;
         left: 4px;
@@ -1020,16 +1028,14 @@ body {
         font-size: 9px;
     }
 
-
     .game-preview-popup {
         width: min(285px, calc(100vw - 16px));
         padding: 10px;
     }
 
     /*
-     * На узком экране колонки становятся
-     * вертикальными, чтобы popup не выходил
-     * за границы окна.
+     * На узком экране содержимое popup
+     * располагается вертикально.
      */
     .game-preview-popup.game-preview-popup-with-description.game-preview-popup-with-actions {
         flex-direction: column;
@@ -1065,6 +1071,9 @@ body {
     }
 }
 
+/*
+ * Очень узкие экраны.
+ */
 @media (max-width: 400px) {
     .tier-label {
         flex-basis: 45px;
