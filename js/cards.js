@@ -2,6 +2,7 @@ import {
     getGameTags,
     getSteamImage
 } from './data.js';
+
 import {
     registerPriceCard
 } from './steam-price.js';
@@ -18,7 +19,9 @@ import {
 
 export function createGameCard(game) {
     const card =
-        document.createElement('article');
+        document.createElement(
+            'article'
+        );
 
     card.className =
         'game-card';
@@ -28,19 +31,24 @@ export function createGameCard(game) {
     );
 
     const name =
-        game['Name'] || 'Без названия';
+        game['Name'] ||
+        'Без названия';
 
     const cover =
-        game['Cover'] || '';
+        game['Cover'] ||
+        '';
 
     const steamLink =
-        game['Steam Link'] || '';
+        game['Steam Link'] ||
+        '';
 
     const video =
-        game['Video'] || '';
+        game['Video'] ||
+        '';
 
     const description =
-        game['Description'] || '';
+        game['Description'] ||
+        '';
 
     const gameTags =
         getGameTags(game);
@@ -49,7 +57,8 @@ export function createGameCard(game) {
         getSteamImage(steamLink);
 
     const imageUrl =
-        cover || steamImage;
+        cover ||
+        steamImage;
 
     if (imageUrl) {
         card.appendChild(
@@ -68,14 +77,15 @@ export function createGameCard(game) {
 
     if (gameTags.length > 0) {
         card.appendChild(
-            createGameTagsElement(gameTags)
+            createGameTagsElement(
+                gameTags
+            )
         );
     }
 
     /*
      * Описание, Steam-ссылка или ролик
-     * делают карточку интерактивной
-     * и создают popup.
+     * создают popup.
      */
     if (
         steamLink ||
@@ -94,20 +104,15 @@ export function createGameCard(game) {
         );
     }
 
-    /*
-     * Popup добавляется до настройки событий:
-     * setupCardHover() получает ссылку
-     * на уже созданный элемент.
-     */
     setupCardHover(
         card,
         name
     );
-        registerPriceCard(
+
+    registerPriceCard(
         card,
         game
     );
-
 
     return card;
 }
@@ -120,7 +125,9 @@ export function createGameCover(
     name
 ) {
     const image =
-        document.createElement('img');
+        document.createElement(
+            'img'
+        );
 
     image.className =
         'game-cover';
@@ -162,7 +169,9 @@ export function createGameCover(
 
 export function createGameTitle(name) {
     const title =
-        document.createElement('h3');
+        document.createElement(
+            'h3'
+        );
 
     title.className =
         'game-title';
@@ -176,14 +185,18 @@ export function createGameTitle(name) {
 
 export function createGameTagsElement(tags) {
     const tagsContainer =
-        document.createElement('div');
+        document.createElement(
+            'div'
+        );
 
     tagsContainer.className =
         'game-tags';
 
     tags.forEach(tag => {
         const tagElement =
-            document.createElement('span');
+            document.createElement(
+                'span'
+            );
 
         tagElement.className =
             'game-tag';
@@ -205,7 +218,9 @@ export function createTextElement(
     text
 ) {
     const element =
-        document.createElement('p');
+        document.createElement(
+            'p'
+        );
 
     element.className =
         className;
