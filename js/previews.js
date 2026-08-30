@@ -5,7 +5,6 @@ import {
     ACTIVE_CARD_CLASS,
     VIDEO_FILTER_ACTIVE_CLASS,
     PREVIEW_CLOSE_DELAY,
-    PREVIEW_FADE_DURATION,
     PREVIEW_LAYER_CLEANUP_DELAY,
     SCREEN_PADDING,
     PREVIEW_GAP
@@ -207,6 +206,7 @@ export function setupCardHover(card) {
      * closeAllPreviews().
      */
     card._cancelPreviewClose = cancelClose;
+
     card._closePreviewImmediately = () => {
         cancelClose();
 
@@ -596,40 +596,6 @@ function positionPreview(card) {
     card.classList.add(
         PREVIEW_READY_CLASS
     );
-}
-
-
-function resetPreviewPosition(card) {
-    const popup =
-        card.querySelector(
-            '.game-preview-popup'
-        );
-
-    card.classList.remove(
-        PREVIEW_READY_CLASS
-    );
-
-    if (!popup) {
-        return;
-    }
-
-    popup.classList.remove(
-        'preview-position-right',
-        'preview-position-left',
-        'preview-position-bottom'
-    );
-
-    popup.style.left =
-        '';
-
-    popup.style.top =
-        '';
-
-    popup.style.right =
-        '';
-
-    popup.style.bottom =
-        '';
 }
 
 
