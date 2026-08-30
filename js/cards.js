@@ -13,7 +13,6 @@ import {
 } from './config.js';
 
 
-// Создание полной карточки игры
 export function createGameCard(game) {
     const card =
         document.createElement('article');
@@ -40,9 +39,6 @@ export function createGameCard(game) {
     const description =
         game['Description'] || '';
 
-    const comment =
-        game['Comment'] || '';
-
     const gameTags =
         getGameTags(game);
 
@@ -51,7 +47,6 @@ export function createGameCard(game) {
 
     const imageUrl =
         cover || steamImage;
-
 
     if (imageUrl) {
         card.appendChild(
@@ -68,56 +63,38 @@ export function createGameCard(game) {
         createGameTitle(name)
     );
 
-
     if (gameTags.length > 0) {
         card.appendChild(
             createGameTagsElement(gameTags)
         );
     }
 
-
-    if (description) {
-        card.appendChild(
-            createTextElement(
-                'game-description',
-                description
-            )
-        );
-    }
-
-
-    if (comment) {
-        card.appendChild(
-            createTextElement(
-                'game-comment',
-                comment
-            )
-        );
-    }
-
-
     /*
-     * Popup должен быть добавлен до вызова
-     * setupCardHover(), потому что setupCardHover()
-     * получает ссылку на уже существующий popup.
+     * Описание, Steam-ссылка или ролик
+     * делают карточку интерактивной
+     * и создают popup.
      */
-    if (steamLink || video) {
+    if (
+        steamLink ||
+        video ||
+        description
+    ) {
         card.appendChild(
             createPreviewPopup({
                 name,
                 cover,
                 steamLink,
                 video,
-                steamImage
+                steamImage,
+                description
             })
         );
     }
 
-
     /*
-     * Карточка открывает popup по клику.
-     * Переход на Steam выполняется только
-     * через ссылку внутри popup.
+     * Popup добавляется до настройки событий:
+     * setupCardHover() получает ссылку
+     * на уже созданный элемент.
      */
     setupCardHover(
         card,
@@ -128,7 +105,6 @@ export function createGameCard(game) {
 }
 
 
-// Создание изображения обложки игры
 export function createGameCover(
     imageUrl,
     cover,
@@ -157,11 +133,6 @@ export function createGameCover(
                 `Не удалось загрузить обложку игры: ${name}`
             );
 
-            /*
-             * Если пользовательская обложка
-             * не загрузилась, пробуем изображение
-             * из Steam.
-             */
             if (
                 cover &&
                 steamImage &&
@@ -181,7 +152,6 @@ export function createGameCover(
 }
 
 
-// Создание названия игры
 export function createGameTitle(name) {
     const title =
         document.createElement('h3');
@@ -196,7 +166,6 @@ export function createGameTitle(name) {
 }
 
 
-// Создание списка тегов игры
 export function createGameTagsElement(tags) {
     const tagsContainer =
         document.createElement('div');
@@ -223,7 +192,6 @@ export function createGameTagsElement(tags) {
 }
 
 
-// Создание текстового элемента карточки
 export function createTextElement(
     className,
     text
