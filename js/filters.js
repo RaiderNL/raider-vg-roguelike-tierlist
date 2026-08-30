@@ -1,6 +1,14 @@
-import { appState } from './state.js';
+import {
+    appState
+} from './state.js';
 
-import { getGameTags } from './data.js';
+import {
+    getGameTags,
+    getVideoUrl,
+    getVideoTitle,
+    getVideoNumber,
+    getVideoLabel
+} from './data.js';
 
 
 export function fillTagFilter() {
@@ -9,46 +17,49 @@ export function fillTagFilter() {
             '#tag-filter'
         );
 
-    if (!tagFilter) {
+    if (
+        !tagFilter
+    ) {
         return;
     }
 
     const tags = [
         ...new Set(
-            appState.games.flatMap(game =>
-                getGameTags(game)
+            appState.games.flatMap(
+                game =>
+                    getGameTags(
+                        game
+                    )
             )
         )
     ].sort(
-        (firstTag, secondTag) =>
+        (
+            firstTag,
+            secondTag
+        ) =>
             firstTag.localeCompare(
                 secondTag,
                 'ru'
             )
     );
 
-    tagFilter.innerHTML = `
-        <option value="">
-            Все жанры
-        </option>
-    `;
+    tagFilter.replaceChildren(
+        createOption(
+            '',
+            'Все жанры'
+        )
+    );
 
-    tags.forEach(tag => {
-        const option =
-            document.createElement(
-                'option'
+    tags.forEach(
+        tag => {
+            tagFilter.appendChild(
+                createOption(
+                    tag,
+                    tag
+                )
             );
-
-        option.value =
-            tag;
-
-        option.textContent =
-            tag;
-
-        tagFilter.appendChild(
-            option
-        );
-    });
+        }
+    );
 }
 
 
@@ -58,50 +69,116 @@ export function fillVideoFilter() {
             '#video-filter'
         );
 
-    if (!videoFilter) {
+    if (
+        !videoFilter
+    ) {
         return;
     }
 
-    const videoTitles = [
-        ...new Set(
-            appState.games
-                .map(game =>
-                    String(
-                        game['Video Title'] || ''
-                    ).trim()
+    const videoMap =
+        new Map();
+
+    appState.games.forEach(
+        game => {
+            const videoUrl =
+                getVideoUrl(
+                    game
+                );
+
+            const videoTitle =
+                getVideoTitle(
+                    game
+                );
+
+            if (
+                !videoUrl ||
+                videoMap.has(
+                    videoUrl
                 )
-                .filter(Boolean)
-        )
-    ].sort(
-        (firstTitle, secondTitle) =>
-            firstTitle.localeCompare(
-                secondTitle,
-                'ru'
-            )
+            ) {
+                return;
+            }
+
+            videoMap.set(
+                videoUrl,
+                {
+                    game,
+                    videoTitle,
+                    videoNumber:
+                        getVideoNumber(
+                            game
+                        )
+                }
+            );
+        }
     );
 
-    videoFilter.innerHTML = `
-        <option value="">
-            Все ролики
-        </option>
-    `;
-
-    videoTitles.forEach(videoTitle => {
-        const option =
-            document.createElement(
-                'option'
+    const videos =
+        [...videoMap.entries()]
+            .map(
+                ([
+                    videoUrl,
+                    videoData
+                ]) => ({
+                    videoUrl,
+                    ...videoData
+                })
             );
 
-        option.value =
-            videoTitle;
+    const numberedVideos =
+        videos
+            .map(
+                video => video.videoNumber
+            )
+            .filter(
+                videoNumber =>
+                    videoNumber !== null
+            );
 
-        option.textContent =
-            videoTitle;
+    const latestVideoNumber =
+        numberedVideos.length > 0
+            ? Math.max(
+                ...numberedVideos
+            )
+            : null;
 
-        videoFilter.appendChild(
-            option
-        );
-    });
+    videos.sort(
+        (
+            firstVideo,
+            secondVideo
+        ) => {
+            const firstNumber =
+                firstVideo.videoNumber ??
+                -Infinity;
+
+            const secondNumber =
+                secondVideo.videoNumber ??
+                -Infinity;
+
+            return secondNumber - firstNumber;
+        }
+    );
+
+    videoFilter.replaceChildren(
+        createOption(
+            '',
+            'Все ролики'
+        )
+    );
+
+    videos.forEach(
+        video => {
+            videoFilter.appendChild(
+                createOption(
+                    video.videoUrl,
+                    getVideoLabel(
+                        video.game,
+                        latestVideoNumber
+                    )
+                )
+            );
+        }
+    );
 }
 
 
@@ -150,20 +227,26 @@ export function gameMatchesFilters(
     selectedVideo
 ) {
     const name =
-        String(game['Name'] || '')
+        String(
+            game['Name'] || ''
+        )
             .trim()
             .toLowerCase();
 
     const gameTags =
-        getGameTags(game);
+        getGameTags(
+            game
+        );
 
-    const videoTitle =
-        String(
-            game['Video Title'] || ''
-        ).trim();
+    const videoUrl =
+        getVideoUrl(
+            game
+        );
 
     const matchesSearch =
-        name.includes(searchValue);
+        name.includes(
+            searchValue
+        );
 
     const matchesTag =
         selectedTag === '' ||
@@ -173,11 +256,30 @@ export function gameMatchesFilters(
 
     const matchesVideo =
         selectedVideo === '' ||
-        videoTitle === selectedVideo;
+        videoUrl === selectedVideo;
 
     return (
         matchesSearch &&
         matchesTag &&
         matchesVideo
     );
+}
+
+
+function createOption(
+    value,
+    text
+) {
+    const option =
+        document.createElement(
+            'option'
+        );
+
+    option.value =
+        value;
+
+    option.textContent =
+        text;
+
+    return option;
 }
