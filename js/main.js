@@ -32,6 +32,11 @@ import {
 } from './config.js';
 
 
+const SEARCH_RENDER_DELAY = 150;
+
+let searchRenderTimer = null;
+
+
 // Запуск приложения после загрузки HTML
 document.addEventListener(
     'DOMContentLoaded',
@@ -66,9 +71,7 @@ window.addEventListener(
 );
 
 
-// Пересчёт позиции popup при прокрутке.
-// Параметр true позволяет отслеживать
-// прокрутку вложенных контейнеров.
+// Пересчёт позиции popup при прокрутке
 window.addEventListener(
     'scroll',
     updateVisiblePreviewPositions,
@@ -90,7 +93,7 @@ function init() {
     if (searchInput) {
         searchInput.addEventListener(
             'input',
-            renderGames
+            scheduleSearchRender
         );
     }
 
@@ -127,6 +130,18 @@ async function loadApplicationData() {
         console.error(error);
         showLoadingError();
     }
+}
+
+
+function scheduleSearchRender() {
+    if (searchRenderTimer) {
+        clearTimeout(searchRenderTimer);
+    }
+
+    searchRenderTimer = setTimeout(() => {
+        renderGames();
+        searchRenderTimer = null;
+    }, SEARCH_RENDER_DELAY);
 }
 
 
