@@ -7,7 +7,13 @@ const SHEET_URL =
 const TIER_NAMES = ['S', 'A', 'B', 'C', 'D', 'E', 'F'];
 
 const PREVIEW_CLOSED_CLASS = 'preview-closed';
+const PREVIEW_READY_CLASS = 'preview-position-ready';
 const ACTIVE_ROW_CLASS = 'tier-row-active';
+const VIDEO_FILTER_ACTIVE_CLASS = 'video-filter-active';
+
+const PREVIEW_CLOSE_DELAY = 120;
+const SCREEN_PADDING = 8;
+const PREVIEW_GAP = 10;
 
 let games = [];
 
@@ -19,18 +25,9 @@ document.addEventListener('visibilitychange', () => {
     }
 });
 
-window.addEventListener('pageshow', () => {
-    closeAllPreviews();
-});
-
-window.addEventListener('resize', () => {
-    document
-        .querySelectorAll('.game-card:hover, .game-card:focus-within')
-        .forEach(card => {
-            positionPreview(card);
-        });
-});
-
+window.addEventListener('pageshow', closeAllPreviews);
+window.addEventListener('resize', updateVisiblePreviewPositions);
+window.addEventListener('scroll', updateVisiblePreviewPositions, true);
 
 function init() {
     const searchInput = document.querySelector('#search');
@@ -243,6 +240,8 @@ function renderGames() {
     const selectedTag = getSelectedTag();
     const selectedVideo = getSelectedVideo();
 
+    updateVideoFilterState(selectedVideo);
+
     const filteredGames = games
         .filter(game =>
             gameMatchesFilters(
@@ -263,9 +262,7 @@ function renderGames() {
         }
     });
 
-    updateVideoFilterState(selectedVideo);
     renderSelectedVideo(selectedVideo);
-
 }
 
 function clearTierContainers() {
@@ -306,11 +303,10 @@ function updateVideoFilterState(selectedVideo) {
     }
 
     layout.classList.toggle(
-        'video-filter-active',
+        VIDEO_FILTER_ACTIVE_CLASS,
         selectedVideo !== ''
     );
 }
-
 
 function gameMatchesFilters(
     game,
@@ -322,10 +318,10 @@ function gameMatchesFilters(
         .trim()
         .toLowerCase();
 
+    const gameTags = getGameTags(game);
+
     const videoTitle = String(game['Video Title'] || '')
         .trim();
-
-    const gameTags = getGameTags(game);
 
     const matchesSearch = name.includes(searchValue);
 
@@ -435,104 +431,77 @@ function createGameCard(game) {
 }
 
 function setupCardHover(card) {
-    card.addEventListener('mouseenter', () => {
+    let closeTimer = null;
+
+    const cancelClose = () => {
+        if (closeTimer) {
+            clearTimeout(closeTimer);
+            closeTimer = null;
+        }
+    };
+
+    const openPreview = () => {
+        cancelClose();
+
+        if (
+            document
+                .querySelector('.tier-list-layout')
+                ?.classList.contains(
+                    VIDEO_FILTER_ACTIVE_CLASS
+                )
+        ) {
+            return;
+        }
+
         card.classList.remove(PREVIEW_CLOSED_CLASS);
         setTierRowActive(card, true);
+        positionPreview(card);
+    };
 
-        requestAnimationFrame(() => {
-            positionPreview(card);
-        });
+    const closePreview = () => {
+        cancelClose();
+
+        closeTimer = setTimeout(() => {
+            const popup = card.querySelector(
+                '.game-preview-popup'
+            );
+
+            if (
+                card.matches(':hover') ||
+                (popup && popup.matches(':hover')) ||
+                card.matches(':focus-within')
+            ) {
+                return;
+            }
+
+            card.classList.add(PREVIEW_CLOSED_CLASS);
+            card.classList.remove(PREVIEW_READY_CLASS);
+
+            setTierRowActive(card, false);
+            resetPreviewPosition(card);
+        }, PREVIEW_CLOSE_DELAY);
+    };
+
+    card.addEventListener('mouseenter', openPreview);
+
+    card.addEventListener('mouseleave', event => {
+        if (
+            event.relatedTarget &&
+            card.contains(event.relatedTarget)
+        ) {
+            return;
+        }
+
+        closePreview();
     });
 
-    card.addEventListener('mouseleave', () => {
-        card.classList.add(PREVIEW_CLOSED_CLASS);
-        setTierRowActive(card, false);
-        resetPreviewPosition(card);
-    });
-
-    card.addEventListener('focusin', () => {
-        card.classList.remove(PREVIEW_CLOSED_CLASS);
-        setTierRowActive(card, true);
-
-        requestAnimationFrame(() => {
-            positionPreview(card);
-        });
-    });
+    card.addEventListener('focusin', openPreview);
 
     card.addEventListener('focusout', event => {
         if (!card.contains(event.relatedTarget)) {
-            card.classList.add(PREVIEW_CLOSED_CLASS);
-            setTierRowActive(card, false);
-            resetPreviewPosition(card);
+            closePreview();
         }
     });
-}
-function positionPreview(card) {
-    const popup = card.querySelector('.game-preview-popup');
-
-    if (!popup) {
-        return;
-    }
-
-    popup.classList.remove(
-        'preview-position-right',
-        'preview-position-left',
-        'preview-position-bottom'
-    );
-
-    const cardRect = card.getBoundingClientRect();
-    const popupRect = popup.getBoundingClientRect();
-
-    const viewportWidth = window.innerWidth;
-    const viewportHeight = window.innerHeight;
-    const edgeOffset = 8;
-    const popupGap = 10;
-
-    const fitsAbove =
-        cardRect.top - popupRect.height - popupGap >= edgeOffset;
-
-    const fitsRight =
-        cardRect.right + popupRect.width + popupGap <=
-        viewportWidth - edgeOffset;
-
-    const fitsLeft =
-        cardRect.left - popupRect.width - popupGap >= edgeOffset;
-
-    const fitsBelow =
-        cardRect.bottom + popupRect.height + popupGap <=
-        viewportHeight - edgeOffset;
-
-    if (fitsAbove) {
-        return;
-    }
-
-    if (fitsRight) {
-        popup.classList.add('preview-position-right');
-        return;
-    }
-
-    if (fitsLeft) {
-        popup.classList.add('preview-position-left');
-        return;
-    }
-
-    if (fitsBelow) {
-        popup.classList.add('preview-position-bottom');
-    }
-}
-
-function resetPreviewPosition(card) {
-    const popup = card.querySelector('.game-preview-popup');
-
-    if (!popup) {
-        return;
-    }
-
-    popup.classList.remove(
-        'preview-position-right',
-        'preview-position-left',
-        'preview-position-bottom'
-    );
 }
 
 function setTierRowActive(card, isActive) {
@@ -662,6 +631,32 @@ function createPreviewPopup({
 
     popup.className = 'game-preview-popup';
 
+    popup.addEventListener('mouseenter', () => {
+        const card = popup.closest('.game-card');
+
+        if (card) {
+            card.classList.remove(PREVIEW_CLOSED_CLASS);
+            setTierRowActive(card, true);
+        }
+    });
+
+    popup.addEventListener('mouseleave', event => {
+        const card = popup.closest('.game-card');
+
+        if (
+            card &&
+            event.relatedTarget &&
+            card.contains(event.relatedTarget)
+        ) {
+            return;
+        }
+
+        if (card) {
+            card.classList.add(PREVIEW_CLOSED_CLASS);
+            setTierRowActive(card, false);
+        }
+    });
+
     popup.addEventListener('click', event => {
         event.stopPropagation();
         closeAllPreviews();
@@ -774,17 +769,179 @@ function createVideoPreview(name, video) {
     return preview;
 }
 
+function positionPreview(card) {
+    const popup = card.querySelector('.game-preview-popup');
+
+    if (!popup) {
+        return;
+    }
+
+    card.classList.remove(PREVIEW_READY_CLASS);
+
+    popup.classList.remove(
+        'preview-position-right',
+        'preview-position-left',
+        'preview-position-bottom'
+    );
+
+    const cardRect = card.getBoundingClientRect();
+    const popupWidth = popup.offsetWidth;
+    const popupHeight = popup.offsetHeight;
+
+    const viewportWidth = window.innerWidth;
+    const viewportHeight = window.innerHeight;
+
+    const centeredLeft =
+        cardRect.left +
+        (cardRect.width - popupWidth) / 2;
+
+    const centeredTop =
+        cardRect.top +
+        (cardRect.height - popupHeight) / 2;
+
+    const topPosition =
+        cardRect.top -
+        popupHeight -
+        PREVIEW_GAP;
+
+    const rightPosition =
+        cardRect.right +
+        PREVIEW_GAP;
+
+    const leftPosition =
+        cardRect.left -
+        popupWidth -
+        PREVIEW_GAP;
+
+    const bottomPosition =
+        cardRect.bottom +
+        PREVIEW_GAP;
+
+    const fitsAbove =
+        topPosition >= SCREEN_PADDING;
+
+    const fitsRight =
+        rightPosition + popupWidth <=
+        viewportWidth - SCREEN_PADDING;
+
+    const fitsLeft =
+        leftPosition >= SCREEN_PADDING;
+
+    const fitsBelow =
+        bottomPosition + popupHeight <=
+        viewportHeight - SCREEN_PADDING;
+
+    let popupLeft;
+    let popupTop;
+
+    if (fitsAbove) {
+        popupLeft = clamp(
+            centeredLeft,
+            SCREEN_PADDING,
+            viewportWidth -
+                popupWidth -
+                SCREEN_PADDING
+        );
+
+        popupTop = topPosition;
+    } else if (fitsRight) {
+        popup.classList.add('preview-position-right');
+
+        popupLeft = rightPosition;
+        popupTop = clamp(
+            centeredTop,
+            SCREEN_PADDING,
+            viewportHeight -
+                popupHeight -
+                SCREEN_PADDING
+        );
+    } else if (fitsLeft) {
+        popup.classList.add('preview-position-left');
+
+        popupLeft = leftPosition;
+        popupTop = clamp(
+            centeredTop,
+            SCREEN_PADDING,
+            viewportHeight -
+                popupHeight -
+                SCREEN_PADDING
+        );
+    } else {
+        popup.classList.add('preview-position-bottom');
+
+        popupLeft = clamp(
+            centeredLeft,
+            SCREEN_PADDING,
+            viewportWidth -
+                popupWidth -
+                SCREEN_PADDING
+        );
+
+        popupTop = fitsBelow
+            ? bottomPosition
+            : clamp(
+                topPosition,
+                SCREEN_PADDING,
+                viewportHeight -
+                    popupHeight -
+                    SCREEN_PADDING
+            );
+    }
+
+    popup.style.left = `${popupLeft - cardRect.left}px`;
+    popup.style.top = `${popupTop - cardRect.top}px`;
+    popup.style.right = 'auto';
+    popup.style.bottom = 'auto';
+
+    card.classList.add(PREVIEW_READY_CLASS);
+}
+
+function resetPreviewPosition(card) {
+    const popup = card.querySelector('.game-preview-popup');
+
+    card.classList.remove(PREVIEW_READY_CLASS);
+
+    if (!popup) {
+        return;
+    }
+
+    popup.classList.remove(
+        'preview-position-right',
+        'preview-position-left',
+        'preview-position-bottom'
+    );
+
+    popup.style.left = '';
+    popup.style.top = '';
+    popup.style.right = '';
+    popup.style.bottom = '';
+}
+
+function updateVisiblePreviewPositions() {
+    document
+        .querySelectorAll(
+            '.game-card:not(.preview-closed)'
+        )
+        .forEach(card => {
+            const popup = card.querySelector(
+                '.game-preview-popup'
+            );
+
+            if (popup) {
+                positionPreview(card);
+            }
+        });
+}
+
 function closeAllPreviews() {
     document
         .querySelectorAll('.game-card')
         .forEach(card => {
             card.classList.add(PREVIEW_CLOSED_CLASS);
-        });
+            card.classList.remove(PREVIEW_READY_CLASS);
 
-    document
-        .querySelectorAll(`.${ACTIVE_ROW_CLASS}`)
-        .forEach(tierRow => {
-            tierRow.classList.remove(ACTIVE_ROW_CLASS);
+            setTierRowActive(card, false);
+            resetPreviewPosition(card);
         });
 }
 
@@ -830,7 +987,7 @@ function renderSelectedVideo(selectedVideoTitle) {
         return;
     }
 
-    const videoThumbnail = getYouTubeThumbnail(videoUrl);
+    const thumbnailUrl = getYouTubeThumbnail(videoUrl);
 
     const title = document.createElement('h2');
 
@@ -845,11 +1002,11 @@ function renderSelectedVideo(selectedVideoTitle) {
     link.rel = 'noopener noreferrer';
     link.title = 'Открыть видео на YouTube';
 
-    if (videoThumbnail) {
+    if (thumbnailUrl) {
         const image = document.createElement('img');
 
         image.className = 'selected-video-image';
-        image.src = videoThumbnail;
+        image.src = thumbnailUrl;
         image.alt = selectedVideoTitle;
         image.loading = 'lazy';
 
@@ -934,4 +1091,8 @@ function openExternalLink(url) {
     if (newWindow) {
         newWindow.opener = null;
     }
+}
+
+function clamp(value, min, max) {
+    return Math.min(Math.max(value, min), max);
 }
