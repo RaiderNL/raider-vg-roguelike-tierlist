@@ -138,15 +138,6 @@ body {
     border-radius: 8px 0 0 8px;
 }
 
-/*
- * Цветовая шкала силы тиров:
- * от насыщенного тёплого цвета S
- * к холодному приглушённому цвету F.
- */
-/*
- * Мягкая цветовая шкала силы тиров:
- * от золотого S к спокойному серо-синему F.
- */
 .tier-s {
     color: #5b4300;
     background: #e8c766;
@@ -182,8 +173,6 @@ body {
     background: #9daabd;
 }
 
-
-
 .games-container {
     display: flex;
     flex: 1;
@@ -196,28 +185,11 @@ body {
     overflow: visible;
 }
 
-/*
- * В тирах S и A карточки увеличены,
- * чтобы в один ряд помещалось пять игр.
- *
- * Расчёт:
- * 5 × 230px + 4 × 8px = 1182px
- */
 #tier-S .game-card,
 #tier-A .game-card {
     width: 230px;
 }
 
-/*
- * В тирах D, E и F карточки и промежутки
- * уменьшены одним коэффициентом.
- *
- * Стандартный ряд:
- * 3 × 190px + 2 × 8px = 586px
- *
- * Уменьшенный ряд:
- * 4 × 142px + 3 × 6px = 586px
- */
 #tier-D,
 #tier-E,
 #tier-F {
@@ -338,14 +310,8 @@ body {
 }
 
 /*
- * При выборе конкретного видео
- * скрываем popup карточек.
+ * Popup карточки.
  */
-.tier-list-layout.video-filter-active
-.game-preview-popup {
-    display: none !important;
-}
-
 .game-preview-popup {
     position: absolute;
     z-index: 100002;
@@ -375,17 +341,34 @@ body {
 }
 
 /*
- * Popup с описанием и ссылками становится
- * двухколоночным: ссылки слева, цитата справа.
+ * Popup с Description и хотя бы одной ссылкой:
+ * ссылки находятся слева, цитата справа.
+ *
+ * Классы записываются без пробелов, потому что
+ * оба класса находятся на одном элементе popup.
  */
-.game-preview-popup-with-description
-.game-preview-popup-with-actions {
+.game-preview-popup.game-preview-popup-with-description.game-preview-popup-with-actions {
     flex-direction: row;
+    align-items: stretch;
 
     width: min(670px, calc(100vw - 16px));
-    align-items: stretch;
 }
 
+/*
+ * Popup, содержащий только Description,
+ * остаётся квадратной областью.
+ */
+.game-preview-popup.game-preview-popup-with-description:not(.game-preview-popup-with-actions) {
+    width: min(330px, calc(100vw - 16px));
+}
+
+/*
+ * При выборе видео popup карточек скрываются.
+ */
+.tier-list-layout.video-filter-active
+.game-preview-popup {
+    display: none !important;
+}
 
 .game-card:not(.preview-closed)
 .game-preview-popup {
@@ -402,8 +385,7 @@ body {
 }
 
 /*
- * Боковые варианты не используют transform.
- * Координаты задаются через JavaScript.
+ * JavaScript задаёт позицию через left и top.
  */
 .game-preview-popup.preview-position-right,
 .game-preview-popup.preview-position-left,
@@ -412,7 +394,8 @@ body {
 }
 
 /*
- * Невидимый мост между карточкой и popup.
+ * Прозрачный мост не даёт popup закрыться,
+ * когда курсор перемещается от карточки к нему.
  */
 .game-preview-popup::after {
     content: '';
@@ -423,9 +406,7 @@ body {
     pointer-events: auto;
 }
 
-.game-preview-popup:not(.preview-position-right)
-:not(.preview-position-left)
-:not(.preview-position-bottom)::after {
+.game-preview-popup:not(.preview-position-right):not(.preview-position-left):not(.preview-position-bottom)::after {
     right: 0;
     bottom: -14px;
     left: 0;
@@ -458,6 +439,10 @@ body {
 
     height: 14px;
 }
+
+/*
+ * Левая колонка: Steam и YouTube.
+ */
 .preview-actions {
     display: flex;
     flex: 1 1 0;
@@ -467,22 +452,27 @@ body {
     min-width: 0;
 }
 
+/*
+ * Правая квадратная зона с Description.
+ */
 .preview-description {
     position: relative;
 
     display: flex;
     flex: 1 1 0;
     align-items: center;
+    justify-content: center;
 
     min-width: 0;
-    min-height: 0;
     margin: 0;
-    padding: 28px 24px;
+    padding: 34px 28px;
 
     color: #e5e7eb;
+    font-family: Georgia, serif;
     font-size: 15px;
     font-style: italic;
     line-height: 1.5;
+    text-align: center;
     overflow-wrap: anywhere;
 
     background: #30343d;
@@ -490,81 +480,40 @@ body {
     border-radius: 7px;
 }
 
-.game-preview-popup-with-description
-.game-preview-popup-with-actions {
-    flex-direction: column;
-
-    width: min(285px, calc(100vw - 16px));
+/*
+ * Цитата имеет одинаковую ширину и высоту,
+ * если Description выводится отдельно или
+ * находится справа от ссылок.
+ */
+.game-preview-popup.game-preview-popup-with-description
+.preview-description {
+    aspect-ratio: 1 / 1;
 }
 
-.game-preview-popup-with-description
-.game-preview-popup-with-actions
-.preview-description {
-    aspect-ratio: auto;
-    min-height: 130px;
-}
+.preview-description::before,
+.preview-description::after {
+    position: absolute;
 
-.preview-description {
-    padding: 26px 22px;
-    font-size: 14px;
+    color: #e8c766;
+    font-family: Georgia, serif;
+    font-size: 42px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 1;
 }
 
 .preview-description::before {
     content: '“';
 
     top: 10px;
-    left: 11px;
+    left: 12px;
 }
 
 .preview-description::after {
     content: '”';
 
-    right: 12px;
+    right: 13px;
     bottom: 4px;
-}
-
-.preview-description {
-    margin: 0;
-
-    color: #e5e7eb;
-    font-size: 14px;
-    line-height: 1.45;
-    overflow-wrap: anywhere;
-}
-
-.preview-comment {
-    position: relative;
-
-    margin: 0;
-    padding: 10px 12px 10px 30px;
-
-    color: #d6d3d1;
-    font-size: 14px;
-    font-style: italic;
-    line-height: 1.45;
-    overflow-wrap: anywhere;
-
-    background: #30343d;
-    border-left: 3px solid #e8c766;
-    border-radius: 6px;
-}
-
-.preview-comment::before {
-    content: '“';
-
-    position: absolute;
-    top: 4px;
-    left: 9px;
-
-    color: #e8c766;
-    font-size: 25px;
-    font-style: normal;
-    font-weight: 700;
-    line-height: 1;
-}
-
-.preview-comment::after {
-    content: '”';
 }
 
 .preview-link {
@@ -775,22 +724,11 @@ body {
     }
 
     .tier-label {
-        position: relative;
-        z-index: 2;
-    
-        display: flex;
         flex: 0 0 90px;
-        align-items: center;
-        justify-content: center;
-    
-        font-size: 32px;
-        font-weight: 700;
-    
-        text-shadow: 0 1px 2px rgb(0 0 0 / 18%);
-    
-        border-radius: 8px 0 0 8px;
-    }
 
+        font-size: 32px;
+        text-shadow: 0 1px 2px rgb(0 0 0 / 18%);
+    }
 
     .games-container {
         gap: 8px;
@@ -801,21 +739,11 @@ body {
         width: 145px;
     }
 
-    /*
-     * На мобильных S и A также выделяются
-     * увеличенным размером карточек.
-     */
     #tier-S .game-card,
     #tier-A .game-card {
         width: 165px;
     }
 
-    /*
-     * Мобильный расчёт для D–F:
-     *
-     * 3 × 145px + 2 × 8px = 451px
-     * 4 × 108px + 3 × 6px = 450px
-     */
     #tier-D,
     #tier-E,
     #tier-F {
@@ -852,6 +780,26 @@ body {
         padding: 10px;
     }
 
+    /*
+     * На узком экране колонки становятся
+     * вертикальными, чтобы popup не выходил
+     * за границы окна.
+     */
+    .game-preview-popup.game-preview-popup-with-description.game-preview-popup-with-actions {
+        flex-direction: column;
+
+        width: min(285px, calc(100vw - 16px));
+    }
+
+    .game-preview-popup.game-preview-popup-with-description
+    .preview-description {
+        min-height: 130px;
+        padding: 26px 22px;
+
+        font-size: 14px;
+        aspect-ratio: auto;
+    }
+
     .preview-image {
         height: 117px;
     }
@@ -874,6 +822,7 @@ body {
 @media (max-width: 400px) {
     .tier-label {
         flex-basis: 45px;
+
         font-size: 20px;
     }
 
@@ -882,10 +831,6 @@ body {
         padding: 8px;
     }
 
-    /*
-     * На очень узких экранах карточки
-     * занимают две колонки.
-     */
     .game-card,
     #tier-S .game-card,
     #tier-A .game-card,
