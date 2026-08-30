@@ -15,7 +15,13 @@ import {
     gameMatchesFilters
 } from './filters.js';
 
-import { createGameCard } from './cards.js';
+import {
+    createGameCard
+} from './cards.js';
+
+import {
+    setPriceMode
+} from './steam-price.js';
 
 import {
     closeAllPreviews,
@@ -31,15 +37,15 @@ import {
     VIDEO_FILTER_ACTIVE_CLASS
 } from './config.js';
 
-import {
-    setPriceMode
-} from './steam-price.js';
 
-const SEARCH_RENDER_DELAY = 150;
+const SEARCH_RENDER_DELAY =
+    150;
 
-let searchRenderTimer = null;
+let searchRenderTimer =
+    null;
 
-const tierContainers = {};
+const tierContainers =
+    {};
 
 
 // Запуск приложения после загрузки HTML
@@ -54,7 +60,10 @@ document.addEventListener(
 document.addEventListener(
     'visibilitychange',
     () => {
-        if (document.visibilityState === 'visible') {
+        if (
+            document.visibilityState ===
+            'visible'
+        ) {
             closeAllPreviews();
         }
     }
@@ -68,7 +77,7 @@ window.addEventListener(
 );
 
 
-// Пересчёт позиции открытых popup
+// Пересчёт позиции popup
 // после изменения размера окна
 window.addEventListener(
     'resize',
@@ -76,7 +85,8 @@ window.addEventListener(
 );
 
 
-// Пересчёт позиции popup при прокрутке
+// Пересчёт позиции popup
+// при прокрутке
 window.addEventListener(
     'scroll',
     updateVisiblePreviewPositions,
@@ -86,13 +96,19 @@ window.addEventListener(
 
 function init() {
     const searchInput =
-        document.querySelector('#search');
+        document.querySelector(
+            '#search'
+        );
 
     const tagFilter =
-        document.querySelector('#tag-filter');
+        document.querySelector(
+            '#tag-filter'
+        );
 
     const videoFilter =
-        document.querySelector('#video-filter');
+        document.querySelector(
+            '#video-filter'
+        );
 
     const priceModeToggle =
         document.querySelector(
@@ -101,7 +117,6 @@ function init() {
 
 
     cacheTierContainers();
-
 
 
     if (searchInput) {
@@ -124,6 +139,18 @@ function init() {
         videoFilter.addEventListener(
             'change',
             renderGames
+        );
+    }
+
+
+    if (priceModeToggle) {
+        priceModeToggle.addEventListener(
+            'change',
+            event => {
+                setPriceMode(
+                    event.target.checked
+                );
+            }
         );
     }
 
@@ -159,13 +186,18 @@ async function loadApplicationData() {
 
 function scheduleSearchRender() {
     if (searchRenderTimer) {
-        clearTimeout(searchRenderTimer);
+        clearTimeout(
+            searchRenderTimer
+        );
     }
 
-    searchRenderTimer = setTimeout(() => {
-        renderGames();
-        searchRenderTimer = null;
-    }, SEARCH_RENDER_DELAY);
+    searchRenderTimer =
+        setTimeout(() => {
+            renderGames();
+
+            searchRenderTimer =
+                null;
+        }, SEARCH_RENDER_DELAY);
 }
 
 
@@ -173,7 +205,7 @@ function renderGames() {
     /*
      * Перед перерисовкой закрываем popup,
      * чтобы старые карточки не оставались
-     * активными во время обновления DOM.
+     * активными.
      */
     closeAllPreviews();
 
@@ -205,12 +237,16 @@ function renderGames() {
                     selectedVideo
                 )
             )
-            .sort(compareGamesByOrder);
+            .sort(
+                compareGamesByOrder
+            );
 
 
     filteredGames.forEach(game => {
         const tier =
-            normalizeTier(game['Tier']);
+            normalizeTier(
+                game['Tier']
+            );
 
         const container =
             tierContainers[tier];
@@ -238,7 +274,8 @@ function clearTierContainers() {
             tierContainers[tier];
 
         if (container) {
-            container.innerHTML = '';
+            container.innerHTML =
+                '';
         }
     });
 }
