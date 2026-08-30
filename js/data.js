@@ -20,6 +20,14 @@ export async function loadGames() {
 
 
 export function parseCSV(text) {
+    /*
+     * Удаляем BOM в начале CSV-файла.
+     * Без этого первый заголовок может прочитаться
+     * как "\uFEFFName", и game['Name'] не сработает.
+     */
+    text = String(text || '')
+        .replace(/^\uFEFF/, '');
+
     const rows = [];
     let row = [];
     let value = '';
