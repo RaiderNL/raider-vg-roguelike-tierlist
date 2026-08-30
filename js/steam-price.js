@@ -1,8 +1,9 @@
 const PRICES_FILE_URL =
     new URL(
-        './prices.json',
+        '../prices.json',
         import.meta.url
     ).href;
+
 
 
 const PRICE_MODE_CLASS =
