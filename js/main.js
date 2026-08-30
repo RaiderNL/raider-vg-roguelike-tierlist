@@ -36,6 +36,8 @@ const SEARCH_RENDER_DELAY = 150;
 
 let searchRenderTimer = null;
 
+const tierContainers = {};
+
 
 // Запуск приложения после загрузки HTML
 document.addEventListener(
@@ -90,6 +92,9 @@ function init() {
         document.querySelector('#video-filter');
 
 
+    cacheTierContainers();
+
+
     if (searchInput) {
         searchInput.addEventListener(
             'input',
@@ -115,6 +120,16 @@ function init() {
 
 
     loadApplicationData();
+}
+
+
+function cacheTierContainers() {
+    TIER_NAMES.forEach(tier => {
+        tierContainers[tier] =
+            document.querySelector(
+                `#tier-${tier}`
+            );
+    });
 }
 
 
@@ -189,9 +204,7 @@ function renderGames() {
             normalizeTier(game['Tier']);
 
         const container =
-            document.querySelector(
-                `#tier-${tier}`
-            );
+            tierContainers[tier];
 
         if (!container) {
             return;
@@ -213,9 +226,7 @@ function renderGames() {
 function clearTierContainers() {
     TIER_NAMES.forEach(tier => {
         const container =
-            document.querySelector(
-                `#tier-${tier}`
-            );
+            tierContainers[tier];
 
         if (container) {
             container.innerHTML = '';
