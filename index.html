@@ -26,15 +26,6 @@
             Мой тир-лист рогаликов
         </p>
     
-        <label class="price-mode-toggle">
-            <input
-                id="price-mode-toggle"
-                type="checkbox"
-            >
-    
-            <span>
-                Показывать цены
-            </span>
         </label>
     </header>
 
@@ -42,19 +33,41 @@
     <main class="container">
 
         <section class="controls">
-        <div class="control-group">
-            <label for="search">
-                Поиск игры
+           <div class="video-filter-controls">
+        <div class="control-group filter-group">
+            <label for="video-filter">
+                Видео
             </label>
     
-            <input
-                type="search"
-                id="search"
-                placeholder="Введите название игры..."
-            >
+            <select id="video-filter">
+                <option value="">
+                    Все ролики
+                </option>
+            </select>
         </div>
     
-        <div class="control-group">
+        <label class="price-mode-toggle">
+            <input
+                id="price-mode-toggle"
+                type="checkbox"
+            >
+    
+            <span
+                class="price-switch"
+                aria-hidden="true"
+            >
+                <span class="price-switch-thumb"></span>
+            </span>
+    
+            <span class="price-mode-label">
+                Показывать цены
+            </span>
+        </label>
+    </div>
+
+    
+        <div class="control-group filter-group">
+
             <label for="tag-filter">
                 Жанр
             </label>
@@ -66,7 +79,7 @@
             </select>
         </div>
     
-        <div class="control-group">
+        <div class="control-group filter-group">
             <label for="video-filter">
                 Видео
             </label>
