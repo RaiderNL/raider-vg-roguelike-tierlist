@@ -120,8 +120,10 @@ export function createGameCard(
 
     setupCardHover(
         card,
-        name
+        name,
+        steamLink
     );
+
 
     registerPriceCard(
         card,
