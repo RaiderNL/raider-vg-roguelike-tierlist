@@ -2,6 +2,9 @@ import {
     getGameTags,
     getSteamImage
 } from './data.js';
+import {
+    registerPriceCard
+} from './steam-price.js';
 
 import {
     setupCardHover,
