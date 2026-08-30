@@ -9,13 +9,22 @@ import {
     closeAllPreviews
 } from './previews.js';
 
+import {
+    PREVIEW_CLOSED_CLASS
+} from './config.js';
+
 
 // Создание полной карточки игры
 export function createGameCard(game) {
-    const card = document.createElement('article');
+    const card =
+        document.createElement('article');
 
-    card.className = 'game-card';
-    card.classList.add('preview-closed');
+    card.className =
+        'game-card';
+
+    card.classList.add(
+        PREVIEW_CLOSED_CLASS
+    );
 
     const name =
         game['Name'] || 'Без названия';
@@ -152,7 +161,6 @@ export function setupCardSteamLink(
             }
 
             closeAllPreviews();
-
             openExternalLink(steamLink);
         }
     );
@@ -182,7 +190,6 @@ export function setupCardSteamLink(
             event.preventDefault();
 
             closeAllPreviews();
-
             openExternalLink(steamLink);
         }
     );
@@ -316,10 +323,3 @@ function openExternalLink(url) {
             null;
     }
 }
-
-
-// Временная функция-зависимость.
-//
-// На следующем этапе эту функцию лучше
-// импортировать из отдельного модуля previews.js
-// или common.js.
