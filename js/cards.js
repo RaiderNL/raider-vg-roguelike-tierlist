@@ -323,33 +323,3 @@ function openExternalLink(url) {
 // На следующем этапе эту функцию лучше
 // импортировать из отдельного модуля previews.js
 // или common.js.
-function closeAllPreviews() {
-    document
-        .querySelectorAll('.game-card')
-        .forEach(card => {
-            if (card._cancelPreviewClose) {
-                card._cancelPreviewClose();
-            }
-
-            card.classList.add(
-                'preview-closed'
-            );
-
-            card.classList.remove(
-                'preview-position-ready'
-            );
-
-            card.classList.remove(
-                'game-card-preview-active'
-            );
-
-            const tierRow =
-                card.closest('.tier-row');
-
-            if (tierRow) {
-                tierRow.classList.remove(
-                    'tier-row-active'
-                );
-            }
-        });
-}
