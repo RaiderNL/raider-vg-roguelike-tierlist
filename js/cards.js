@@ -103,6 +103,11 @@ export function createGameCard(game) {
         card,
         name
     );
+        registerPriceCard(
+        card,
+        game
+    );
+
 
     return card;
 }
