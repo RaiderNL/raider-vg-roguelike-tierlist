@@ -108,7 +108,7 @@ body {
 
 .tier-row {
     position: relative;
-    z-index: 1;
+    z-index: 0;
 
     display: flex;
     min-height: 150px;
@@ -119,9 +119,17 @@ body {
     box-shadow: 0 2px 8px rgb(0 0 0 / 8%);
 }
 
-.tier-row-active {
+/*
+ * Открытый popup должен быть выше всех остальных тиров.
+ * :has служит страховкой, даже если класс из config.js
+ * отличается от .tier-row-active.
+ */
+.tier-row-active,
+.tier-row:has(.game-card:not(.preview-closed)) {
     z-index: 100000;
 }
+
+
 
 .tier-label {
     position: relative;
