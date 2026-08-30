@@ -116,12 +116,14 @@ body {
     box-shadow: 0 2px 8px rgb(0 0 0 / 8%);
 }
 
+.game-card-preview-active {
+    z-index: 100001 !important;
+}
+
 .tier-row-active {
     z-index: 100000;
 }
-.tier-row-active .game-card {
-    z-index: 100001;
-}
+
 
 .tier-label {
     position: relative;
@@ -199,11 +201,16 @@ body {
 
 .game-card:hover,
 .game-card:focus-within {
-    z-index: 100001;
+    z-index: 2;
 
     transform: translateY(-3px);
     box-shadow: 0 5px 12px rgb(0 0 0 / 20%);
 }
+
+.game-card-preview-active {
+    z-index: 100001 !important;
+}
+
 
 .game-card-clickable {
     cursor: pointer;
@@ -318,6 +325,7 @@ body {
         opacity 0.2s ease,
         visibility 0.2s ease;
 }
+
 
 .game-card:not(.preview-closed) .game-preview-popup {
     visibility: visible;
