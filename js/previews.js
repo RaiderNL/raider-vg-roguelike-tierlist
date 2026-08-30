@@ -57,7 +57,10 @@ export function setupCardHover(
         }
 
         if (layerCleanupTimer) {
-            clearTimeout(layerCleanupTimer);
+            clearTimeout(
+                layerCleanupTimer
+            );
+
             layerCleanupTimer = null;
         }
     };
@@ -104,70 +107,74 @@ export function setupCardHover(
 
     const scheduleLayerCleanup = () => {
         if (layerCleanupTimer) {
-            clearTimeout(layerCleanupTimer);
+            clearTimeout(
+                layerCleanupTimer
+            );
         }
 
-        layerCleanupTimer = setTimeout(() => {
-            if (
-                card.classList.contains(
-                    PREVIEW_CLOSED_CLASS
-                ) &&
-                !card.matches(':hover') &&
-                !card.matches(':focus-within')
-            ) {
-                card.classList.remove(
-                    ACTIVE_CARD_CLASS
-                );
+        layerCleanupTimer =
+            setTimeout(() => {
+                if (
+                    card.classList.contains(
+                        PREVIEW_CLOSED_CLASS
+                    ) &&
+                    !card.matches(':hover') &&
+                    !card.matches(':focus-within')
+                ) {
+                    card.classList.remove(
+                        ACTIVE_CARD_CLASS
+                    );
 
-                setTierRowActive(
-                    card,
-                    false
-                );
-            }
+                    setTierRowActive(
+                        card,
+                        false
+                    );
+                }
 
-            layerCleanupTimer = null;
-        }, PREVIEW_LAYER_CLEANUP_DELAY);
+                layerCleanupTimer = null;
+            }, PREVIEW_LAYER_CLEANUP_DELAY);
     };
 
     const closePreview = (
         respectFocus = true
     ) => {
         if (closeTimer) {
-            clearTimeout(closeTimer);
+            clearTimeout(
+                closeTimer
+            );
         }
 
-        closeTimer = setTimeout(() => {
-            if (
-                card.matches(':hover') ||
-                popup.matches(':hover') ||
-                (
-                    respectFocus &&
-                    card.matches(':focus-within')
-                )
-            ) {
+        closeTimer =
+            setTimeout(() => {
+                if (
+                    card.matches(':hover') ||
+                    popup.matches(':hover') ||
+                    (
+                        respectFocus &&
+                        card.matches(':focus-within')
+                    )
+                ) {
+                    closeTimer = null;
+                    return;
+                }
+
+                card.classList.add(
+                    PREVIEW_CLOSED_CLASS
+                );
+
+                card.classList.remove(
+                    PREVIEW_READY_CLASS
+                );
+
+                scheduleLayerCleanup();
+
                 closeTimer = null;
-                return;
-            }
-
-            card.classList.add(
-                PREVIEW_CLOSED_CLASS
-            );
-
-            card.classList.remove(
-                PREVIEW_READY_CLASS
-            );
-
-            scheduleLayerCleanup();
-
-            closeTimer = null;
-        }, PREVIEW_CLOSE_DELAY);
+            }, PREVIEW_CLOSE_DELAY);
     };
 
     popup.addEventListener(
         'mouseenter',
-        () => {
-            cancelClose();
-        }
+        cancelClose
     );
 
     popup.addEventListener(
@@ -175,7 +182,9 @@ export function setupCardHover(
         event => {
             if (
                 event.relatedTarget &&
-                card.contains(event.relatedTarget)
+                card.contains(
+                    event.relatedTarget
+                )
             ) {
                 return;
             }
@@ -228,7 +237,9 @@ export function setupCardHover(
         event => {
             if (
                 event.relatedTarget &&
-                card.contains(event.relatedTarget)
+                card.contains(
+                    event.relatedTarget
+                )
             ) {
                 return;
             }
@@ -252,7 +263,9 @@ export function setupCardHover(
         'focusout',
         event => {
             if (
-                card.contains(event.relatedTarget)
+                card.contains(
+                    event.relatedTarget
+                )
             ) {
                 return;
             }
@@ -264,19 +277,20 @@ export function setupCardHover(
     card._cancelPreviewClose =
         cancelClose;
 
-    card._closePreviewImmediately = () => {
-        cancelClose();
+    card._closePreviewImmediately =
+        () => {
+            cancelClose();
 
-        card.classList.add(
-            PREVIEW_CLOSED_CLASS
-        );
+            card.classList.add(
+                PREVIEW_CLOSED_CLASS
+            );
 
-        card.classList.remove(
-            PREVIEW_READY_CLASS
-        );
+            card.classList.remove(
+                PREVIEW_READY_CLASS
+            );
 
-        scheduleLayerCleanup();
-    };
+            scheduleLayerCleanup();
+        };
 }
 
 
@@ -285,7 +299,9 @@ function setTierRowActive(
     isActive
 ) {
     const tierRow =
-        card.closest('.tier-row');
+        card.closest(
+            '.tier-row'
+        );
 
     if (!tierRow) {
         return;
@@ -307,7 +323,9 @@ export function createPreviewPopup({
     description
 }) {
     const popup =
-        document.createElement('div');
+        document.createElement(
+            'div'
+        );
 
     popup.className =
         'game-preview-popup';
@@ -316,7 +334,10 @@ export function createPreviewPopup({
         Boolean(description);
 
     const hasActions =
-        Boolean(steamLink || video);
+        Boolean(
+            steamLink ||
+            video
+        );
 
     popup.classList.toggle(
         'game-preview-popup-with-description',
@@ -328,13 +349,11 @@ export function createPreviewPopup({
         hasActions
     );
 
-    /*
-     * Ссылки создаются первыми:
-     * это левая колонка в двухколоночном popup.
-     */
     if (hasActions) {
         const actions =
-            document.createElement('div');
+            document.createElement(
+                'div'
+            );
 
         actions.className =
             'preview-actions';
@@ -359,16 +378,16 @@ export function createPreviewPopup({
             );
         }
 
-        popup.appendChild(actions);
+        popup.appendChild(
+            actions
+        );
     }
 
-    /*
-     * Description располагается справа
-     * и CSS отображает его в виде цитаты.
-     */
     if (hasDescription) {
         const descriptionElement =
-            document.createElement('blockquote');
+            document.createElement(
+                'blockquote'
+            );
 
         descriptionElement.className =
             'preview-description';
@@ -406,7 +425,9 @@ function createSteamPreview({
     steamImage
 }) {
     const preview =
-        document.createElement('a');
+        document.createElement(
+            'a'
+        );
 
     preview.className =
         'preview-link';
@@ -424,13 +445,16 @@ function createSteamPreview({
         `Открыть ${name} в Steam`;
 
     const image =
-        document.createElement('img');
+        document.createElement(
+            'img'
+        );
 
     image.className =
         'preview-image';
 
     image.src =
-        cover || steamImage;
+        cover ||
+        steamImage;
 
     image.alt =
         `${name} — страница в Steam`;
@@ -453,7 +477,9 @@ function createSteamPreview({
     );
 
     const label =
-        document.createElement('span');
+        document.createElement(
+            'span'
+        );
 
     label.className =
         'preview-label';
@@ -473,7 +499,9 @@ function createVideoPreview(
     video
 ) {
     const preview =
-        document.createElement('a');
+        document.createElement(
+            'a'
+        );
 
     preview.className =
         'preview-link';
@@ -495,7 +523,9 @@ function createVideoPreview(
 
     if (thumbnail) {
         const image =
-            document.createElement('img');
+            document.createElement(
+                'img'
+            );
 
         image.className =
             'preview-image';
@@ -509,10 +539,14 @@ function createVideoPreview(
         image.loading =
             'lazy';
 
-        preview.appendChild(image);
+        preview.appendChild(
+            image
+        );
     } else {
         const placeholder =
-            document.createElement('div');
+            document.createElement(
+                'div'
+            );
 
         placeholder.className =
             'preview-image preview-image-placeholder';
@@ -526,7 +560,9 @@ function createVideoPreview(
     }
 
     const label =
-        document.createElement('span');
+        document.createElement(
+            'span'
+        );
 
     label.className =
         'preview-label';
@@ -534,7 +570,9 @@ function createVideoPreview(
     label.textContent =
         'Смотреть обзор';
 
-    preview.appendChild(label);
+    preview.appendChild(
+        label
+    );
 
     return preview;
 }
@@ -605,15 +643,19 @@ function positionPreview(card) {
         topPosition >= SCREEN_PADDING;
 
     const fitsRight =
-        rightPosition + popupWidth <=
-        viewportWidth - SCREEN_PADDING;
+        rightPosition +
+        popupWidth <=
+        viewportWidth -
+        SCREEN_PADDING;
 
     const fitsLeft =
         leftPosition >= SCREEN_PADDING;
 
     const fitsBelow =
-        bottomPosition + popupHeight <=
-        viewportHeight - SCREEN_PADDING;
+        bottomPosition +
+        popupHeight <=
+        viewportHeight -
+        SCREEN_PADDING;
 
     let popupLeft;
     let popupTop;
@@ -721,7 +763,9 @@ export function updateVisiblePreviewPositions() {
 
 export function closeAllPreviews() {
     document
-        .querySelectorAll('.game-card')
+        .querySelectorAll(
+            '.game-card'
+        )
         .forEach(card => {
             if (
                 card._closePreviewImmediately
