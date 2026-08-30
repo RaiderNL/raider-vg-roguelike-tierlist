@@ -362,7 +362,7 @@ export function getVideoLabel(
 
     const prefix =
         isLatest
-            ? '🔥'
+            ? '🔥 NEW 🔥'
             : videoNumber !== null
                 ? String(videoNumber)
                 : 'Без номера';
