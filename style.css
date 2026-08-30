@@ -33,7 +33,7 @@ body {
 }
 
 .container {
-    width: min(1290px, calc(100% - 32px));
+    width: min(1300px, calc(100% - 32px));
     margin: 24px auto;
 }
 
