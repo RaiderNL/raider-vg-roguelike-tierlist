@@ -281,6 +281,36 @@ body {
 .tier-row:has(.game-card:not(.preview-closed)) {
     z-index: 100000;
 }
+/*
+ * Едва заметный оттенок фона для каждого тира.
+ */
+.tier-row:has(.tier-s) {
+    background: #fffcf1;
+}
+
+.tier-row:has(.tier-a) {
+    background: #fff9f5;
+}
+
+.tier-row:has(.tier-b) {
+    background: #fffdf5;
+}
+
+.tier-row:has(.tier-c) {
+    background: #f8fcf5;
+}
+
+.tier-row:has(.tier-d) {
+    background: #f5fbfd;
+}
+
+.tier-row:has(.tier-e) {
+    background: #faf9fd;
+}
+
+.tier-row:has(.tier-f) {
+    background: #f7f9fc;
+}
 
 .tier-label {
     position: relative;
