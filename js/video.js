@@ -1,8 +1,20 @@
-export function getYouTubeThumbnail(videoUrl) {
-    const videoId =
-        getYouTubeVideoId(videoUrl);
+import {
+    getVideoUrl,
+    getVideoTitle
+} from './data.js';
 
-    if (!videoId) {
+
+export function getYouTubeThumbnail(
+    videoUrl
+) {
+    const videoId =
+        getYouTubeVideoId(
+            videoUrl
+        );
+
+    if (
+        !videoId
+    ) {
         return '';
     }
 
@@ -12,9 +24,13 @@ export function getYouTubeThumbnail(videoUrl) {
 }
 
 
-export function getYouTubeVideoId(videoUrl) {
+export function getYouTubeVideoId(
+    videoUrl
+) {
     const url =
-        String(videoUrl || '').trim();
+        String(
+            videoUrl || ''
+        ).trim();
 
     const patterns = [
         /youtube\.com\/watch\?[^#]*v=([a-zA-Z0-9_-]+)/i,
@@ -23,11 +39,17 @@ export function getYouTubeVideoId(videoUrl) {
         /youtube\.com\/shorts\/([a-zA-Z0-9_-]+)/i
     ];
 
-    for (const pattern of patterns) {
+    for (
+        const pattern of patterns
+    ) {
         const match =
-            url.match(pattern);
+            url.match(
+                pattern
+            );
 
-        if (match) {
+        if (
+            match
+        ) {
             return match[1];
         }
     }
@@ -38,20 +60,24 @@ export function getYouTubeVideoId(videoUrl) {
 
 export function renderSelectedVideo(
     games,
-    selectedVideoTitle
+    selectedVideoUrl
 ) {
     const panel =
         document.querySelector(
             '#selected-video-panel'
         );
 
-    if (!panel) {
+    if (
+        !panel
+    ) {
         return;
     }
 
-    panel.innerHTML = '';
+    panel.replaceChildren();
 
-    if (!selectedVideoTitle) {
+    if (
+        !selectedVideoUrl
+    ) {
         hideSelectedVideoPanel(
             panel
         );
@@ -60,19 +86,16 @@ export function renderSelectedVideo(
     }
 
     const game =
-        games.find(item => {
-            const videoTitle =
-                String(
-                    item['Video Title'] || ''
-                ).trim();
+        games.find(
+            item =>
+                getVideoUrl(
+                    item
+                ) === selectedVideoUrl
+        );
 
-            return (
-                videoTitle ===
-                selectedVideoTitle
-            );
-        });
-
-    if (!game) {
+    if (
+        !game
+    ) {
         hideSelectedVideoPanel(
             panel
         );
@@ -81,11 +104,18 @@ export function renderSelectedVideo(
     }
 
     const videoUrl =
-        String(
-            game['Video'] || ''
-        ).trim();
+        getVideoUrl(
+            game
+        );
 
-    if (!videoUrl) {
+    const videoTitle =
+        getVideoTitle(
+            game
+        );
+
+    if (
+        !videoUrl
+    ) {
         hideSelectedVideoPanel(
             panel
         );
@@ -99,16 +129,21 @@ export function renderSelectedVideo(
         );
 
     const title =
-        document.createElement('h2');
+        document.createElement(
+            'h2'
+        );
 
     title.className =
         'selected-video-title';
 
     title.textContent =
-        selectedVideoTitle;
+        videoTitle ||
+        'Видеообзор';
 
     const link =
-        document.createElement('a');
+        document.createElement(
+            'a'
+        );
 
     link.className =
         'selected-video-link';
@@ -125,9 +160,13 @@ export function renderSelectedVideo(
     link.title =
         'Открыть видео на YouTube';
 
-    if (thumbnailUrl) {
+    if (
+        thumbnailUrl
+    ) {
         const image =
-            document.createElement('img');
+            document.createElement(
+                'img'
+            );
 
         image.className =
             'selected-video-image';
@@ -136,7 +175,8 @@ export function renderSelectedVideo(
             thumbnailUrl;
 
         image.alt =
-            selectedVideoTitle;
+            videoTitle ||
+            'Видеообзор игры';
 
         image.loading =
             'lazy';
@@ -146,7 +186,9 @@ export function renderSelectedVideo(
         );
     } else {
         const placeholder =
-            document.createElement('div');
+            document.createElement(
+                'div'
+            );
 
         placeholder.className =
             'selected-video-placeholder';
@@ -160,7 +202,9 @@ export function renderSelectedVideo(
     }
 
     const caption =
-        document.createElement('span');
+        document.createElement(
+            'span'
+        );
 
     caption.className =
         'selected-video-caption';
@@ -172,8 +216,13 @@ export function renderSelectedVideo(
         caption
     );
 
-    panel.appendChild(title);
-    panel.appendChild(link);
+    panel.appendChild(
+        title
+    );
+
+    panel.appendChild(
+        link
+    );
 
     panel.classList.add(
         'is-visible'
@@ -186,7 +235,9 @@ export function renderSelectedVideo(
 }
 
 
-function hideSelectedVideoPanel(panel) {
+function hideSelectedVideoPanel(
+    panel
+) {
     panel.classList.remove(
         'is-visible'
     );
