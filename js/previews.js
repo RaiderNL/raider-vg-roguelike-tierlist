@@ -17,8 +17,10 @@ import {
 
 export function setupCardHover(
     card,
-    name
+    name,
+    steamLink
 ) {
+ 
     let closeTimer = null;
     let layerCleanupTimer = null;
 
@@ -204,9 +206,16 @@ export function setupCardHover(
                 return;
             }
 
+            if (
+                openSteamPageForSelectedVideo()
+            ) {
+                return;
+            }
+
             openPreview();
         }
     );
+
 
     card.addEventListener(
         'keydown',
@@ -228,9 +237,17 @@ export function setupCardHover(
 
             event.preventDefault();
 
+            if (
+                openSteamPageForSelectedVideo()
+            ) {
+                return;
+            }
+
             openPreview();
         }
     );
+
+
 
     card.addEventListener(
         'mouseleave',
