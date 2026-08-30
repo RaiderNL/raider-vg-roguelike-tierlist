@@ -234,6 +234,7 @@ function fillVideoFilter() {
 }
 
 function renderGames() {
+    closeAllPreviews();
     clearTierContainers();
 
     const searchValue = getSearchValue();
@@ -453,9 +454,26 @@ function setupCardHover(card) {
             return;
         }
 
+        const popup = card.querySelector(
+            '.game-preview-popup'
+        );
+
+        if (!popup) {
+            return;
+        }
+
         card.classList.remove(PREVIEW_CLOSED_CLASS);
         setTierRowActive(card, true);
-        positionPreview(card);
+
+        requestAnimationFrame(() => {
+            if (
+                !card.classList.contains(
+                    PREVIEW_CLOSED_CLASS
+                )
+            ) {
+                positionPreview(card);
+            }
+        });
     };
 
     const closePreview = () => {
@@ -471,6 +489,7 @@ function setupCardHover(card) {
                 (popup && popup.matches(':hover')) ||
                 card.matches(':focus-within')
             ) {
+                closeTimer = null;
                 return;
             }
 
@@ -478,7 +497,13 @@ function setupCardHover(card) {
             card.classList.remove(PREVIEW_READY_CLASS);
 
             setTierRowActive(card, false);
-            resetPreviewPosition(card);
+
+            /*
+             * Координаты здесь намеренно не сбрасываются.
+             * При следующем открытии positionPreview()
+             * рассчитает их заново после отображения popup.
+             */
+            closeTimer = null;
         }, PREVIEW_CLOSE_DELAY);
     };
 
@@ -502,6 +527,8 @@ function setupCardHover(card) {
             closePreview();
         }
     });
+
+    card._cancelPreviewClose = cancelClose;
 }
 
 function setTierRowActive(card, isActive) {
@@ -631,31 +658,15 @@ function createPreviewPopup({
 
     popup.className = 'game-preview-popup';
 
-    popup.addEventListener('mouseenter', () => {
-        const card = popup.closest('.game-card');
-
-        if (card) {
-            card.classList.remove(PREVIEW_CLOSED_CLASS);
-            setTierRowActive(card, true);
-        }
-    });
-
-    popup.addEventListener('mouseleave', event => {
-        const card = popup.closest('.game-card');
-
-        if (
-            card &&
-            event.relatedTarget &&
-            card.contains(event.relatedTarget)
-        ) {
-            return;
-        }
-
-        if (card) {
-            card.classList.add(PREVIEW_CLOSED_CLASS);
-            setTierRowActive(card, false);
-        }
-    });
+    /*
+     * Важно:
+     * popup не должен самостоятельно менять состояние карточки
+     * через mouseenter/mouseleave.
+     *
+     * Он является дочерним элементом .game-card, поэтому
+     * состояние popup полностью контролируется обработчиками
+     * карточки в setupCardHover().
+     */
 
     popup.addEventListener('click', event => {
         event.stopPropagation();
@@ -920,7 +931,7 @@ function resetPreviewPosition(card) {
 function updateVisiblePreviewPositions() {
     document
         .querySelectorAll(
-            '.game-card:not(.preview-closed)'
+            `.game-card:not(.${PREVIEW_CLOSED_CLASS})`
         )
         .forEach(card => {
             const popup = card.querySelector(
@@ -937,11 +948,20 @@ function closeAllPreviews() {
     document
         .querySelectorAll('.game-card')
         .forEach(card => {
+            if (card._cancelPreviewClose) {
+                card._cancelPreviewClose();
+            }
+
             card.classList.add(PREVIEW_CLOSED_CLASS);
             card.classList.remove(PREVIEW_READY_CLASS);
 
             setTierRowActive(card, false);
-            resetPreviewPosition(card);
+
+            /*
+             * Координаты также не сбрасываются.
+             * Это предотвращает кратковременное появление popup
+             * в позиции top: 0 / left: 0.
+             */
         });
 }
 
