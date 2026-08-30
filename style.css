@@ -445,6 +445,49 @@ body {
 
     height: 14px;
 }
+.preview-description {
+    margin: 0;
+
+    color: #e5e7eb;
+    font-size: 14px;
+    line-height: 1.45;
+    overflow-wrap: anywhere;
+}
+
+.preview-comment {
+    position: relative;
+
+    margin: 0;
+    padding: 10px 12px 10px 30px;
+
+    color: #d6d3d1;
+    font-size: 14px;
+    font-style: italic;
+    line-height: 1.45;
+    overflow-wrap: anywhere;
+
+    background: #30343d;
+    border-left: 3px solid #e8c766;
+    border-radius: 6px;
+}
+
+.preview-comment::before {
+    content: '“';
+
+    position: absolute;
+    top: 4px;
+    left: 9px;
+
+    color: #e8c766;
+    font-size: 25px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 1;
+}
+
+.preview-comment::after {
+    content: '”';
+}
 
 .preview-link {
     display: block;
