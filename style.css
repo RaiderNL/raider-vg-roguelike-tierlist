@@ -374,6 +374,19 @@ body {
         visibility 0.2s ease;
 }
 
+/*
+ * Popup с описанием и ссылками становится
+ * двухколоночным: ссылки слева, цитата справа.
+ */
+.game-preview-popup-with-description
+.game-preview-popup-with-actions {
+    flex-direction: row;
+
+    width: min(670px, calc(100vw - 16px));
+    align-items: stretch;
+}
+
+
 .game-card:not(.preview-closed)
 .game-preview-popup {
     visibility: visible;
@@ -445,6 +458,71 @@ body {
 
     height: 14px;
 }
+.preview-actions {
+    display: flex;
+    flex: 1 1 0;
+    flex-direction: column;
+    gap: 12px;
+
+    min-width: 0;
+}
+
+.preview-description {
+    position: relative;
+
+    display: flex;
+    flex: 1 1 0;
+    align-items: center;
+
+    min-width: 0;
+    min-height: 0;
+    margin: 0;
+    padding: 28px 24px;
+
+    color: #e5e7eb;
+    font-size: 15px;
+    font-style: italic;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+
+    background: #30343d;
+    border-left: 3px solid #e8c766;
+    border-radius: 7px;
+}
+
+.game-preview-popup-with-description
+.game-preview-popup-with-actions {
+    flex-direction: column;
+
+    width: min(285px, calc(100vw - 16px));
+}
+
+.game-preview-popup-with-description
+.game-preview-popup-with-actions
+.preview-description {
+    aspect-ratio: auto;
+    min-height: 130px;
+}
+
+.preview-description {
+    padding: 26px 22px;
+    font-size: 14px;
+}
+
+.preview-description::before {
+    content: '“';
+
+    top: 10px;
+    left: 11px;
+}
+
+.preview-description::after {
+    content: '”';
+
+    right: 12px;
+    bottom: 4px;
+}
+
 .preview-description {
     margin: 0;
 
