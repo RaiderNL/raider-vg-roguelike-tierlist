@@ -1,67 +1,64 @@
-const STEAM_PROXY_URL =
-    'https://script.google.com/macros/s/AKfycbyUwe-rY-sOYJIuWNvQQJQa1mP50rkzcihHfZOqjrUTO9oyew4JKz_3cfNfsIveczDJ/exec';
+const PRICES_FILE_URL =
+    new URL(
+        './prices.json',
+        import.meta.url
+    ).href;
 
 
-/*
- * В одном HTTP-запросе к Apps Script будет до 10 игр.
- * Внутри Apps Script Steam вызывается для одной игры за раз.
- */
-const PRICE_BATCH_SIZE =
-    10;
+const PRICE_MODE_CLASS =
+    'price-mode-active';
 
 
-/*
- * Небольшая пауза между вызовами Apps Script.
- * Основное ограничение 200 мс задаётся в Apps Script.
- */
-const PRICE_BATCH_DELAY =
-    300;
+const PRICE_ELEMENT_CLASS =
+    'game-price';
 
 
-/*
- * Повтор временно недоступных цен.
- */
-const PRICE_RETRY_DELAY =
-    60000;
+const PRICE_LOADING_CLASS =
+    'game-price-loading';
 
 
-const priceCache =
-    new Map();
+const PRICE_UNAVAILABLE_CLASS =
+    'game-price-unavailable';
 
 
-const unavailableAppIds =
-    new Set();
+const PRICE_RELOAD_INTERVAL =
+    24 * 60 * 60 * 1000;
 
 
-const registeredCards =
-    new Set();
+let pricesLoaded =
+    false;
 
 
-const pendingAppIds =
-    new Set();
+let pricesLoadingPromise =
+    null;
+
+
+let pricesUpdatedAt =
+    null;
 
 
 let priceModeEnabled =
     false;
 
 
-let priceLoadingInProgress =
-    false;
+const priceCache =
+    new Map();
 
 
-let priceLoadTimer =
-    null;
-
-
-let priceRetryTimer =
-    null;
+const registeredCards =
+    new Set();
 
 
 /*
- * Переключение режима отображения цен.
- *
- * Загрузка цен не зависит от этого переключателя:
- * она начинается сразу после открытия сайта.
+ * Загружаем цены сразу после открытия сайта,
+ * независимо от состояния кнопки режима цен.
+ */
+loadStaticPrices();
+
+
+/*
+ * Публичная функция включения или выключения
+ * отображения цен.
  */
 export function setPriceMode(
     isEnabled
@@ -71,44 +68,57 @@ export function setPriceMode(
 
 
     document.body.classList.toggle(
-        'price-mode-active',
+        PRICE_MODE_CLASS,
         priceModeEnabled
     );
 
 
-    if (!priceModeEnabled) {
-        registeredCards.forEach(card => {
-            removePriceFromCard(
-                card
-            );
-        });
+    if (
+        priceModeEnabled
+    ) {
+        renderAllPrices();
 
         return;
     }
 
 
-    registeredCards.forEach(card => {
-        renderCardPriceState(
-            card
-        );
-    });
-
-
-    schedulePriceLoading();
+    hideAllPrices();
 }
 
 
 /*
- * Вызывается при создании карточки игры.
+ * Альтернативное имя функции,
+ * если оно используется в script.js.
+ */
+export function togglePriceMode(
+    isEnabled
+) {
+    setPriceMode(
+        isEnabled
+    );
+}
+
+
+/*
+ * Регистрация карточки игры.
  *
- * Цены ставятся в очередь сразу, а не только
- * после нажатия на кнопку режима цен.
+ * Эту функцию нужно вызвать после создания карточки:
+ *
+ * registerPriceCard(card, game);
  */
 export function registerPriceCard(
     card,
     game
 ) {
-    card._priceGame =
+    if (
+        !card ||
+        !game
+    ) {
+        return;
+    }
+
+
+    card._steamPriceGame =
         game;
 
 
@@ -117,23 +127,10 @@ export function registerPriceCard(
     );
 
 
-    const appId =
-        getSteamAppId(
-            game?.['Steam Link']
-        );
-
-
-    if (appId) {
-        pendingAppIds.add(
-            appId
-        );
-
-        schedulePriceLoading();
-    }
-
-
-    if (priceModeEnabled) {
-        renderCardPriceState(
+    if (
+        priceModeEnabled
+    ) {
+        renderPriceForCard(
             card
         );
     }
@@ -141,421 +138,171 @@ export function registerPriceCard(
 
 
 /*
- * Небольшая задержка нужна, чтобы при рендере
- * списка сначала зарегистрировались все карточки.
+ * Удаление карточки из списка отслеживания.
  */
-function schedulePriceLoading() {
+export function unregisterPriceCard(
+    card
+) {
+    registeredCards.delete(
+        card
+    );
+}
+
+
+/*
+ * Загрузка prices.json.
+ */
+export async function loadStaticPrices() {
     if (
-        priceLoadingInProgress ||
-        priceLoadTimer
+        pricesLoadingPromise
     ) {
-        return;
+        return pricesLoadingPromise;
     }
 
 
-    priceLoadTimer =
-        setTimeout(
-            () => {
-                priceLoadTimer =
+    pricesLoadingPromise =
+        fetch(
+            PRICES_FILE_URL,
+            {
+                cache:
+                    'no-cache'
+            }
+        )
+            .then(response => {
+                if (
+                    !response.ok
+                ) {
+                    throw new Error(
+                        `Не удалось загрузить prices.json: HTTP ${response.status}`
+                    );
+                }
+
+
+                return response.json();
+            })
+            .then(result => {
+                const prices =
+                    result?.prices ||
+                    result ||
+                    {};
+
+
+                priceCache.clear();
+
+
+                Object.entries(
+                    prices
+                ).forEach(
+                    ([appId, priceData]) => {
+                        priceCache.set(
+                            String(appId),
+                            priceData
+                        );
+                    }
+                );
+
+
+                pricesUpdatedAt =
+                    result?.updatedAt ||
                     null;
 
-                loadPendingPrices();
-            },
-            100
-        );
+
+                pricesLoaded =
+                    true;
+
+
+                console.info(
+                    `Цены загружены из prices.json: ${priceCache.size}`
+                );
+
+
+                if (
+                    pricesUpdatedAt
+                ) {
+                    console.info(
+                        'Дата обновления цен:',
+                        pricesUpdatedAt
+                    );
+                }
+
+
+                if (
+                    priceModeEnabled
+                ) {
+                    renderAllPrices();
+                }
+
+
+                return priceCache;
+            })
+            .catch(error => {
+                pricesLoaded =
+                    false;
+
+
+                console.warn(
+                    'Ошибка загрузки prices.json:',
+                    error
+                );
+
+
+                return priceCache;
+            })
+            .finally(() => {
+                pricesLoadingPromise =
+                    null;
+            });
+
+
+    return pricesLoadingPromise;
 }
 
 
 /*
- * Последовательно загружает все ещё неизвестные цены.
- */
-async function loadPendingPrices() {
-    if (
-        priceLoadingInProgress ||
-        pendingAppIds.size === 0
-    ) {
-        return;
-    }
-
-
-    priceLoadingInProgress =
-        true;
-
-
-    try {
-        while (
-            pendingAppIds.size > 0
-        ) {
-            const appIds =
-                takePendingAppIds(
-                    PRICE_BATCH_SIZE
-                );
-
-
-            const result =
-                await fetchSteamPricesBatch(
-                    appIds
-                );
-
-
-            result.prices.forEach(
-                (priceData, appId) => {
-                    priceCache.set(
-                        appId,
-                        priceData
-                    );
-
-                    unavailableAppIds.delete(
-                        appId
-                    );
-                }
-            );
-
-
-            result.unavailableAppIds.forEach(
-                appId => {
-                    unavailableAppIds.add(
-                        appId
-                    );
-                }
-            );
-
-
-            result.retryableAppIds.forEach(
-                appId => {
-                    pendingAppIds.add(
-                        appId
-                    );
-                }
-            );
-
-
-            if (priceModeEnabled) {
-                renderAllVisiblePrices();
-            }
-
-
-            if (
-                pendingAppIds.size > 0
-            ) {
-                await wait(
-                    PRICE_BATCH_DELAY
-                );
-            }
-        }
-    } finally {
-        priceLoadingInProgress =
-            false;
-    }
-
-
-    if (
-        pendingAppIds.size > 0
-    ) {
-        scheduleRetry();
-    }
-}
-
-
-/*
- * Забирает ограниченную группу игр из очереди.
- */
-function takePendingAppIds(
-    limit
-) {
-    const appIds =
-        [];
-
-
-    for (
-        const appId of pendingAppIds
-    ) {
-        appIds.push(
-            appId
-        );
-
-        pendingAppIds.delete(
-            appId
-        );
-
-
-        if (
-            appIds.length >= limit
-        ) {
-            break;
-        }
-    }
-
-
-    return appIds;
-}
-
-
-/*
- * Запрос к Apps Script.
+ * Повторная загрузка файла раз в сутки.
  *
- * Apps Script возвращает:
- * {
- *   success: true,
- *   data: {
- *     "123": { success: true, data: {...} }
- *   },
- *   retryableAppIds: ["456"]
- * }
+ * Обычно она не нужна при обычном открытии страницы,
+ * но полезна, если вкладка остаётся открытой.
  */
-async function fetchSteamPricesBatch(
-    appIds
-) {
-    const emptyResult = {
-        prices:
-            new Map(),
-
-        unavailableAppIds:
-            new Set(),
-
-        retryableAppIds:
-            new Set()
-    };
-
-
-    const apiUrl =
-        `${STEAM_PROXY_URL}` +
-        `?appids=${encodeURIComponent(appIds.join(','))}` +
-        '&cc=ru' +
-        '&l=russian';
-
-
-    try {
-        const response =
-            await fetch(
-                apiUrl,
-                {
-                    method: 'GET',
-                    cache: 'no-store'
-                }
-            );
-
-
-        if (!response.ok) {
-            console.warn(
-                `Apps Script вернул HTTP ${response.status}:`,
-                appIds
-            );
-
-
-            appIds.forEach(appId => {
-                emptyResult.retryableAppIds.add(
-                    appId
-                );
-            });
-
-
-            return emptyResult;
-        }
-
-
-        const result =
-            await response.json();
-
-
-        if (
-            result?.success === false ||
-            result?.error
-        ) {
-            console.warn(
-                'Ошибка Google Apps Script:',
-                result?.error
-            );
-
-
-            appIds.forEach(appId => {
-                emptyResult.retryableAppIds.add(
-                    appId
-                );
-            });
-
-
-            return emptyResult;
-        }
-
-
-        const responseData =
-            result?.data ||
-            result;
-
-
-        const retryableAppIds =
-            new Set(
-                result?.retryableAppIds ||
-                []
-            );
-
-
-        appIds.forEach(appId => {
-            if (
-                retryableAppIds.has(appId)
-            ) {
-                emptyResult.retryableAppIds.add(
-                    appId
-                );
-
-                return;
-            }
-
-
-            const appResult =
-                responseData?.[appId];
-
-
-            if (
-                appResult?.temporary
-            ) {
-                emptyResult.retryableAppIds.add(
-                    appId
-                );
-
-                return;
-            }
-
-
-            const priceData =
-                getPriceData(
-                    appResult
-                );
-
-
-            if (priceData) {
-                emptyResult.prices.set(
-                    appId,
-                    priceData
-                );
-
-                return;
-            }
-
-
-            /*
-             * Игра доступна, но Steam не прислал цену:
-             * например, страница удалена, скрыта в регионе
-             * или цена недоступна.
-             */
-            emptyResult.unavailableAppIds.add(
-                appId
-            );
-        });
-
-
-        return emptyResult;
-    } catch (error) {
-        console.warn(
-            'Ошибка сети при загрузке цен:',
-            error
-        );
-
-
-        appIds.forEach(appId => {
-            emptyResult.retryableAppIds.add(
-                appId
-            );
-        });
-
-
-        return emptyResult;
-    }
-}
+setInterval(
+    () => {
+        loadStaticPrices();
+    },
+    PRICE_RELOAD_INTERVAL
+);
 
 
 /*
- * Преобразует Steam-ответ одной игры в данные цены.
+ * Возвращает данные цены по App ID.
  */
-function getPriceData(
-    appResult
+export function getPrice(
+    appId
 ) {
     if (
-        !appResult?.success ||
-        !appResult?.data
+        !appId
     ) {
         return null;
     }
 
 
-    const gameData =
-        appResult.data;
-
-
-    if (
-        gameData.is_free
-    ) {
-        return {
-            finalFormatted:
-                'Бесплатно',
-
-            initialFormatted:
-                '',
-
-            discountPercent:
-                0
-        };
-    }
-
-
-    const priceOverview =
-        gameData.price_overview;
-
-
-    if (!priceOverview) {
-        return null;
-    }
-
-
-    return {
-        finalFormatted:
-            priceOverview.final_formatted ||
-            formatPrice(
-                priceOverview.final
-            ),
-
-        initialFormatted:
-            priceOverview.initial_formatted ||
-            formatPrice(
-                priceOverview.initial
-            ),
-
-        discountPercent:
-            Number(
-                priceOverview.discount_percent
-            ) || 0
-    };
+    return priceCache.get(
+        String(appId)
+    ) || null;
 }
 
 
 /*
- * Повторяет только временно недоступные игры.
+ * Возвращает дату обновления prices.json.
  */
-function scheduleRetry() {
-    if (priceRetryTimer) {
-        return;
-    }
-
-
-    priceRetryTimer =
-        setTimeout(
-            () => {
-                priceRetryTimer =
-                    null;
-
-                loadPendingPrices();
-            },
-            PRICE_RETRY_DELAY
-        );
+export function getPricesUpdatedAt() {
+    return pricesUpdatedAt;
 }
 
 
 /*
- * Обновляет цены на всех карточках,
- * когда режим отображения включён.
+ * Обновление цен на всех зарегистрированных карточках.
  */
-function renderAllVisiblePrices() {
+export function renderAllPrices() {
     registeredCards.forEach(card => {
         if (
             !card.isConnected
@@ -568,7 +315,7 @@ function renderAllVisiblePrices() {
         }
 
 
-        renderCardPriceState(
+        renderPriceForCard(
             card
         );
     });
@@ -576,22 +323,24 @@ function renderAllVisiblePrices() {
 
 
 /*
- * Вывод текущего состояния цены карточки.
+ * Отображение цены на одной карточке.
  */
-function renderCardPriceState(
+function renderPriceForCard(
     card
 ) {
     const game =
-        card._priceGame;
+        card._steamPriceGame;
 
 
     const appId =
-        getSteamAppId(
-            game?.['Steam Link']
+        getSteamAppIdFromGame(
+            game
         );
 
 
-    if (!appId) {
+    if (
+        !appId
+    ) {
         return;
     }
 
@@ -602,10 +351,11 @@ function renderCardPriceState(
         );
 
 
-    if (priceData) {
-        renderPriceOnCard(
-            card,
-            priceData
+    if (
+        !pricesLoaded
+    ) {
+        showPriceLoading(
+            card
         );
 
         return;
@@ -613,7 +363,8 @@ function renderCardPriceState(
 
 
     if (
-        unavailableAppIds.has(appId)
+        !priceData ||
+        priceData.available === false
     ) {
         showPriceUnavailable(
             card
@@ -623,32 +374,115 @@ function renderCardPriceState(
     }
 
 
-    showPriceLoading(
-        card
+    renderPrice(
+        card,
+        priceData
     );
 }
 
 
 /*
- * Создание или получение элемента цены.
+ * Получение Steam App ID из данных игры.
  */
-function getOrCreatePriceElement(
+function getSteamAppIdFromGame(
+    game
+) {
+    if (
+        !game
+    ) {
+        return null;
+    }
+
+
+    const possibleValues = [
+        game['App ID'],
+        game['AppID'],
+        game.appid,
+        game.appId,
+        game['Steam Link'],
+        game.steamLink,
+        game.steam_link
+    ];
+
+
+    for (
+        const value of possibleValues
+    ) {
+        const appId =
+            getSteamAppId(
+                value
+            );
+
+
+        if (
+            appId
+        ) {
+            return appId;
+        }
+    }
+
+
+    return null;
+}
+
+
+/*
+ * Получение App ID из ссылки Steam
+ * или из уже готового числового значения.
+ */
+function getSteamAppId(
+    value
+) {
+    const text =
+        String(
+            value || ''
+        ).trim();
+
+
+    if (
+        /^\d+$/.test(
+            text
+        )
+    ) {
+        return text;
+    }
+
+
+    const match =
+        text.match(
+            /\/app\/(\d+)/i
+        );
+
+
+    return match
+        ? match[1]
+        : null;
+}
+
+
+/*
+ * Получение или создание элемента цены.
+ */
+function getPriceElement(
     card
 ) {
     let priceElement =
         card.querySelector(
-            '.game-price'
+            `.${PRICE_ELEMENT_CLASS}`
         );
 
 
-    if (!priceElement) {
+    if (
+        !priceElement
+    ) {
         priceElement =
             document.createElement(
                 'div'
             );
 
+
         priceElement.className =
-            'game-price';
+            PRICE_ELEMENT_CLASS;
 
 
         card.appendChild(
@@ -662,84 +496,79 @@ function getOrCreatePriceElement(
 
 
 /*
- * Отображение загрузки.
+ * Состояние загрузки.
  */
 function showPriceLoading(
     card
 ) {
     const priceElement =
-        getOrCreatePriceElement(
+        getPriceElement(
             card
         );
 
 
     priceElement.classList.remove(
-        'game-price-unavailable'
+        PRICE_UNAVAILABLE_CLASS
     );
 
 
     priceElement.classList.add(
-        'game-price-loading'
+        PRICE_LOADING_CLASS
     );
 
 
-    priceElement.innerHTML =
-        '<span class="game-price-loading-text">' +
-        'Загрузка…' +
-        '</span>';
+    priceElement.textContent =
+        'Загрузка…';
 }
 
 
 /*
- * Отображение недоступной цены.
+ * Цена недоступна.
  */
 function showPriceUnavailable(
     card
 ) {
     const priceElement =
-        getOrCreatePriceElement(
+        getPriceElement(
             card
         );
 
 
     priceElement.classList.remove(
-        'game-price-loading'
+        PRICE_LOADING_CLASS
     );
 
 
     priceElement.classList.add(
-        'game-price-unavailable'
+        PRICE_UNAVAILABLE_CLASS
     );
 
 
-    priceElement.innerHTML =
-        '<span class="game-price-unavailable-text">' +
-        'Цена недоступна' +
-        '</span>';
+    priceElement.textContent =
+        'Цена недоступна';
 }
 
 
 /*
- * Отображение цены.
+ * Вывод цены и скидки.
  */
-function renderPriceOnCard(
+function renderPrice(
     card,
     priceData
 ) {
     const priceElement =
-        getOrCreatePriceElement(
+        getPriceElement(
             card
         );
 
 
     priceElement.classList.remove(
-        'game-price-loading',
-        'game-price-unavailable'
+        PRICE_LOADING_CLASS,
+        PRICE_UNAVAILABLE_CLASS
     );
 
 
-    priceElement.innerHTML =
-        '';
+    priceElement.replaceChildren();
 
 
     const currentPrice =
@@ -753,7 +582,8 @@ function renderPriceOnCard(
 
 
     currentPrice.textContent =
-        priceData.finalFormatted;
+        priceData.finalFormatted ||
+        'Цена недоступна';
 
 
     priceElement.appendChild(
@@ -761,9 +591,15 @@ function renderPriceOnCard(
     );
 
 
+    const hasDiscount =
+        Number(
+            priceData.discountPercent
+        ) > 0 &&
+        priceData.initialFormatted;
+
+
     if (
-        priceData.discountPercent > 0 &&
-        priceData.initialFormatted
+        hasDiscount
     ) {
         const oldPrice =
             document.createElement(
@@ -806,83 +642,20 @@ function renderPriceOnCard(
 
 
 /*
- * Удаление элемента цены при выключении режима.
+ * Удаление отображения цен при выключении режима.
  */
-function removePriceFromCard(
-    card
-) {
-    const priceElement =
-        card.querySelector(
-            '.game-price'
-        );
+function hideAllPrices() {
+    registeredCards.forEach(card => {
+        const priceElement =
+            card.querySelector(
+                `.${PRICE_ELEMENT_CLASS}`
+            );
 
 
-    if (priceElement) {
-        priceElement.remove();
-    }
-}
-
-
-/*
- * Извлечение Steam App ID из ссылки.
- */
-function getSteamAppId(
-    steamLink
-) {
-    const link =
-        String(
-            steamLink || ''
-        ).trim();
-
-
-    const match =
-        link.match(
-            /(?:store\.steampowered\.com|steamcommunity\.com)\/app\/(\d+)/i
-        );
-
-
-    return match
-        ? match[1]
-        : null;
-}
-
-
-/*
- * Резервное форматирование, если Steam
- * не прислал готовую строку цены.
- */
-function formatPrice(
-    priceInCents
-) {
-    const price =
-        Number(
-            priceInCents
-        );
-
-
-    if (
-        !Number.isFinite(price)
-    ) {
-        return '';
-    }
-
-
-    return (
-        (price / 100)
-            .toFixed(2)
-            .replace('.', ',') +
-        ' руб.'
-    );
-}
-
-
-function wait(
-    milliseconds
-) {
-    return new Promise(resolve => {
-        setTimeout(
-            resolve,
-            milliseconds
-        );
+        if (
+            priceElement
+        ) {
+            priceElement.remove();
+        }
     });
 }
