@@ -1107,3 +1107,67 @@ body {
         gap: 6px;
     }
 }
+/*
+ * Плавное появление плашки цены.
+ */
+.game-price {
+    overflow: hidden;
+
+    animation: price-panel-appear 280ms ease-out both;
+}
+
+.game-price::after {
+    content: '';
+
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: -70%;
+
+    width: 45%;
+
+    pointer-events: none;
+
+    background: linear-gradient(
+        105deg,
+        transparent,
+        rgb(255 255 255 / 18%),
+        transparent
+    );
+
+    animation: price-panel-shine 650ms ease-out 120ms both;
+}
+
+@keyframes price-panel-appear {
+    from {
+        opacity: 0;
+        transform: translateY(6px) scale(0.97);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+@keyframes price-panel-shine {
+    from {
+        left: -70%;
+    }
+
+    to {
+        left: 130%;
+    }
+}
+
+/*
+ * Пользователи с отключённой анимацией
+ * не получают движущиеся элементы.
+ */
+@media (prefers-reduced-motion: reduce) {
+    .game-price,
+    .game-price::after {
+        animation: none;
+    }
+}
+
