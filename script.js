@@ -14,6 +14,10 @@ const ACTIVE_CARD_CLASS = 'game-card-preview-active';
 const VIDEO_FILTER_ACTIVE_CLASS = 'video-filter-active';
 
 const PREVIEW_CLOSE_DELAY = 120;
+const PREVIEW_FADE_DURATION = 200;
+const PREVIEW_LAYER_CLEANUP_DELAY =
+    PREVIEW_FADE_DURATION + 20;
+
 const SCREEN_PADDING = 8;
 const PREVIEW_GAP = 10;
 
@@ -435,11 +439,18 @@ function createGameCard(game) {
 
 function setupCardHover(card) {
     let closeTimer = null;
+    let layerCleanupTimer = null;
+
 
     const cancelClose = () => {
         if (closeTimer) {
             clearTimeout(closeTimer);
             closeTimer = null;
+        }
+
+        if (layerCleanupTimer) {
+            clearTimeout(layerCleanupTimer);
+            layerCleanupTimer = null;
         }
     };
 
@@ -500,17 +511,38 @@ function setupCardHover(card) {
 
             card.classList.add(PREVIEW_CLOSED_CLASS);
             card.classList.remove(PREVIEW_READY_CLASS);
-            card.classList.remove(ACTIVE_CARD_CLASS);
-            
-            setTierRowActive(card, false);
 
+            /*
+             * ACTIVE_CARD_CLASS и ACTIVE_ROW_CLASS пока
+             * не убираются. Popup ещё находится в процессе
+             * fade-out и должен оставаться поверх остальных
+             * элементов.
+             */
+            layerCleanupTimer = setTimeout(() => {
+                if (
+                    card.classList.contains(
+                        PREVIEW_CLOSED_CLASS
+                    ) &&
+                    !card.matches(':hover') &&
+                    !card.matches(':focus-within')
+                ) {
+                    card.classList.remove(
+                        ACTIVE_CARD_CLASS
+                    );
+
+                    setTierRowActive(card, false);
+                }
+
+                layerCleanupTimer = null;
+            }, PREVIEW_LAYER_CLEANUP_DELAY);
 
             /*
              * Координаты здесь намеренно не сбрасываются.
              * При следующем открытии positionPreview()
-             * рассчитает их заново после отображения popup.
+             * рассчитает их заново.
              */
             closeTimer = null;
+
         }, PREVIEW_CLOSE_DELAY);
     };
 
@@ -961,18 +993,28 @@ function closeAllPreviews() {
 
             card.classList.add(PREVIEW_CLOSED_CLASS);
             card.classList.remove(PREVIEW_READY_CLASS);
-            card.classList.remove(ACTIVE_CARD_CLASS);
-            
-            setTierRowActive(card, false);
-
 
             /*
-             * Координаты также не сбрасываются.
-             * Это предотвращает кратковременное появление popup
-             * в позиции top: 0 / left: 0.
+             * Не убираем ACTIVE_CARD_CLASS мгновенно.
+             * Popup должен остаться поверх элементов во время
+             * fade-out.
              */
+            setTimeout(() => {
+                if (
+                    card.classList.contains(
+                        PREVIEW_CLOSED_CLASS
+                    )
+                ) {
+                    card.classList.remove(
+                        ACTIVE_CARD_CLASS
+                    );
+
+                    setTierRowActive(card, false);
+                }
+            }, PREVIEW_LAYER_CLEANUP_DELAY);
         });
 }
+
 
 function renderSelectedVideo(selectedVideoTitle) {
     const panel = document.querySelector(
