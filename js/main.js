@@ -31,6 +31,9 @@ import {
     VIDEO_FILTER_ACTIVE_CLASS
 } from './config.js';
 
+import {
+    setPriceMode
+} from './steam-price.js';
 
 const SEARCH_RENDER_DELAY = 150;
 
@@ -91,8 +94,14 @@ function init() {
     const videoFilter =
         document.querySelector('#video-filter');
 
+    const priceModeToggle =
+        document.querySelector(
+            '#price-mode-toggle'
+        );
+
 
     cacheTierContainers();
+
 
 
     if (searchInput) {
