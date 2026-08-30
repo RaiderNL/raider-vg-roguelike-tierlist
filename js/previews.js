@@ -27,18 +27,10 @@ export function setupCardHover(
             '.game-preview-popup'
         );
 
-    /*
-     * Если у игры нет ни Steam-ссылки,
-     * ни видео, popup не создаётся.
-     */
     if (!popup) {
         return;
     }
 
-    /*
-     * Карточка теперь является кнопкой,
-     * открывающей popup.
-     */
     card.setAttribute(
         'role',
         'button'
@@ -76,10 +68,6 @@ export function setupCardHover(
                 '.tier-list-layout'
             );
 
-        /*
-         * При выбранном видео popup карточек
-         * не используется.
-         */
         if (
             layout?.classList.contains(
                 VIDEO_FILTER_ACTIVE_CLASS
@@ -88,10 +76,6 @@ export function setupCardHover(
             return;
         }
 
-        /*
-         * Активный слой устанавливается
-         * до показа popup.
-         */
         card.classList.remove(
             PREVIEW_CLOSED_CLASS
         );
@@ -105,11 +89,6 @@ export function setupCardHover(
             true
         );
 
-        /*
-         * Даём браузеру сначала применить
-         * новый stacking context, затем
-         * рассчитываем позицию popup.
-         */
         requestAnimationFrame(() => {
             if (
                 !card.classList.contains(
@@ -128,10 +107,6 @@ export function setupCardHover(
         }
 
         layerCleanupTimer = setTimeout(() => {
-            /*
-             * Если пользователь снова открыл popup
-             * или навёлся на карточку, слой не убираем.
-             */
             if (
                 card.classList.contains(
                     PREVIEW_CLOSED_CLASS
@@ -160,11 +135,6 @@ export function setupCardHover(
         }
 
         closeTimer = setTimeout(() => {
-            /*
-             * Если курсор всё ещё находится
-             * на карточке или popup, закрытие
-             * отменяется.
-             */
             if (
                 card.matches(':hover') ||
                 popup.matches(':hover') ||
@@ -174,10 +144,6 @@ export function setupCardHover(
                 return;
             }
 
-            /*
-             * Сначала запускаем fade-out.
-             * Высокий z-index пока сохраняется.
-             */
             card.classList.add(
                 PREVIEW_CLOSED_CLASS
             );
@@ -187,9 +153,8 @@ export function setupCardHover(
             );
 
             /*
-             * ACTIVE_CARD_CLASS и ACTIVE_ROW_CLASS
-             * будут удалены только после завершения
-             * анимации исчезновения.
+             * Высокий z-index сохраняется
+             * на время fade-out.
              */
             scheduleLayerCleanup();
 
@@ -199,14 +164,50 @@ export function setupCardHover(
 
 
     /*
-     * Открытие popup по клику на карточку.
+     * Если мышь вошла в popup, отменяем
+     * ранее запланированное закрытие.
+     */
+    popup.addEventListener(
+        'mouseenter',
+        () => {
+            cancelClose();
+        }
+    );
+
+
+    /*
+     * Если мышь ушла из popup за пределы
+     * карточки и popup, запускаем закрытие.
+     */
+    popup.addEventListener(
+        'mouseleave',
+        event => {
+            /*
+             * Переход из popup обратно
+             * на карточку не закрывает popup.
+             */
+            if (
+                event.relatedTarget &&
+                card.contains(event.relatedTarget)
+            ) {
+                return;
+            }
+
+            closePreview();
+        }
+    );
+
+
+    /*
+     * Клик по основной части карточки
+     * открывает popup.
      */
     card.addEventListener(
         'click',
         event => {
             /*
-             * Клик по ссылке Steam или YouTube
-             * не должен повторно открывать popup.
+             * Клики по ссылкам внутри popup
+             * обрабатываются самими ссылками.
              */
             if (
                 event.target.closest(
@@ -235,8 +236,8 @@ export function setupCardHover(
             }
 
             /*
-             * Ссылки внутри popup должны
-             * обрабатываться браузером самостоятельно.
+             * Клавиши внутри popup не должны
+             * повторно открывать popup карточки.
              */
             if (
                 event.target.closest(
@@ -254,23 +255,14 @@ export function setupCardHover(
 
 
     /*
-     * Наведение popup не открывает его.
-     * Popup уже открыт кликом и просто остаётся
-     * видимым при перемещении мыши внутри карточки.
-     */
-
-
-    /*
-     * Уход мыши за пределы карточки вместе
-     * со всем её содержимым закрывает popup.
+     * Уход мыши с карточки.
      */
     card.addEventListener(
         'mouseleave',
         event => {
             /*
-             * Переход между карточкой и popup
-             * считается перемещением внутри одной
-             * интерактивной области.
+             * Переход с карточки на popup
+             * не закрывает popup.
              */
             if (
                 event.relatedTarget &&
@@ -285,16 +277,11 @@ export function setupCardHover(
 
 
     /*
-     * Поддержка клавиатурной навигации.
+     * Фокус на самой карточке открывает popup.
      */
     card.addEventListener(
         'focusin',
         () => {
-            /*
-             * Фокус на самой карточке открывает popup.
-             * Фокус на ссылках popup не вызывает
-             * повторное открытие.
-             */
             if (
                 document.activeElement === card
             ) {
@@ -304,14 +291,13 @@ export function setupCardHover(
     );
 
 
+    /*
+     * Если фокус переместился внутри
+     * карточки или popup, ничего не закрываем.
+     */
     card.addEventListener(
         'focusout',
         event => {
-            /*
-             * Если фокус перешёл с карточки
-             * на ссылку внутри popup, popup
-             * не закрываем.
-             */
             if (
                 card.contains(event.relatedTarget)
             ) {
@@ -324,9 +310,8 @@ export function setupCardHover(
 
 
     /*
-     * Эти методы используются
-     * closeAllPreviews() из main.js
-     * и обработчиком popup.
+     * Эти методы используются функцией
+     * closeAllPreviews().
      */
     card._cancelPreviewClose =
         cancelClose;
@@ -343,7 +328,8 @@ export function setupCardHover(
         );
 
         /*
-         * Слой сохраняется на время fade-out.
+         * Высокий слой сохраняется во время
+         * анимации исчезновения.
          */
         scheduleLayerCleanup();
     };
@@ -383,7 +369,7 @@ export function createPreviewPopup({
 
     /*
      * Клик внутри popup не должен
-     * всплывать до обработчика карточки.
+     * доходить до обработчика карточки.
      */
     popup.addEventListener(
         'click',
@@ -393,7 +379,7 @@ export function createPreviewPopup({
     );
 
     /*
-     * Клавиатурные события ссылок
+     * Клавиатурные события ссылок внутри popup
      * не должны обрабатываться карточкой.
      */
     popup.addEventListener(
