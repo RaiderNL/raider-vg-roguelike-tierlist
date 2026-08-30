@@ -143,40 +143,45 @@ body {
  * от насыщенного тёплого цвета S
  * к холодному приглушённому цвету F.
  */
+/*
+ * Мягкая цветовая шкала силы тиров:
+ * от золотого S к спокойному серо-синему F.
+ */
 .tier-s {
-    color: #fff;
-    background: #dc2626;
+    color: #5b4300;
+    background: #e8c766;
 }
 
 .tier-a {
-    color: #fff;
-    background: #ea580c;
+    color: #5a3d2b;
+    background: #e8b58f;
 }
 
 .tier-b {
-    color: #fff;
-    background: #f59e0b;
+    color: #51452d;
+    background: #d8c58a;
 }
 
 .tier-c {
-    color: #422006;
-    background: #facc15;
+    color: #344638;
+    background: #b7d1a5;
 }
 
 .tier-d {
-    color: #1f2937;
-    background: #a3e635;
+    color: #294354;
+    background: #a9cdd8;
 }
 
 .tier-e {
-    color: #fff;
-    background: #38bdf8;
+    color: #443d5c;
+    background: #bdb6d1;
 }
 
 .tier-f {
-    color: #fff;
-    background: #64748b;
+    color: #334155;
+    background: #9daabd;
 }
+
 
 
 .games-container {
