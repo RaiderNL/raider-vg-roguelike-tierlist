@@ -9,6 +9,8 @@ const TIER_NAMES = ['S', 'A', 'B', 'C', 'D', 'E', 'F'];
 const PREVIEW_CLOSED_CLASS = 'preview-closed';
 const PREVIEW_READY_CLASS = 'preview-position-ready';
 const ACTIVE_ROW_CLASS = 'tier-row-active';
+const ACTIVE_CARD_CLASS = 'game-card-preview-active';
+
 const VIDEO_FILTER_ACTIVE_CLASS = 'video-filter-active';
 
 const PREVIEW_CLOSE_DELAY = 120;
@@ -463,7 +465,10 @@ function setupCardHover(card) {
         }
 
         card.classList.remove(PREVIEW_CLOSED_CLASS);
+        card.classList.add(ACTIVE_CARD_CLASS);
+        
         setTierRowActive(card, true);
+
 
         requestAnimationFrame(() => {
             if (
@@ -495,8 +500,10 @@ function setupCardHover(card) {
 
             card.classList.add(PREVIEW_CLOSED_CLASS);
             card.classList.remove(PREVIEW_READY_CLASS);
-
+            card.classList.remove(ACTIVE_CARD_CLASS);
+            
             setTierRowActive(card, false);
+
 
             /*
              * Координаты здесь намеренно не сбрасываются.
@@ -954,8 +961,10 @@ function closeAllPreviews() {
 
             card.classList.add(PREVIEW_CLOSED_CLASS);
             card.classList.remove(PREVIEW_READY_CLASS);
-
+            card.classList.remove(ACTIVE_CARD_CLASS);
+            
             setTierRowActive(card, false);
+
 
             /*
              * Координаты также не сбрасываются.
