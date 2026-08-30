@@ -137,14 +137,6 @@ export function setupCardHover(
         }
 
         closeTimer = setTimeout(() => {
-            /*
-             * При закрытии мышью учитываем
-             * только положение мыши.
-             *
-             * Фокус, который карточка получила
-             * после клика, не должен блокировать
-             * закрытие popup.
-             */
             if (
                 card.matches(':hover') ||
                 popup.matches(':hover') ||
@@ -165,10 +157,6 @@ export function setupCardHover(
                 PREVIEW_READY_CLASS
             );
 
-            /*
-             * Высокий слой сохраняется во время
-             * fade-out popup.
-             */
             scheduleLayerCleanup();
 
             closeTimer = null;
@@ -176,10 +164,6 @@ export function setupCardHover(
     };
 
 
-    /*
-     * Если мышь вошла в popup, отменяем
-     * отложенное закрытие.
-     */
     popup.addEventListener(
         'mouseenter',
         () => {
@@ -188,17 +172,9 @@ export function setupCardHover(
     );
 
 
-    /*
-     * Обрабатываем уход мыши непосредственно
-     * с popup.
-     */
     popup.addEventListener(
         'mouseleave',
         event => {
-            /*
-             * Переход с popup обратно на карточку
-             * не должен закрывать popup.
-             */
             if (
                 event.relatedTarget &&
                 card.contains(event.relatedTarget)
@@ -206,26 +182,14 @@ export function setupCardHover(
                 return;
             }
 
-            /*
-             * При уходе мыши игнорируем
-             * focus-within.
-             */
             closePreview(false);
         }
     );
 
 
-    /*
-     * Клик по основной части карточки
-     * открывает popup.
-     */
     card.addEventListener(
         'click',
         event => {
-            /*
-             * Ссылки внутри popup должны
-             * работать самостоятельно.
-             */
             if (
                 event.target.closest(
                     '.game-preview-popup'
@@ -239,9 +203,6 @@ export function setupCardHover(
     );
 
 
-    /*
-     * Открытие popup клавишами Enter и Space.
-     */
     card.addEventListener(
         'keydown',
         event => {
@@ -252,10 +213,6 @@ export function setupCardHover(
                 return;
             }
 
-            /*
-             * Ссылки внутри popup не должны
-             * повторно открывать popup карточки.
-             */
             if (
                 event.target.closest(
                     '.game-preview-popup'
@@ -271,16 +228,9 @@ export function setupCardHover(
     );
 
 
-    /*
-     * Обрабатываем уход мыши с карточки.
-     */
     card.addEventListener(
         'mouseleave',
         event => {
-            /*
-             * Переход с карточки на popup
-             * не должен закрывать popup.
-             */
             if (
                 event.relatedTarget &&
                 card.contains(event.relatedTarget)
@@ -288,18 +238,11 @@ export function setupCardHover(
                 return;
             }
 
-            /*
-             * При уходе мыши focus-within
-             * не должен блокировать закрытие.
-             */
             closePreview(false);
         }
     );
 
 
-    /*
-     * Фокус на карточке открывает popup.
-     */
     card.addEventListener(
         'focusin',
         () => {
@@ -312,17 +255,9 @@ export function setupCardHover(
     );
 
 
-    /*
-     * Если фокус переместился наружу,
-     * закрываем popup.
-     */
     card.addEventListener(
         'focusout',
         event => {
-            /*
-             * Переход фокуса между карточкой
-             * и элементом внутри popup не закрывает его.
-             */
             if (
                 card.contains(event.relatedTarget)
             ) {
@@ -334,10 +269,6 @@ export function setupCardHover(
     );
 
 
-    /*
-     * Методы используются функцией
-     * closeAllPreviews().
-     */
     card._cancelPreviewClose =
         cancelClose;
 
@@ -352,10 +283,6 @@ export function setupCardHover(
             PREVIEW_READY_CLASS
         );
 
-        /*
-         * Сохраняем высокий слой на время
-         * fade-out popup.
-         */
         scheduleLayerCleanup();
     };
 }
@@ -384,7 +311,8 @@ export function createPreviewPopup({
     cover,
     steamLink,
     video,
-    steamImage
+    steamImage,
+    description
 }) {
     const popup =
         document.createElement('div');
@@ -393,9 +321,24 @@ export function createPreviewPopup({
         'game-preview-popup';
 
     /*
-     * Клик внутри popup не должен
-     * доходить до обработчика карточки.
+     * Description из таблицы отображается
+     * в popup как стилизованная цитата.
      */
+    if (description) {
+        const descriptionElement =
+            document.createElement('blockquote');
+
+        descriptionElement.className =
+            'preview-description';
+
+        descriptionElement.textContent =
+            description;
+
+        popup.appendChild(
+            descriptionElement
+        );
+    }
+
     popup.addEventListener(
         'click',
         event => {
@@ -403,10 +346,6 @@ export function createPreviewPopup({
         }
     );
 
-    /*
-     * Клавиатурные события внутри popup
-     * не должны обрабатываться карточкой.
-     */
     popup.addEventListener(
         'keydown',
         event => {
@@ -500,13 +439,8 @@ function createSteamPreview({
     label.textContent =
         'Открыть в Steam';
 
-    preview.appendChild(
-        image
-    );
-
-    preview.appendChild(
-        label
-    );
+    preview.appendChild(image);
+    preview.appendChild(label);
 
     return preview;
 }
@@ -553,9 +487,7 @@ function createVideoPreview(
         image.loading =
             'lazy';
 
-        preview.appendChild(
-            image
-        );
+        preview.appendChild(image);
     } else {
         const placeholder =
             document.createElement('div');
@@ -580,9 +512,7 @@ function createVideoPreview(
     label.textContent =
         'Смотреть обзор';
 
-    preview.appendChild(
-        label
-    );
+    preview.appendChild(label);
 
     return preview;
 }
@@ -666,7 +596,6 @@ function positionPreview(card) {
     let popupLeft;
     let popupTop;
 
-
     if (fitsAbove) {
         popupLeft = clamp(
             centeredLeft,
@@ -731,7 +660,6 @@ function positionPreview(card) {
                     SCREEN_PADDING
             );
     }
-
 
     popup.style.left =
         `${popupLeft - cardRect.left}px`;
