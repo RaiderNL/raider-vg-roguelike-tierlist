@@ -1,8 +1,11 @@
-const priceCache = new Map();
+const priceCache =
+    new Map();
 
-const priceRequestCache = new Map();
+const priceRequestCache =
+    new Map();
 
-let priceModeEnabled = false;
+let priceModeEnabled =
+    false;
 
 
 export function setPriceMode(
@@ -17,11 +20,11 @@ export function setPriceMode(
     );
 
     document
-        .querySelectorAll('.game-card')
+        .querySelectorAll(
+            '.game-card'
+        )
         .forEach(card => {
-            updateCardPrice(
-                card
-            );
+            updateCardPrice(card);
         });
 }
 
@@ -33,27 +36,19 @@ export function registerPriceCard(
     card._priceGame =
         game;
 
-    if (
-        priceModeEnabled
-    ) {
-        updateCardPrice(
-            card
-        );
+    if (priceModeEnabled) {
+        updateCardPrice(card);
     }
 }
 
 
-async function updateCardPrice(
-    card
-) {
+async function updateCardPrice(card) {
     let priceElement =
         card.querySelector(
             '.game-price'
         );
 
-    if (
-        !priceModeEnabled
-    ) {
+    if (!priceModeEnabled) {
         if (priceElement) {
             priceElement.remove();
         }
@@ -98,12 +93,10 @@ async function updateCardPrice(
         );
 
     /*
-     * Пользователь мог выключить режим,
+     * Режим мог быть выключен,
      * пока выполнялся запрос.
      */
-    if (
-        !priceModeEnabled
-    ) {
+    if (!priceModeEnabled) {
         priceElement.remove();
 
         return;
@@ -115,7 +108,9 @@ async function updateCardPrice(
         );
 
         priceElement.innerHTML =
-            '<span class="game-price-unavailable-text">Цена недоступна</span>';
+            '<span class="game-price-unavailable-text">' +
+            'Цена недоступна' +
+            '</span>';
 
         return;
     }
@@ -129,7 +124,9 @@ async function updateCardPrice(
 
 function createPriceElement() {
     const element =
-        document.createElement('div');
+        document.createElement(
+            'div'
+        );
 
     element.className =
         'game-price';
@@ -146,7 +143,9 @@ function renderPrice(
         '';
 
     const currentPrice =
-        document.createElement('span');
+        document.createElement(
+            'span'
+        );
 
     currentPrice.className =
         'game-price-current';
@@ -162,7 +161,9 @@ function renderPrice(
         priceData.discountPercent > 0
     ) {
         const oldPrice =
-            document.createElement('span');
+            document.createElement(
+                'span'
+            );
 
         oldPrice.className =
             'game-price-old';
@@ -171,13 +172,15 @@ function renderPrice(
             priceData.initialFormatted;
 
         const discount =
-            document.createElement('span');
+            document.createElement(
+                'span'
+            );
 
         discount.className =
             'game-price-discount';
 
         discount.textContent =
-            `Скидка −${priceData.discountPercent}%`;
+            `−${priceData.discountPercent}%`;
 
         priceElement.appendChild(
             oldPrice
@@ -202,9 +205,7 @@ async function getSteamPrice(
         return null;
     }
 
-    if (
-        priceCache.has(appId)
-    ) {
+    if (priceCache.has(appId)) {
         return priceCache.get(
             appId
         );
@@ -219,36 +220,34 @@ async function getSteamPrice(
     }
 
     const request =
-        fetchSteamPrice(
-            appId
-        );
+        fetchSteamPrice(appId);
 
     priceRequestCache.set(
         appId,
         request
     );
 
-    const result =
-        await request;
+    try {
+        const result =
+            await request;
 
-    priceRequestCache.delete(
-        appId
-    );
+        if (result) {
+            priceCache.set(
+                appId,
+                result
+            );
+        }
 
-    if (result) {
-        priceCache.set(
-            appId,
-            result
+        return result;
+    } finally {
+        priceRequestCache.delete(
+            appId
         );
     }
-
-    return result;
 }
 
 
-async function fetchSteamPrice(
-    appId
-) {
+async function fetchSteamPrice(appId) {
     const apiUrl =
         'https://store.steampowered.com/api/appdetails' +
         `?appids=${encodeURIComponent(appId)}` +
@@ -257,9 +256,7 @@ async function fetchSteamPrice(
 
     try {
         const response =
-            await fetch(
-                apiUrl
-            );
+            await fetch(apiUrl);
 
         if (!response.ok) {
             return null;
@@ -281,9 +278,7 @@ async function fetchSteamPrice(
         const data =
             appResult.data;
 
-        if (
-            data.is_free
-        ) {
+        if (data.is_free) {
             return {
                 finalFormatted: 'Бесплатно',
                 initialFormatted: '',
@@ -319,15 +314,13 @@ async function fetchSteamPrice(
 }
 
 
-function getSteamAppId(
-    steamLink
-) {
+function getSteamAppId(steamLink) {
     if (!steamLink) {
         return null;
     }
 
     const match =
-        steamLink.match(
+        String(steamLink).match(
             /\/app\/(\d+)/
         );
 
