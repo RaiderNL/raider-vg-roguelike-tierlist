@@ -1364,11 +1364,17 @@ function removeDropPlaceholder() {
         );
 
     if (
-        !placeholder
+        placeholderAnimationFrame
     ) {
-        return;
+        cancelAnimationFrame(
+            placeholderAnimationFrame
+        );
+
+        placeholderAnimationFrame =
+            null;
     }
-        if (
+
+    if (
         placeholderAnimation
     ) {
         placeholderAnimation.cancel();
@@ -1377,15 +1383,16 @@ function removeDropPlaceholder() {
             null;
     }
 
+    if (
+        !placeholder
+    ) {
+        return;
+    }
 
     placeholder.classList.remove(
         'is-visible'
     );
 
-    /*
-     * Удаляем сразу, чтобы при следующем
-     * drag не осталось старого placeholder.
-     */
     placeholder.remove();
 }
 
