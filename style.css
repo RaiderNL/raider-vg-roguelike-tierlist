@@ -266,13 +266,6 @@ iframe {
     border-radius: var(--radius-sm);
 }
 
-.main-page .site-navigation {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: flex-end;
-    gap: 6px;
-}
 
 .main-page .site-navigation a {
     padding: 8px 10px;
