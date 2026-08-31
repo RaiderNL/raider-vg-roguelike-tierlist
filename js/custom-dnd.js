@@ -2,15 +2,16 @@ let currentDragState = null;
 
 let currentLayoutGetter = null;
 let currentLayoutChangeHandler = null;
-let flipAnimationFrame = null;
 
 let dragAndDropIsInitialized = false;
 let customCardsObserver = null;
 
+let layoutAnimationFrame = null;
+
 
 /*
  * =========================================================
- * Инициализация
+ * Инициализация drag-and-drop
  * =========================================================
  */
 
@@ -71,7 +72,6 @@ export function setupCustomDragAndDrop({
 
     updateDraggableCards();
     setupCardsObserver();
-
 }
 
 
@@ -147,13 +147,17 @@ function handleDragStart(
         'custom-drag-active'
     );
 
-    event.dataTransfer.effectAllowed =
-        'move';
+    if (
+        event.dataTransfer
+    ) {
+        event.dataTransfer.effectAllowed =
+            'move';
 
-    event.dataTransfer.setData(
-        'text/plain',
-        gameId
-    );
+        event.dataTransfer.setData(
+            'text/plain',
+            gameId
+        );
+    }
 }
 
 
@@ -186,8 +190,12 @@ function handleDragOver(
 
     event.preventDefault();
 
-    event.dataTransfer.dropEffect =
-        'move';
+    if (
+        event.dataTransfer
+    ) {
+        event.dataTransfer.dropEffect =
+            'move';
+    }
 
     currentDragState.dropZone =
         dropZone;
@@ -311,14 +319,8 @@ function updateDropPlaceholder(
         getDropPlaceholder();
 
     /*
-     * Если курсор находится над placeholder,
-     * вообще не изменяем DOM.
-     *
-     * Это предотвращает цикл:
-     *
-     * конец контейнера →
-     * перед правой карточкой →
-     * конец контейнера.
+     * Пока курсор находится над placeholder,
+     * не переставляем его повторно.
      */
     if (
         placeholder.parentElement === dropZone &&
@@ -337,8 +339,8 @@ function updateDropPlaceholder(
         );
 
     /*
-     * Если курсор над текущей карточкой,
-     * оставляем placeholder на прежнем месте.
+     * Если курсор находится над исходной
+     * карточкой, сохраняем текущую позицию.
      */
     if (
         targetCard === currentDragState.card
@@ -347,8 +349,8 @@ function updateDropPlaceholder(
     }
 
     /*
-     * Если курсор находится не над карточкой,
-     * помещаем placeholder в конец контейнера.
+     * Если курсор не над карточкой,
+     * вставляем placeholder в конец.
      */
     if (
         !targetCard
@@ -557,7 +559,6 @@ function placePlaceholderAtEnd(
 
     /*
      * Placeholder уже находится последним.
-     * Ничего не меняем.
      */
     if (
         placeholder.parentElement === dropZone &&
@@ -567,14 +568,17 @@ function placePlaceholderAtEnd(
     }
 
     animateDropZoneChange(
-    dropZone,
-    () => {
-        dropZone.appendChild(
-            placeholder
-        );
-    }
-);
+        dropZone,
+        () => {
+            dropZone.appendChild(
+                placeholder
+            );
 
+            showPlaceholder(
+                placeholder
+            );
+        }
+    );
 }
 
 
@@ -584,8 +588,8 @@ function placePlaceholderBefore(
     referenceCard
 ) {
     /*
-     * Если referenceCard отсутствует,
-     * placeholder должен быть последним.
+     * Если карточки справа нет,
+     * ставим placeholder в конец.
      */
     if (
         !referenceCard
@@ -599,8 +603,8 @@ function placePlaceholderBefore(
     }
 
     /*
-     * Placeholder уже стоит непосредственно
-     * перед нужной карточкой.
+     * Placeholder уже находится
+     * непосредственно перед нужной карточкой.
      */
     if (
         placeholder.parentElement === dropZone &&
@@ -610,121 +614,332 @@ function placePlaceholderBefore(
     }
 
     animateDropZoneChange(
-    dropZone,
-    () => {
-        dropZone.insertBefore(
-            placeholder,
-            referenceCard
-        );
-    }
-);
+        dropZone,
+        () => {
+            dropZone.insertBefore(
+                placeholder,
+                referenceCard
+            );
 
+            showPlaceholder(
+                placeholder
+            );
+        }
+    );
 }
-function animateDropZoneChange(
-    dropZone,
-    change
+
+
+function showPlaceholder(
+    placeholder
 ) {
     if (
-        typeof change !== 'function'
+        placeholder.classList.contains(
+            'is-visible'
+        )
     ) {
         return;
     }
 
-    if (
-        flipAnimationFrame
-    ) {
-        cancelAnimationFrame(
-            flipAnimationFrame
-        );
+    requestAnimationFrame(
+        () => {
+            placeholder.classList.add(
+                'is-visible'
+            );
+        }
+    );
+}
 
-        flipAnimationFrame =
-            null;
+
+/*
+ * =========================================================
+ * FLIP-анимация layout
+ * =========================================================
+ */
+
+/*
+ * Анимирует карточки и строки после изменения
+ * положения placeholder или перерисовки списка.
+ */
+export function animateCustomLayoutChange(
+    root,
+    change
+) {
+    if (
+        !root ||
+        typeof change !== 'function' ||
+        isReducedMotion()
+    ) {
+        change?.();
+
+        return;
     }
 
     const cards =
         [
-            ...dropZone.querySelectorAll(
-                '[data-game-id]'
+            ...root.querySelectorAll(
+                '.game-card'
             )
         ].filter(
             card =>
-                card !==
-                currentDragState?.card
+                card !== currentDragState?.card &&
+                card.id !== 'custom-drop-placeholder'
         );
 
-    const previousPositions =
+    const rows =
+        [
+            ...root.querySelectorAll(
+                '.custom-tier-row'
+            )
+        ];
+
+    const previousCardRects =
+        new Map();
+
+    const previousRowRects =
         new Map();
 
     cards.forEach(
         card => {
-            previousPositions.set(
+            previousCardRects.set(
                 card,
                 card.getBoundingClientRect()
             );
         }
     );
 
+    rows.forEach(
+        row => {
+            previousRowRects.set(
+                row,
+                row.getBoundingClientRect()
+            );
+        }
+    );
+
     change();
 
-    flipAnimationFrame =
+    if (
+        layoutAnimationFrame
+    ) {
+        cancelAnimationFrame(
+            layoutAnimationFrame
+        );
+    }
+
+    layoutAnimationFrame =
         requestAnimationFrame(
             () => {
-                cards.forEach(
-                    card => {
-                        const previous =
-                            previousPositions.get(
-                                card
-                            );
-
-                        if (
-                            !previous
-                        ) {
-                            return;
-                        }
-
-                        const current =
-                            card.getBoundingClientRect();
-
-                        const deltaX =
-                            previous.left -
-                            current.left;
-
-                        const deltaY =
-                            previous.top -
-                            current.top;
-
-                        if (
-                            Math.abs(deltaX) < 1 &&
-                            Math.abs(deltaY) < 1
-                        ) {
-                            return;
-                        }
-
-                        card.animate(
-                            [
-                                {
-                                    transform:
-                                        `translate(${deltaX}px, ${deltaY}px)`
-                                },
-                                {
-                                    transform:
-                                        'translate(0, 0)'
-                                }
-                            ],
-                            {
-                                duration: 220,
-                                easing:
-                                    'cubic-bezier(0.22, 1, 0.36, 1)',
-                                fill: 'both'
-                            }
-                        );
-                    }
+                animateCards(
+                    cards,
+                    previousCardRects
                 );
 
-                flipAnimationFrame =
+                animateRows(
+                    rows,
+                    previousRowRects
+                );
+
+                layoutAnimationFrame =
                     null;
             }
         );
+}
+
+
+function animateDropZoneChange(
+    dropZone,
+    change
+) {
+    const root =
+        document.querySelector(
+            '.custom-editor-content'
+        ) ||
+        dropZone;
+
+    animateCustomLayoutChange(
+        root,
+        change
+    );
+}
+
+
+function animateCards(
+    cards,
+    previousRects
+) {
+    cards.forEach(
+        card => {
+            const previousRect =
+                previousRects.get(
+                    card
+                );
+
+            if (
+                !previousRect ||
+                !card.isConnected
+            ) {
+                return;
+            }
+
+            const currentRect =
+                card.getBoundingClientRect();
+
+            const deltaX =
+                previousRect.left -
+                currentRect.left;
+
+            const deltaY =
+                previousRect.top -
+                currentRect.top;
+
+            if (
+                Math.abs(deltaX) < 1 &&
+                Math.abs(deltaY) < 1
+            ) {
+                return;
+            }
+
+            animateElement(
+                card,
+                [
+                    {
+                        transform:
+                            `translate(${deltaX}px, ${deltaY}px)`
+                    },
+                    {
+                        transform:
+                            'translate(0, 0)'
+                    }
+                ],
+                260
+            );
+        }
+    );
+}
+
+
+function animateRows(
+    rows,
+    previousRects
+) {
+    rows.forEach(
+        row => {
+            const previousRect =
+                previousRects.get(
+                    row
+                );
+
+            if (
+                !previousRect ||
+                !row.isConnected
+            ) {
+                return;
+            }
+
+            const currentRect =
+                row.getBoundingClientRect();
+
+            const deltaX =
+                previousRect.left -
+                currentRect.left;
+
+            const deltaY =
+                previousRect.top -
+                currentRect.top;
+
+            const heightChanged =
+                Math.abs(
+                    previousRect.height -
+                    currentRect.height
+                ) >= 1;
+
+            const positionChanged =
+                Math.abs(deltaX) >= 1 ||
+                Math.abs(deltaY) >= 1;
+
+            if (
+                !heightChanged &&
+                !positionChanged
+            ) {
+                return;
+            }
+
+            const animations = [];
+
+            if (
+                positionChanged
+            ) {
+                animations.push({
+                    transform:
+                        `translate(${deltaX}px, ${deltaY}px)`
+                });
+            }
+
+            if (
+                heightChanged
+            ) {
+                animations[0] = {
+                    ...(animations[0] || {}),
+                    height:
+                        `${previousRect.height}px`
+                };
+
+                animations.push({
+                    transform:
+                        'translate(0, 0)',
+                    height:
+                        `${currentRect.height}px`
+                });
+            } else {
+                animations.push({
+                    transform:
+                        'translate(0, 0)'
+                });
+            }
+
+            const animation =
+                row.animate(
+                    animations,
+                    {
+                        duration: 300,
+                        easing:
+                            'cubic-bezier(0.22, 1, 0.36, 1)',
+                        fill: 'both'
+                    }
+                );
+
+            animation.onfinish =
+                () => {
+                    row.style.height =
+                        '';
+
+                    animation.cancel();
+                };
+        }
+    );
+}
+
+
+function animateElement(
+    element,
+    keyframes,
+    duration
+) {
+    const animation =
+        element.animate(
+            keyframes,
+            {
+                duration,
+                easing:
+                    'cubic-bezier(0.22, 1, 0.36, 1)',
+                fill: 'both'
+            }
+        );
+
+    animation.onfinish =
+        () => {
+            animation.cancel();
+        };
 }
 
 
@@ -781,10 +996,6 @@ function isPointerInsideExpandedElement(
     const bounds =
         element.getBoundingClientRect();
 
-    /*
-     * Небольшая зона устойчивости предотвращает
-     * переключение позиции на границе placeholder.
-     */
     const tolerance = 8;
 
     return (
@@ -866,10 +1077,16 @@ function handleDrop(
                 null
             );
 
+        const transitionInfo = {
+            gameId,
+            targetTier
+        };
+
         clearDragState();
 
         currentLayoutChangeHandler?.(
-            updatedLayout
+            updatedLayout,
+            transitionInfo
         );
 
         return;
@@ -898,10 +1115,17 @@ function handleDrop(
             placement.index
         );
 
+    const transitionInfo = {
+        gameId,
+        targetTier:
+            placement.tier
+    };
+
     clearDragState();
 
     currentLayoutChangeHandler?.(
-        updatedLayout
+        updatedLayout,
+        transitionInfo
     );
 }
 
@@ -945,10 +1169,6 @@ function getDropPlaceholder() {
         'true'
     );
 
-    /*
-     * Placeholder не перехватывает события мыши.
-     * Его положение контролируется координатами курсора.
-     */
     placeholder.style.pointerEvents =
         'none';
 
@@ -957,11 +1177,26 @@ function getDropPlaceholder() {
 
 
 function removeDropPlaceholder() {
-    document
-        .querySelector(
+    const placeholder =
+        document.querySelector(
             '#custom-drop-placeholder'
-        )
-        ?.remove();
+        );
+
+    if (
+        !placeholder
+    ) {
+        return;
+    }
+
+    placeholder.classList.remove(
+        'is-visible'
+    );
+
+    /*
+     * Удаляем сразу, чтобы при следующем
+     * drag не осталось старого placeholder.
+     */
+    placeholder.remove();
 }
 
 
@@ -1101,8 +1336,7 @@ function moveGameToTier(
 
     /*
      * При перемещении внутри одного тира
-     * индекс нужно уменьшить после удаления
-     * исходной карточки.
+     * индекс уменьшается после удаления карточки.
      */
     if (
         sourceTier === targetTier &&
@@ -1234,6 +1468,7 @@ function clearDragState() {
  * Состояние draggable
  * =========================================================
  */
+
 function setupCardsObserver() {
     if (
         customCardsObserver ||
@@ -1261,6 +1496,7 @@ function setupCardsObserver() {
         }
     );
 }
+
 
 function updateDraggableCards() {
     const editable =
@@ -1290,11 +1526,21 @@ function updateDraggableCards() {
 }
 
 
-
-
+/*
+ * =========================================================
+ * Вспомогательные функции
+ * =========================================================
+ */
 
 function isEditMode() {
     return document.body.classList.contains(
         'custom-mode-edit'
     );
+}
+
+
+function isReducedMotion() {
+    return window.matchMedia(
+        '(prefers-reduced-motion: reduce)'
+    ).matches;
 }
