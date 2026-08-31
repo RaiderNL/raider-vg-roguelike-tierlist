@@ -598,6 +598,7 @@ body.custom-mode-view .custom-trash-drop-area {
 
     min-width: 0;
     max-width: 100%;
+    overflow: visible;
 }
 
 .custom-tier-row {
@@ -608,6 +609,7 @@ body.custom-mode-view .custom-trash-drop-area {
     min-width: 0;
     min-height: 150px;
     overflow: visible;
+    will-change: transform, height;
 
     border: 1px solid rgb(225 227 232 / 70%);
     border-radius: var(--radius-md);
@@ -750,12 +752,7 @@ body.custom-drag-active
         opacity 0.18s ease;
 }
 
-body.custom-drag-active
-.custom-games-container
-.game-card.is-dragging {
-    opacity: 0.3;
-    transform: scale(0.97);
-}
+
 
 .custom-games-container .game-card:hover {
     transform: translateY(-3px);
@@ -775,11 +772,14 @@ body.custom-drag-active
 
 
 .custom-games-container .game-card.is-dragging {
+    z-index: 2;
+
     opacity: 0.18;
     cursor: grabbing;
+    filter: saturate(0.7);
 
     transform: scale(0.88);
-    filter: saturate(0.7);
+    transform-origin: center;
 
     transition:
         transform 0.24s cubic-bezier(0.22, 1, 0.36, 1),
@@ -787,6 +787,23 @@ body.custom-drag-active
         filter 0.24s ease;
 }
 
+/*
+ * Плавное появление карточки
+ * после завершения перетаскивания.
+ */
+.custom-games-container .game-card.custom-card-enter {
+    opacity: 0;
+    transform: scale(0.82);
+}
+
+.custom-games-container .game-card.custom-card-enter-active {
+    opacity: 1;
+    transform: scale(1);
+
+    transition:
+        transform 0.28s cubic-bezier(0.22, 1, 0.36, 1),
+        opacity 0.24s ease;
+}
 
 
 /*
@@ -827,9 +844,14 @@ body.custom-drag-active
     transform-origin: center;
 
     transition:
-        transform 0.24s cubic-bezier(0.22, 1, 0.36, 1),
-        opacity 0.24s ease,
-        box-shadow 0.24s ease;
+    transform 0.24s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 0.24s ease,
+    box-shadow 0.24s ease;
+
+animation:
+    custom-placeholder-breathe
+    1.4s ease-in-out infinite;
+
 }
 
 .custom-drop-placeholder.is-visible {
