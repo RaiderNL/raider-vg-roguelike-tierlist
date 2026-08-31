@@ -599,14 +599,14 @@ async function shareCurrentFilters(
      * Если открыта чужая ссылка, её список
      * сохраняется без перезаписи.
      */
-    if (
-        isFavoritesFilterActive() &&
-        !hasSharedFavorites()
-    ) {
-        addFavoritesToUrl(
-            url
-        );
-    }
+        if (
+            isFavoritesFilterActive()
+        ) {
+            addFavoritesToUrl(
+                url
+            );
+        }
+
 
     const shareUrl =
         url.href;
