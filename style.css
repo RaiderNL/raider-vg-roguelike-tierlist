@@ -157,8 +157,9 @@ iframe {
 .controls {
     display: flex;
     flex-wrap: wrap;
-    align-items: flex-end;
-    gap: 16px;
+    align-items: center;
+    gap: 12px;
+
 
     max-width: 100%;
     margin-bottom: 24px;
