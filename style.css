@@ -302,6 +302,67 @@ iframe {
     outline-offset: 2px;
 }
 
+/*
+ * =========================================================
+ * Фильтр избранного
+ * =========================================================
+ */
+
+.favorites-filter-button {
+    display: inline-flex;
+    flex: 0 0 var(--control-height);
+    align-items: center;
+    justify-content: center;
+
+    width: var(--control-height);
+    min-width: var(--control-height);
+    height: var(--control-height);
+    padding: 0;
+
+    color: #6b7280;
+    font-size: 25px;
+    line-height: 1;
+
+    cursor: pointer;
+
+    background: var(--color-surface-soft);
+    border: 1px solid var(--color-border-control);
+    border-radius: var(--radius-sm);
+    box-shadow: var(--shadow-card);
+
+    transition:
+        color 0.2s ease,
+        background 0.2s ease,
+        border-color 0.2s ease,
+        box-shadow 0.2s ease,
+        transform 0.2s ease;
+}
+
+.favorites-filter-button:hover {
+    color: #d29f22;
+    background: var(--color-accent-soft);
+    border-color: var(--color-accent);
+    box-shadow: var(--shadow-hover);
+    transform: translateY(-1px);
+}
+
+.favorites-filter-button:active {
+    transform: translateY(0);
+}
+
+.favorites-filter-button.is-active {
+    color: #d29f22;
+    background: #fff4c5;
+    border-color: var(--color-accent-dark);
+    box-shadow:
+        0 0 0 3px rgb(232 199 102 / 25%),
+        var(--shadow-card);
+}
+
+.favorites-filter-button:focus-visible {
+    outline: 3px solid var(--color-accent-focus);
+    outline-offset: 2px;
+}
 
 /*
  * =========================================================
@@ -1056,6 +1117,12 @@ iframe {
     line-height: 1.1;
 }
 
+    .favorites-filter-button {
+        align-self: flex-start;
+
+        width: 38px;
+        min-width: 38px;
+    }
 
 /*
  * =========================================================
@@ -2408,10 +2475,10 @@ body.price-mode-active #tier-F .game-price-discount {
     .game-preview-close,
     .preview-link,
     .filter-action-button,
-    .mobile-tier-navigation-button {
-        transition: none;
-        animation: none;
-    }
+.favorites-filter-button,
+.mobile-tier-navigation-button {
+
+    
 }
 /*
  * =========================================================
