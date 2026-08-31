@@ -18,29 +18,94 @@
 
     <link rel="stylesheet" href="style.css">
 </head>
-<body>
+<body class="main-page">
 
-    <header class="site-header">
-        <h1>Raider_VG Ultimate Roguelike Tierlist</h1>
 
-        <p>
-                    <a
-            class="custom-tierlist-header-link"
-            href="custom.html"
-            aria-label="Создать собственный тир-лист"
+   <header class="site-header">
+    <div class="site-header-inner">
+
+        <a
+            class="site-logo"
+            href="./index.html"
         >
-            <span aria-hidden="true">✎</span>
-            <span>Создать свой тир-лист</span>
+            Raider_VG Roguelike Tierlist
         </a>
 
-            Распределение всех рогаликов, что я обозрел на своем канале по тирлисту
-        </p>
-    </header>
+        <nav
+            class="site-navigation"
+            aria-label="Основная навигация"
+        >
+            <a
+                class="is-active"
+                href="./index.html"
+                aria-current="page"
+            >
+                Тир-лист Рэйдера
+            </a>
+
+            <a
+                href="./custom.html"
+            >
+                Свой тир-лист
+            </a>
+        </nav>
+
+    </div>
+</header>
 
 
-    <main class="container">
+<main class="container">
 
-        <section class="controls">
+    <section class="main-page-header">
+
+        <div class="main-page-heading">
+
+            <p class="main-page-kicker">
+                Авторский список
+            </p>
+
+            <h1 class="main-page-title">
+                Тир-лист Рэйдера
+            </h1>
+
+            <p class="main-page-description">
+                Распределение всех рогаликов,
+                которые я обозрел на своём канале
+            </p>
+
+            <p class="main-page-status">
+                Выберите нужную версию тир-листа
+            </p>
+
+        </div>
+
+
+        <div
+            class="main-mode-switcher"
+            role="group"
+            aria-label="Версия тир-листа"
+        >
+            <a
+                class="main-mode-button is-active"
+                href="./index.html"
+                aria-current="page"
+            >
+                Тир-лист Рэйдера
+            </a>
+
+            <a
+                class="main-mode-button"
+                href="./custom.html"
+            >
+                Свой тир-лист
+            </a>
+        </div>
+
+    </section>
+
+
+    <section class="controls">
+
             <div class="control-group search-group">
                 <input
                     type="search"
