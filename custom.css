@@ -1908,3 +1908,61 @@ body.custom-mode-view #custom-view-actions {
     opacity: 1 !important;
     filter: none !important;
 }
+/*
+ * =========================================================
+ * Информационная кнопка в режиме просмотра
+ * =========================================================
+ */
+
+body.custom-mode-view
+.custom-games-container
+.game-card {
+    position: relative;
+}
+
+body.custom-mode-view
+.custom-games-container
+.game-media {
+    position: relative;
+    isolation: isolate;
+}
+
+body.custom-mode-view
+.custom-games-container
+.game-info-button {
+    position: absolute;
+    z-index: 20;
+
+    top: 6px;
+    right: 6px;
+    bottom: auto;
+    left: auto;
+
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+
+    width: 32px;
+    height: 32px;
+    margin: 0;
+    padding: 0;
+
+    opacity: 1 !important;
+    visibility: visible !important;
+    pointer-events: auto !important;
+
+    transform: none;
+}
+
+body.custom-mode-view
+.custom-games-container
+.game-info-button:hover {
+    transform: scale(1.08);
+}
+
+body.custom-mode-view
+.custom-games-container
+.game-info-button:active {
+    transform: scale(0.94);
+}
+
