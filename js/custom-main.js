@@ -992,19 +992,29 @@ const activeFavoriteIds =
 
 
                    const card =
-                        createGameCard(
-                            game,
-                            {
-                                videoFilterActive:
-                                    selectedVideo !== '',
-                    
-                                showFavorite: true,
-                                showInfo: true,
-                    
-                                openOnCardClick:
-                                    currentMode === 'view'
-                            }
-                        );
+    createGameCard(
+        game,
+        {
+            videoFilterActive:
+                selectedVideo !== '',
+
+            showFavorite: true,
+
+            /*
+             * В редакторе попап открывается
+             * отдельной кнопкой «!».
+             */
+            showInfo:
+                currentMode === 'edit',
+
+            /*
+             * В просмотре попап открывается
+             * кликом по самой карточке.
+             */
+            openOnCardClick:
+                currentMode === 'view'
+        }
+    );
 
 
                     card.dataset.gameId =
