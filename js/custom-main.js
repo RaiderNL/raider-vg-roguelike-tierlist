@@ -18,7 +18,8 @@ import {
 } from './custom-tierlist.js';
 
 import {
-    setupCustomDragAndDrop
+    setupCustomDragAndDrop,
+    animateCustomLayoutChange
 } from './custom-dnd.js';
 
 
@@ -35,6 +36,12 @@ document.addEventListener(
     init
 );
 
+
+/*
+ * =========================================================
+ * Инициализация страницы
+ * =========================================================
+ */
 
 async function init() {
     cacheTierContainers();
@@ -80,6 +87,12 @@ async function init() {
 
 
 /*
+ * =========================================================
+ * Кэширование контейнеров
+ * =========================================================
+ */
+
+/*
  * Находит контейнеры UNRANKED, S-F и REMOVED.
  */
 function cacheTierContainers() {
@@ -98,8 +111,11 @@ function cacheTierContainers() {
 
 
 /*
- * Кнопки «Редактирование» и «Просмотр».
+ * =========================================================
+ * Переключение режима
+ * =========================================================
  */
+
 function setupModeSwitcher() {
     document
         .querySelectorAll(
@@ -133,10 +149,6 @@ function setCustomMode(
 }
 
 
-/*
- * Обновляет видимые кнопки и состояние режима.
- * Тиры не скрываются ни в одном режиме.
- */
 function updateInterface() {
     const isEditMode =
         currentMode === 'edit';
@@ -187,8 +199,8 @@ function updateInterface() {
     );
 
     /*
-     * Кнопка копирования доступна в просмотре
-     * и для собственной, и для общей версии.
+     * Кнопка копирования доступна
+     * в обоих режимах.
      */
     setHidden(
         '#share-custom-tierlist-view',
@@ -317,8 +329,11 @@ function updateModeTexts() {
 
 
 /*
- * Фильтры, сохранение, сброс и создание ссылок.
+ * =========================================================
+ * Фильтры и кнопки действий
+ * =========================================================
  */
+
 function setupControls() {
     document
         .querySelector(
@@ -386,8 +401,11 @@ function setupControls() {
 
 
 /*
- * Раскрывает и скрывает карточки из REMOVED.
+ * =========================================================
+ * Переключатель скрытых игр
+ * =========================================================
  */
+
 function setupRemovedGamesToggle() {
     const toggleButton =
         document.querySelector(
@@ -431,8 +449,11 @@ function setupRemovedGamesToggle() {
 
 
 /*
- * Заполняет жанры данными Google Sheets.
+ * =========================================================
+ * Фильтр жанров
+ * =========================================================
  */
+
 function fillTagFilter() {
     const tagFilter =
         document.querySelector(
@@ -491,9 +512,57 @@ function fillTagFilter() {
 
 
 /*
- * Рисует карточки во всех контейнерах.
+ * =========================================================
+ * Рендер тир-листа
+ * =========================================================
  */
-function renderCustomTierList() {
+
+/*
+ * Обёртка позволяет включать FLIP-анимацию
+ * только после завершения drag-and-drop.
+ */
+function renderCustomTierList(
+    transitionInfo = null
+) {
+    if (
+        !transitionInfo?.animate
+    ) {
+        renderCustomTierListNow(
+            transitionInfo
+        );
+
+        return;
+    }
+
+    const editorContent =
+        document.querySelector(
+            '#custom-editor-content'
+        );
+
+    if (
+        !editorContent
+    ) {
+        renderCustomTierListNow(
+            transitionInfo
+        );
+
+        return;
+    }
+
+    animateCustomLayoutChange(
+        editorContent,
+        () => {
+            renderCustomTierListNow(
+                transitionInfo
+            );
+        }
+    );
+}
+
+
+function renderCustomTierListNow(
+    transitionInfo = null
+) {
     if (
         !currentLayout
     ) {
@@ -577,6 +646,23 @@ function renderCustomTierList() {
                         );
                     }
 
+                    /*
+                     * Добавляем класс только карточке,
+                     * которая была перемещена.
+                     */
+                    if (
+                        transitionInfo?.gameId &&
+                        String(
+                            transitionInfo.gameId
+                        ) === String(
+                            gameId
+                        )
+                    ) {
+                        prepareCardEnterAnimation(
+                            card
+                        );
+                    }
+
                     container.appendChild(
                         card
                     );
@@ -600,11 +686,20 @@ function renderCustomTierList() {
             getLayout: () =>
                 currentLayout,
 
-            onLayoutChange: updatedLayout => {
+            onLayoutChange: (
+                updatedLayout,
+                transitionInfo
+            ) => {
                 currentLayout =
                     updatedLayout;
 
-                renderCustomTierList();
+                renderCustomTierList({
+                    animate: true,
+                    gameId:
+                        transitionInfo?.gameId || null,
+                    targetTier:
+                        transitionInfo?.targetTier || null
+                });
 
                 showStatus(
                     'Порядок игр обновлён'
@@ -612,6 +707,33 @@ function renderCustomTierList() {
             }
         });
     }
+}
+
+
+function prepareCardEnterAnimation(
+    card
+) {
+    card.classList.add(
+        'custom-card-enter'
+    );
+
+    requestAnimationFrame(
+        () => {
+            card.classList.add(
+                'custom-card-enter-active'
+            );
+
+            window.setTimeout(
+                () => {
+                    card.classList.remove(
+                        'custom-card-enter',
+                        'custom-card-enter-active'
+                    );
+                },
+                320
+            );
+        }
+    );
 }
 
 
@@ -628,8 +750,11 @@ function clearTierContainers() {
 
 
 /*
- * Счётчики UNRANKED, корзины и подпись скрытых игр.
+ * =========================================================
+ * Счётчики
+ * =========================================================
  */
+
 function updateRemovedCounters() {
     const unrankedCount =
         currentLayout?.UNRANKED?.length || 0;
@@ -647,7 +772,6 @@ function updateRemovedCounters() {
         '#custom-trash-count',
         removedCount
     );
-
 
     const toggleButton =
         document.querySelector(
@@ -674,12 +798,10 @@ function updateRemovedCounters() {
         return;
     }
 
-        toggleButton.textContent =
-            isExpanded
-                ? 'Скрыть скрытые игры'
-                : 'Показать скрытые игры';
-
-
+    toggleButton.textContent =
+        isExpanded
+            ? 'Скрыть скрытые игры'
+            : 'Показать скрытые игры';
 }
 
 
@@ -702,6 +824,12 @@ function setText(
     }
 }
 
+
+/*
+ * =========================================================
+ * Фильтрация
+ * =========================================================
+ */
 
 function gameMatchesFilters(
     game,
@@ -777,6 +905,12 @@ function updateEmptyMessage(
     }
 }
 
+
+/*
+ * =========================================================
+ * Сохранение и ссылки
+ * =========================================================
+ */
 
 function saveCurrentLayout() {
     if (
@@ -913,6 +1047,12 @@ function removeLayoutFromCurrentUrl() {
 }
 
 
+/*
+ * =========================================================
+ * Уведомления
+ * =========================================================
+ */
+
 function showStatus(
     message
 ) {
@@ -941,6 +1081,12 @@ function showStatus(
         );
 }
 
+
+/*
+ * =========================================================
+ * Копирование текста
+ * =========================================================
+ */
 
 async function copyText(
     text
@@ -992,6 +1138,12 @@ async function copyText(
     }
 }
 
+
+/*
+ * =========================================================
+ * Вспомогательные функции
+ * =========================================================
+ */
 
 function createOption(
     value,
