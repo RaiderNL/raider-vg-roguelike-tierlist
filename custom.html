@@ -1,12 +1,19 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
+    
     <meta charset="UTF-8">
+    
 
     <meta
         name="viewport"
         content="width=device-width, initial-scale=1"
     >
+<link
+    rel="icon"
+    type="image/x-icon"
+    href="Ico-min.ico"
+>
 
     <meta
         name="description"
@@ -286,28 +293,37 @@
         </section>
 
         <section
-            id="custom-view-actions"
-            class="custom-actions"
-            hidden
-        >
-            <button
-                id="save-shared-tierlist"
-                class="custom-action-button custom-action-button-primary"
-                type="button"
-                hidden
-            >
-                Сохранить как свой
-            </button>
+    id="custom-view-actions"
+    class="custom-actions"
+    hidden
+>
+    <button
+        id="save-shared-tierlist"
+        class="custom-action-button custom-action-button-primary"
+        type="button"
+        hidden
+    >
+        Сохранить как свой
+    </button>
 
-            <button
-                id="share-custom-tierlist-view"
-                class="custom-action-button"
-                type="button"
-                hidden
-            >
-                Скопировать ссылку
-            </button>
-        </section>
+    <button
+        id="share-custom-tierlist-view"
+        class="custom-action-button"
+        type="button"
+        hidden
+    >
+        Скопировать ссылку
+    </button>
+
+    <button
+        id="download-custom-screenshot"
+        class="custom-action-button"
+        type="button"
+    >
+        Скачать скриншот
+    </button>
+</section>
+
 
 
         <!-- =================================================
@@ -580,6 +596,15 @@
     </footer>
 
 
+    <script
+    src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"
+></script>
+
+<script
+    type="module"
+    src="./js/custom-main.js"
+></script>
+
     <!-- =====================================================
          Скрипт страницы
 
@@ -587,6 +612,7 @@
          Если custom.html находится в другой папке,
          скорректируй путь к custom-main.js.
          ===================================================== -->
+
 
     <script
         type="module"
