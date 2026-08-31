@@ -1077,6 +1077,31 @@ body {
 
     .game-card {
         width: 145px;
+        overflow: hidden;
+    }
+
+    .game-price {
+        right: 4px;
+        bottom: 4px;
+        left: 4px;
+
+        gap: 3px;
+        min-height: 22px;
+        max-height: 40px;
+        padding: 3px 4px;
+        overflow: hidden;
+
+        font-size: 11px;
+    }
+
+    .game-price-old {
+        font-size: 10px;
+    }
+
+    .game-price-discount {
+        padding: 2px 4px;
+
+        font-size: 9px;
     }
 
     #tier-S .game-card,
