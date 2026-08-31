@@ -27,8 +27,6 @@ let currentLayout = null;
 let isSharedLayout = false;
 let currentMode = 'edit';
 
-
-
 const tierContainers = {};
 
 
@@ -40,11 +38,9 @@ document.addEventListener(
 
 async function init() {
     cacheTierContainers();
-
     setupModeSwitcher();
     setupControls();
     setupRemovedGamesToggle();
-
 
     try {
         games =
@@ -63,17 +59,12 @@ async function init() {
         isSharedLayout =
             startData.isShared;
 
-        /*
-         * Чужая версия открывается
-         * сразу в режиме просмотра.
-         */
         currentMode =
             isSharedLayout
                 ? 'view'
                 : 'edit';
 
         updateInterface();
-
         renderCustomTierList();
     } catch (
         error
@@ -89,11 +80,7 @@ async function init() {
 
 
 /*
- * Кэшируем все контейнеры:
- *
- * UNRANKED — нераспределённые игры;
- * S–F — уровни тир-листа;
- * REMOVED — удалённые игры.
+ * Находит контейнеры UNRANKED, S-F и REMOVED.
  */
 function cacheTierContainers() {
     [
@@ -111,42 +98,28 @@ function cacheTierContainers() {
 
 
 /*
- * Настраиваем переключатель режимов.
+ * Кнопки «Редактирование» и «Просмотр».
  */
 function setupModeSwitcher() {
-    const modeButtons =
-        document.querySelectorAll(
+    document
+        .querySelectorAll(
             '[data-custom-mode]'
-        );
-
-    modeButtons.forEach(
-        button => {
-            button.addEventListener(
-                'click',
-                () => {
-                    const mode =
-                        button.dataset.customMode;
-
-                    if (
-                        mode !== 'edit' &&
-                        mode !== 'view'
-                    ) {
-                        return;
+        )
+        .forEach(
+            button => {
+                button.addEventListener(
+                    'click',
+                    () => {
+                        setCustomMode(
+                            button.dataset.customMode
+                        );
                     }
-
-                    setCustomMode(
-                        mode
-                    );
-                }
-            );
-        }
-    );
+                );
+            }
+        );
 }
 
 
-/*
- * Переключает режим страницы.
- */
 function setCustomMode(
     mode
 ) {
@@ -156,58 +129,17 @@ function setCustomMode(
             : 'edit';
 
     updateInterface();
-
     renderCustomTierList();
 }
 
 
 /*
- * Обновляет классы body,
- * кнопки и видимость блоков.
+ * Обновляет видимые кнопки и состояние режима.
+ * Тиры не скрываются ни в одном режиме.
  */
 function updateInterface() {
     const isEditMode =
         currentMode === 'edit';
-
-    const editModeButton =
-        document.querySelector(
-            '#custom-edit-mode-button'
-        );
-
-    const viewModeButton =
-        document.querySelector(
-            '#custom-view-mode-button'
-        );
-
-    const editActions =
-        document.querySelector(
-            '#custom-edit-actions'
-        );
-
-    const viewActions =
-        document.querySelector(
-            '#custom-view-actions'
-        );
-
-    const editControls =
-        document.querySelector(
-            '#custom-edit-controls'
-        );
-
-    const editorContent =
-        document.querySelector(
-            '#custom-editor-content'
-        );
-
-    const sharedNotice =
-        document.querySelector(
-            '#custom-shared-notice'
-        );
-
-    const saveSharedButton =
-        document.querySelector(
-            '#save-shared-tierlist'
-        );
 
     document.body.classList.toggle(
         'custom-mode-edit',
@@ -219,97 +151,115 @@ function updateInterface() {
         !isEditMode
     );
 
-
-    editModeButton?.classList.toggle(
-        'is-active',
+    updateModeButton(
+        '#custom-edit-mode-button',
         isEditMode
     );
 
-    viewModeButton?.classList.toggle(
-        'is-active',
+    updateModeButton(
+        '#custom-view-mode-button',
         !isEditMode
     );
 
-    editModeButton?.setAttribute(
-        'aria-pressed',
-        String(
-            isEditMode
-        )
+    setHidden(
+        '#custom-edit-controls',
+        !isEditMode
     );
 
-    viewModeButton?.setAttribute(
-        'aria-pressed',
-        String(
-            !isEditMode
-        )
+    setHidden(
+        '#custom-edit-actions',
+        !isEditMode
     );
 
+    setHidden(
+        '#custom-view-actions',
+        isEditMode
+    );
 
-    if (
-        editActions
-    ) {
-        editActions.hidden =
-            !isEditMode;
-    }
+    setHidden(
+        '#custom-shared-notice',
+        !isSharedLayout
+    );
 
-    if (
-        viewActions
-    ) {
-        viewActions.hidden =
-            isEditMode;
-    }
+    setHidden(
+        '#save-shared-tierlist',
+        !isSharedLayout
+    );
 
-    if (
-        editControls
-    ) {
-        editControls.hidden =
-            !isEditMode;
-    }
-
-    if (
-        editorContent
-    ) {
-        editorContent.hidden =
-            false;
-    }
-
-
-    if (
-        sharedNotice
-    ) {
-        sharedNotice.hidden =
-            !isSharedLayout;
-    }
-
-    if (
-        saveSharedButton
-    ) {
-        saveSharedButton.hidden =
-            !isSharedLayout;
-    }
+    /*
+     * Кнопка копирования доступна в просмотре
+     * и для собственной, и для общей версии.
+     */
+    setHidden(
+        '#share-custom-tierlist-view',
+        false
+    );
 
     updateModeTexts();
 }
 
 
-/*
- * Обновляет заголовки и описания
- * в зависимости от режима.
- */
+function updateModeButton(
+    selector,
+    isActive
+) {
+    const button =
+        document.querySelector(
+            selector
+        );
+
+    if (
+        !button
+    ) {
+        return;
+    }
+
+    button.classList.toggle(
+        'is-active',
+        isActive
+    );
+
+    button.setAttribute(
+        'aria-pressed',
+        String(
+            isActive
+        )
+    );
+}
+
+
+function setHidden(
+    selector,
+    isHidden
+) {
+    const element =
+        document.querySelector(
+            selector
+        );
+
+    if (
+        element
+    ) {
+        element.hidden =
+            isHidden;
+    }
+}
+
+
 function updateModeTexts() {
     const title =
         document.querySelector(
             '#custom-mode-title'
         );
 
-    const status =
-        document.querySelector(
-            '#custom-mode-status'
-        );
-
     const description =
         document.querySelector(
             '#custom-page-description'
+        );
+
+    const status =
+        document.querySelector(
+            '#custom-mode-status'
         );
 
     if (
@@ -325,19 +275,17 @@ function updateModeTexts() {
         }
 
         if (
-            status
-        ) {
-            status.textContent =
-                isSharedLayout
-                    ? 'Это готовая версия из ссылки'
-                    : 'Режим просмотра без редактирования';
-        }
-
-        if (
             description
         ) {
             description.textContent =
                 'Готовая пользовательская версия тир-листа';
+        }
+
+        if (
+            status
+        ) {
+            status.textContent =
+                'Режим просмотра без редактирования';
         }
 
         return;
@@ -353,87 +301,93 @@ function updateModeTexts() {
     }
 
     if (
-        status
-    ) {
-        status.textContent =
-            'Перетащите игры в нужные уровни';
-    }
-
-    if (
         description
     ) {
         description.textContent =
             'Соберите собственную версию тир-листа';
     }
+
+    if (
+        status
+    ) {
+        status.textContent =
+            'Перетащите игры в нужные уровни';
+    }
 }
 
 
 /*
- * Подключаем фильтры и кнопки.
+ * Фильтры, сохранение, сброс и создание ссылок.
  */
 function setupControls() {
-    const searchInput =
-        document.querySelector(
+    document
+        .querySelector(
             '#custom-search'
+        )
+        ?.addEventListener(
+            'input',
+            renderCustomTierList
         );
 
-    const tagFilter =
-        document.querySelector(
+    document
+        .querySelector(
             '#custom-tag-filter'
+        )
+        ?.addEventListener(
+            'change',
+            renderCustomTierList
         );
 
-    const saveButton =
-        document.querySelector(
+    document
+        .querySelector(
             '#save-custom-tierlist'
+        )
+        ?.addEventListener(
+            'click',
+            saveCurrentLayout
         );
 
-    const shareButton =
-        document.querySelector(
+    document
+        .querySelector(
             '#share-custom-tierlist'
+        )
+        ?.addEventListener(
+            'click',
+            shareCurrentLayout
         );
 
-    const resetButton =
-        document.querySelector(
+    document
+        .querySelector(
+            '#share-custom-tierlist-view'
+        )
+        ?.addEventListener(
+            'click',
+            shareCurrentLayout
+        );
+
+    document
+        .querySelector(
             '#reset-custom-tierlist'
+        )
+        ?.addEventListener(
+            'click',
+            resetCurrentLayout
         );
 
-    const saveSharedButton =
-        document.querySelector(
+    document
+        .querySelector(
             '#save-shared-tierlist'
+        )
+        ?.addEventListener(
+            'click',
+            saveSharedLayout
         );
-
-
-    searchInput?.addEventListener(
-        'input',
-        renderCustomTierList
-    );
-
-    tagFilter?.addEventListener(
-        'change',
-        renderCustomTierList
-    );
-
-    saveButton?.addEventListener(
-        'click',
-        saveCurrentLayout
-    );
-
-    shareButton?.addEventListener(
-        'click',
-        shareCurrentLayout
-    );
-
-    resetButton?.addEventListener(
-        'click',
-        resetCurrentLayout
-    );
-
-    saveSharedButton?.addEventListener(
-        'click',
-        saveSharedLayout
-    );
 }
 
+
+/*
+ * Раскрывает и скрывает карточки из REMOVED.
+ */
 function setupRemovedGamesToggle() {
     const toggleButton =
         document.querySelector(
@@ -470,16 +424,14 @@ function setupRemovedGamesToggle() {
             removedContainer.hidden =
                 isExpanded;
 
-            toggleButton.textContent =
-                isExpanded
-                    ? 'Показать скрытые игры'
-                    : 'Скрыть скрытые игры';
+            updateRemovedCounters();
         }
     );
 }
 
+
 /*
- * Заполняем фильтр жанров.
+ * Заполняет жанры данными Google Sheets.
  */
 function fillTagFilter() {
     const tagFilter =
@@ -503,20 +455,22 @@ function fillTagFilter() {
                         )
                 )
             )
-        ].sort(
-            (
-                firstTag,
-                secondTag
-            ) =>
-                firstTag.localeCompare(
-                    secondTag,
-                    'ru'
-                )
-        );
+        ]
+            .filter(
+                Boolean
+            )
+            .sort(
+                (
+                    firstTag,
+                    secondTag
+                ) =>
+                    firstTag.localeCompare(
+                        secondTag,
+                        'ru'
+                    )
+            );
 
-    tagFilter.replaceChildren();
-
-    tagFilter.appendChild(
+    tagFilter.replaceChildren(
         createOption(
             '',
             'Все жанры'
@@ -537,7 +491,7 @@ function fillTagFilter() {
 
 
 /*
- * Отрисовываем все группы игр.
+ * Рисует карточки во всех контейнерах.
  */
 function renderCustomTierList() {
     if (
@@ -548,6 +502,18 @@ function renderCustomTierList() {
 
     clearTierContainers();
 
+    const gameById =
+        new Map(
+            games.map(
+                game => [
+                    getGameId(
+                        game
+                    ),
+                    game
+                ]
+            )
+        );
+
     const searchValue =
         getSearchValue();
 
@@ -556,7 +522,6 @@ function renderCustomTierList() {
 
     let visibleGamesCount =
         0;
-
 
     [
         ...CUSTOM_TIER_NAMES,
@@ -578,11 +543,8 @@ function renderCustomTierList() {
             gameIds.forEach(
                 gameId => {
                     const game =
-                        games.find(
-                            item =>
-                                getGameId(
-                                    item
-                                ) === gameId
+                        gameById.get(
+                            gameId
                         );
 
                     if (
@@ -604,10 +566,6 @@ function renderCustomTierList() {
                     card.dataset.gameId =
                         gameId;
 
-                    /*
-                     * В режиме просмотра карточки
-                     * не должны быть перетаскиваемыми.
-                     */
                     card.draggable =
                         currentMode === 'edit';
 
@@ -635,10 +593,6 @@ function renderCustomTierList() {
 
     updateRemovedCounters();
 
-    /*
-     * Drag-and-drop подключается
-     * только в режиме редактирования.
-     */
     if (
         currentMode === 'edit'
     ) {
@@ -646,106 +600,111 @@ function renderCustomTierList() {
             getLayout: () =>
                 currentLayout,
 
-                        onLayoutChange:
-                updatedLayout => {
-                    currentLayout =
-                        updatedLayout;
-            
-                    renderCustomTierList();
-            
-                    updateRemovedCounters();
-            
-                    showStatus(
-                        'Порядок игр обновлён'
-                    );
-                }
+            onLayoutChange: updatedLayout => {
+                currentLayout =
+                    updatedLayout;
 
+                renderCustomTierList();
+
+                showStatus(
+                    'Порядок игр обновлён'
+                );
+            }
         });
-
     }
 }
 
 
-/*
- * Очищаем контейнеры перед отрисовкой.
- */
 function clearTierContainers() {
     [
         ...CUSTOM_TIER_NAMES,
         REMOVED_TIER_NAME
     ].forEach(
         tier => {
-            const container =
-                tierContainers[tier];
-
-            container?.replaceChildren();
+            tierContainers[tier]?.replaceChildren();
         }
     );
 }
 
 
 /*
- * Обновляем счётчики корзины.
+ * Счётчики UNRANKED, корзины и подпись скрытых игр.
  */
 function updateRemovedCounters() {
+    const unrankedCount =
+        currentLayout?.UNRANKED?.length || 0;
+
     const removedCount =
         currentLayout?.[REMOVED_TIER_NAME]
             ?.length || 0;
 
-    const trashCount =
-        document.querySelector(
-            '#custom-trash-count'
-        );
-
-    const removedGamesCount =
-        document.querySelector(
-            '#custom-removed-games-count'
-        );
-
-    if (
-        trashCount
-    ) {
-        trashCount.textContent =
-            String(
-                removedCount
-            );
-    }
-
-    if (
-        removedGamesCount
-    ) {
-        removedGamesCount.textContent =
-            String(
-                removedCount
-            );
-    }
-    const removedGamesToggle =
-    document.querySelector(
-        '#custom-removed-games-toggle'
+    setText(
+        '#custom-unranked-count',
+        unrankedCount
     );
 
+    setText(
+        '#custom-trash-count',
+        removedCount
+    );
+
+    setText(
+        '#custom-removed-games-count',
+        removedCount
+    );
+
+    const toggleButton =
+        document.querySelector(
+            '#custom-removed-games-toggle'
+        );
+
     if (
-        removedGamesToggle
+        !toggleButton
     ) {
-        const isExpanded =
-            removedGamesToggle.getAttribute(
-                'aria-expanded'
-            ) === 'true';
-    
-        removedGamesToggle.textContent =
-            removedCount > 0
-                ? isExpanded
-                    ? 'Скрыть скрытые игры'
-                    : `Показать скрытые игры (${removedCount})`
-                : 'Скрытые игры отсутствуют';
+        return;
     }
 
+    const isExpanded =
+        toggleButton.getAttribute(
+            'aria-expanded'
+        ) === 'true';
+
+    if (
+        removedCount === 0
+    ) {
+        toggleButton.textContent =
+            'Скрытые игры отсутствуют';
+
+        return;
+    }
+
+    toggleButton.textContent =
+        isExpanded
+            ? 'Скрыть скрытые игры'
+            : `Показать скрытые игры (${removedCount})`;
 }
 
 
-/*
- * Проверяет фильтры карточки.
- */
+function setText(
+    selector,
+    value
+) {
+    const element =
+        document.querySelector(
+            selector
+        );
+
+    if (
+        element
+    ) {
+        element.textContent =
+            String(
+                value
+            );
+    }
+}
+
+
 function gameMatchesFilters(
     game,
     searchValue,
@@ -753,7 +712,7 @@ function gameMatchesFilters(
 ) {
     const name =
         String(
-            game?.['Name'] || ''
+            game?.Name || ''
         )
             .trim()
             .toLowerCase();
@@ -804,9 +763,6 @@ function getSelectedTag() {
 }
 
 
-/*
- * Сообщение об отсутствии игр.
- */
 function updateEmptyMessage(
     visibleGamesCount
 ) {
@@ -816,19 +772,14 @@ function updateEmptyMessage(
         );
 
     if (
-        !emptyMessage
+        emptyMessage
     ) {
-        return;
+        emptyMessage.hidden =
+            visibleGamesCount > 0;
     }
-
-    emptyMessage.hidden =
-        visibleGamesCount > 0;
 }
 
 
-/*
- * Сохраняем текущую структуру.
- */
 function saveCurrentLayout() {
     if (
         !currentLayout
@@ -855,7 +806,6 @@ function saveCurrentLayout() {
         false;
 
     removeLayoutFromCurrentUrl();
-
     updateInterface();
 
     showStatus(
@@ -864,48 +814,23 @@ function saveCurrentLayout() {
 }
 
 
-/*
- * Сохраняем чужую версию
- * как собственную.
- */
 function saveSharedLayout() {
-    if (
-        !currentLayout
-    ) {
-        return;
-    }
+    saveCurrentLayout();
 
-    const saved =
-        saveLocalLayout(
-            currentLayout
+    if (
+        !isSharedLayout
+    ) {
+        setCustomMode(
+            'edit'
         );
 
-    if (
-        !saved
-    ) {
         showStatus(
-            'Не удалось сохранить тир-лист'
+            'Версия сохранена как ваша'
         );
-
-        return;
     }
-
-    isSharedLayout =
-        false;
-
-    removeLayoutFromCurrentUrl();
-
-    updateInterface();
-
-    showStatus(
-        'Версия сохранена как ваша'
-    );
 }
 
 
-/*
- * Формируем ссылку на текущий тир-лист.
- */
 async function shareCurrentLayout() {
     if (
         !currentLayout
@@ -941,9 +866,6 @@ async function shareCurrentLayout() {
 }
 
 
-/*
- * Возвращает все игры в UNRANKED.
- */
 function resetCurrentLayout() {
     if (
         !games.length
@@ -975,10 +897,6 @@ function resetCurrentLayout() {
 }
 
 
-/*
- * Удаляет параметр чужой версии
- * из текущего URL.
- */
 function removeLayoutFromCurrentUrl() {
     const url =
         new URL(
@@ -997,9 +915,6 @@ function removeLayoutFromCurrentUrl() {
 }
 
 
-/*
- * Показывает временный статус.
- */
 function showStatus(
     message
 ) {
@@ -1023,17 +938,12 @@ function showStatus(
 
     showStatus.timer =
         window.setTimeout(
-            () => {
-                updateModeTexts();
-            },
+            updateModeTexts,
             1800
         );
 }
 
 
-/*
- * Копирование текста.
- */
 async function copyText(
     text
 ) {
@@ -1059,18 +969,6 @@ async function copyText(
     textarea.style.position =
         'fixed';
 
-    textarea.style.top =
-        '0';
-
-    textarea.style.left =
-        '0';
-
-    textarea.style.width =
-        '1px';
-
-    textarea.style.height =
-        '1px';
-
     textarea.style.opacity =
         '0';
 
@@ -1078,7 +976,6 @@ async function copyText(
         textarea
     );
 
-    textarea.focus();
     textarea.select();
 
     const copied =
@@ -1129,9 +1026,16 @@ function showLoadingError() {
         return;
     }
 
-    tierList.innerHTML = `
-        <p class="loading-error">
-            Не удалось загрузить данные из Google Sheets.
-        </p>
-    `;
+    tierList.replaceChildren(
+        Object.assign(
+            document.createElement(
+                'p'
+            ),
+            {
+                className: 'loading-error',
+                textContent:
+                    'Не удалось загрузить данные из Google Sheets.'
+            }
+        )
+    );
 }
