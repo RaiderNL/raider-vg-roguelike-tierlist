@@ -1,6 +1,18 @@
 /*
  * =========================================================
- * Страница пользовательского тир-листа
+ * КАСТОМНЫЙ ТИР-ЛИСТ
+ * =========================================================
+ *
+ * Базовые стили:
+ * style.css
+ *
+ * Этот файл содержит только стили custom.html
+ */
+
+
+/*
+ * =========================================================
+ * Основная страница
  * =========================================================
  */
 
@@ -13,6 +25,7 @@
         var(--page-content-width),
         calc(100% - 32px)
     );
+
     max-width: 100%;
     margin: 24px auto;
 }
@@ -20,7 +33,7 @@
 
 /*
  * =========================================================
- * Шапка страницы
+ * Шапка
  * =========================================================
  */
 
@@ -29,7 +42,7 @@
     text-align: left;
 }
 
-.site-header-inner {
+.custom-page .site-header-inner {
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -39,10 +52,11 @@
         var(--page-content-width),
         100%
     );
+
     margin: 0 auto;
 }
 
-.site-logo {
+.custom-page .site-logo {
     color: #fff;
     font-size: 19px;
     font-weight: 700;
@@ -50,17 +64,17 @@
     text-decoration: none;
 }
 
-.site-logo:hover {
+.custom-page .site-logo:hover {
     color: var(--color-accent);
 }
 
-.site-logo:focus-visible {
+.custom-page .site-logo:focus-visible {
     outline: 3px solid var(--color-accent-focus);
     outline-offset: 4px;
     border-radius: var(--radius-sm);
 }
 
-.site-navigation {
+.custom-page .site-navigation {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
@@ -74,7 +88,7 @@
     border-radius: var(--radius-md);
 }
 
-.site-navigation a {
+.custom-page .site-navigation a {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -98,18 +112,18 @@
         box-shadow 0.2s ease;
 }
 
-.site-navigation a:hover {
+.custom-page .site-navigation a:hover {
     color: #fff;
     background: rgb(255 255 255 / 12%);
 }
 
-.site-navigation a.is-active {
+.custom-page .site-navigation a.is-active {
     color: #fff;
     background: rgb(255 255 255 / 18%);
     box-shadow: var(--shadow-card);
 }
 
-.site-navigation a:focus-visible {
+.custom-page .site-navigation a:focus-visible {
     outline: 3px solid var(--color-accent-focus);
     outline-offset: 2px;
 }
@@ -117,7 +131,7 @@
 
 /*
  * =========================================================
- * Заголовок и переключатель режима
+ * Заголовок страницы
  * =========================================================
  */
 
@@ -166,6 +180,28 @@
     font-size: 14px;
     font-weight: 700;
 }
+
+.custom-shared-notice {
+    margin: 12px 0 0;
+    padding: 12px 14px;
+
+    color: #5a4610;
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 1.4;
+
+    background: var(--color-accent-soft);
+    border: 1px solid var(--color-accent);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-card);
+}
+
+
+/*
+ * =========================================================
+ * Переключатель режима
+ * =========================================================
+ */
 
 .custom-mode-switcher {
     display: inline-flex;
@@ -220,29 +256,7 @@
 
 /*
  * =========================================================
- * Уведомление об общей версии
- * =========================================================
- */
-
-.custom-shared-notice {
-    margin: 12px 0 0;
-    padding: 12px 14px;
-
-    color: #5a4610;
-    font-size: 14px;
-    font-weight: 700;
-    line-height: 1.4;
-
-    background: var(--color-accent-soft);
-    border: 1px solid var(--color-accent);
-    border-radius: var(--radius-md);
-    box-shadow: var(--shadow-card);
-}
-
-
-/*
- * =========================================================
- * Фильтры и действия
+ * Панель фильтров
  * =========================================================
  */
 
@@ -259,6 +273,16 @@
     border: 1px solid rgb(225 227 232 / 70%);
     border-radius: var(--radius-lg);
     box-shadow: var(--shadow-panel);
+}
+
+/*
+ * Фильтры должны быть видны и при просмотре,
+ * и при редактировании.
+ */
+.custom-page.custom-page
+.custom-mode-view
+#custom-edit-controls {
+    display: flex;
 }
 
 .custom-filter-group {
@@ -305,6 +329,60 @@
     border-color: var(--color-primary);
     box-shadow: 0 0 0 3px var(--color-primary-focus);
 }
+
+
+/*
+ * В режиме просмотра подписи фильтров убираются.
+ * Все элементы остаются одинаковой высоты.
+ */
+
+body.custom-mode-view .custom-edit-controls {
+    align-items: center;
+}
+
+body.custom-mode-view .custom-filter-label {
+    display: none;
+}
+
+body.custom-mode-view .custom-filter-group {
+    align-self: center;
+    flex: 1 1 220px;
+    min-width: 180px;
+}
+
+body.custom-mode-view .custom-search-input,
+body.custom-mode-view .custom-tag-select {
+    height: var(--control-height);
+}
+
+
+/*
+ * Кнопки фильтров
+ */
+
+.custom-edit-controls
+.favorites-filter-button,
+.custom-edit-controls
+.filter-action-button,
+.custom-edit-controls
+.price-mode-toggle {
+    align-self: center;
+    flex: 0 0 auto;
+}
+
+.custom-edit-controls
+.favorites-filter-button {
+    width: var(--control-height);
+    min-width: var(--control-height);
+    height: var(--control-height);
+}
+
+
+/*
+ * =========================================================
+ * Действия
+ * =========================================================
+ */
 
 .custom-actions {
     display: flex;
@@ -358,6 +436,12 @@
 .custom-action-button:focus-visible {
     outline: 3px solid var(--color-primary-focus);
     outline-offset: 2px;
+}
+
+.custom-action-button:disabled {
+    cursor: wait;
+    opacity: 0.65;
+    transform: none;
 }
 
 .custom-action-button-primary {
@@ -436,7 +520,13 @@
 }
 
 .custom-unranked-container {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: 8px;
+
     min-height: 114px;
+    padding: 8px;
 
     background: #f8fafc;
     border: 1px dashed #cbd5e1;
@@ -450,84 +540,13 @@
  * =========================================================
  */
 
-/*
- * Drop-зона корзины появляется только во время переноса.
- */
-
-
-
-body.custom-mode-view .custom-trash-drop-area {
-    display: none;
-}
-
-
 .custom-trash-section {
     margin: 0 0 16px;
 }
 
 .custom-trash-drop-area {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-
-    min-height: 68px;
-    padding: 14px 16px;
-
-    color: #991b1b;
-    font-size: 14px;
-    font-weight: 700;
-    line-height: 1.3;
-    text-align: center;
-
-    background: #fff1f2;
-    border: 2px dashed #ef9a9a;
-    border-radius: var(--radius-md);
-
-    transition:
-        max-height 0.28s cubic-bezier(0.22, 1, 0.36, 1),
-        min-height 0.28s cubic-bezier(0.22, 1, 0.36, 1),
-        padding 0.28s cubic-bezier(0.22, 1, 0.36, 1),
-        border-width 0.28s cubic-bezier(0.22, 1, 0.36, 1),
-        opacity 0.22s ease,
-        visibility 0s linear 0.28s,
-        color 0.2s ease,
-        background 0.2s ease,
-        border-color 0.2s ease,
-        box-shadow 0.2s ease,
-        transform 0.28s cubic-bezier(0.22, 1, 0.36, 1);
-
+    display: none !important;
 }
-
-.custom-trash-icon {
-    flex: 0 0 auto;
-
-    font-size: 22px;
-    line-height: 1;
-}
-
-.custom-trash-title {
-    min-width: 0;
-}
-
-.custom-trash-drop-area:hover,
-.custom-trash-drop-area.is-drop-target {
-    color: #7f1d1d;
-    background: #ffe4e6;
-    border-color: #dc2626;
-    box-shadow: 0 0 0 3px rgb(220 38 38 / 15%);
-}
-
-.custom-trash-drop-area.is-drop-target {
-    transform: scale(1.01);
-}
-
-
-/*
- * =========================================================
- * Скрытые игры
- * =========================================================
- */
 
 .custom-removed-games {
     display: flex;
@@ -591,20 +610,30 @@ body.custom-mode-view .custom-trash-drop-area {
 }
 
 .custom-removed-games-container:empty::before {
-    content: 'Корзина пуста';
-
     width: 100%;
     padding: 12px;
 
     color: var(--color-text-muted);
     font-size: 13px;
     text-align: center;
+
+    content: 'Корзина пуста';
+}
+
+
+/*
+ * В режиме просмотра служебные секции скрыты.
+ */
+
+body.custom-mode-view .custom-unranked-section,
+body.custom-mode-view .custom-trash-section {
+    display: none;
 }
 
 
 /*
  * =========================================================
- * Тиры
+ * Список тиров
  * =========================================================
  */
 
@@ -626,7 +655,6 @@ body.custom-mode-view .custom-trash-drop-area {
     min-width: 0;
     min-height: 150px;
     overflow: visible;
-    will-change: transform, height;
 
     border: 1px solid rgb(225 227 232 / 70%);
     border-radius: var(--radius-md);
@@ -724,7 +752,7 @@ body.custom-mode-view .custom-trash-drop-area {
 
 .custom-games-container {
     display: flex;
-    flex: 1;
+    flex: 1 1 auto;
     flex-wrap: wrap;
     align-items: flex-start;
     gap: 8px;
@@ -733,143 +761,317 @@ body.custom-mode-view .custom-trash-drop-area {
     max-width: 100%;
     min-height: 148px;
     padding: 12px;
+
     overflow: visible;
 }
 
 
 /*
  * =========================================================
- * Карточки и drag-and-drop
+ * Карточки в режиме редактирования
  * =========================================================
  */
 
-.custom-games-container .game-card {
-    flex: 0 0 190px;
-
-    width: 190px;
-    max-width: 100%;
+body.custom-mode-edit
+.custom-games-container
+.game-card {
+    flex: 0 0 142px;
+    width: 142px;
 
     cursor: grab;
-
     user-select: none;
     touch-action: none;
 }
-.custom-games-container .game-card {
-    transition:
-        transform 0.22s cubic-bezier(0.22, 1, 0.36, 1),
-        opacity 0.18s ease,
-        box-shadow 0.22s ease;
-}
 
-body.custom-drag-active
+body.custom-mode-edit
 .custom-games-container
-.game-card:not(.is-dragging) {
-    transition:
-        transform 0.22s cubic-bezier(0.22, 1, 0.36, 1),
-        opacity 0.18s ease;
+.game-title {
+    display: block;
+
+    width: calc(100% - 12px);
+    margin: 4px auto 3px;
+    overflow: hidden;
+
+    font-size: 11px;
+    line-height: 1.2;
+    text-align: center;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+body.custom-mode-edit .custom-tier-row {
+    min-height: 116px;
+}
+
+body.custom-mode-edit .custom-games-container {
+    min-height: 114px;
+    gap: 6px;
+    padding: 8px;
+}
+
+body.custom-mode-edit .custom-tier-label {
+    flex-basis: 64px;
+    font-size: 26px;
+}
+
+body.custom-mode-edit
+.custom-games-container
+.game-card:active {
+    cursor: grabbing;
 }
 
 
+/*
+ * =========================================================
+ * Карточки в режиме просмотра
+ * =========================================================
+ *
+ * Соответствует размерам в style.css:
+ *
+ * S/A — 230 px
+ * B/C — 190 px
+ * D/E/F — 142 px
+ */
 
-.custom-games-container .game-card:hover {
-    transform: translateY(-3px);
+body.custom-mode-view
+.custom-games-container
+.game-card {
+    flex: 0 0 190px;
+    width: 190px;
+
+    cursor: pointer;
+    user-select: none;
 }
+
+
 /*
- * =========================================================
- * Кнопка информации в кастомном тир-листе
- * =========================================================
+ * S и A — крупные карточки
  */
+
+body.custom-mode-view
+#custom-tier-S
+.game-card,
+body.custom-mode-view
+#custom-tier-A
+.game-card {
+    flex: 0 0 230px;
+    width: 230px;
+
+    grid-template-rows:
+        minmax(0, 74%)
+        minmax(0, 1fr)
+        auto;
+}
+
+
+/*
+ * B и C — стандартные карточки
+ */
+
+body.custom-mode-view
+#custom-tier-B
+.game-card,
+body.custom-mode-view
+#custom-tier-C
+.game-card {
+    flex: 0 0 190px;
+    width: 190px;
+}
+
+
+/*
+ * D, E и F — компактные карточки
+ */
+
+body.custom-mode-view
+#custom-tier-D,
+body.custom-mode-view
+#custom-tier-E,
+body.custom-mode-view
+#custom-tier-F {
+    gap: 6px;
+}
+
+body.custom-mode-view
+#custom-tier-D
+.game-card,
+body.custom-mode-view
+#custom-tier-E
+.game-card,
+body.custom-mode-view
+#custom-tier-F
+.game-card {
+    flex: 0 0 142px;
+    width: 142px;
+}
+
+
+/*
+ * Форматирование заголовков B/C
+ */
+
+body.custom-mode-view
+#custom-tier-B
+.game-title,
+body.custom-mode-view
+#custom-tier-C
+.game-title {
+    display: block;
+
+    width: calc(100% - 14px);
+    margin: 5px auto 3px;
+    overflow: hidden;
+
+    font-size: 13px;
+    line-height: 1.2;
+    text-align: center;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+
+/*
+ * Форматирование заголовков D/E/F
+ */
+
+body.custom-mode-view
+#custom-tier-D
+.game-title,
+body.custom-mode-view
+#custom-tier-E
+.game-title,
+body.custom-mode-view
+#custom-tier-F
+.game-title {
+    display: block;
+
+    width: calc(100% - 10px);
+    margin: 4px auto 3px;
+    overflow: hidden;
+
+    font-size: 11px;
+    line-height: 1.15;
+    text-align: center;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+
+/*
+ * Форматирование тегов D/E/F
+ */
+
+body.custom-mode-view
+#custom-tier-D
+.game-tags,
+body.custom-mode-view
+#custom-tier-E
+.game-tags,
+body.custom-mode-view
+#custom-tier-F
+.game-tags {
+    width: calc(100% - 10px);
+    max-height: 27px;
+    margin: 0 auto 5px;
+    gap: 3px;
+}
+
+body.custom-mode-view
+#custom-tier-D
+.game-tag,
+body.custom-mode-view
+#custom-tier-E
+.game-tag,
+body.custom-mode-view
+#custom-tier-F
+.game-tag {
+    max-width: 100%;
+    padding: 2px 4px;
+
+    font-size: 9px;
+    line-height: 1.1;
+}
+
 
 /*
  * =========================================================
- * Кнопка информации в кастомном тир-листе
+ * Кнопки на карточке
  * =========================================================
  */
 
-.custom-games-container .game-info-button {
-    position: absolute;
+.custom-games-container .game-media {
+    position: relative;
+    isolation: isolate;
+}
+
+
+/*
+ * Звёздочка всегда слева
+ */
+
+.custom-games-container .favorite-button {
     top: 6px;
-    right: 6px;
-    left: auto;
+    right: auto;
+    bottom: auto;
+    left: 6px;
 
-    z-index: 4;
-
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
+    z-index: 5;
 
     width: 32px;
     height: 32px;
-    padding: 0;
 
-    color: #fff;
-    font-size: 22px;
-    font-weight: 700;
-    line-height: 1;
-
-    cursor: pointer;
-
-    background: rgb(32 35 42 / 82%);
-    border: 1px solid rgb(255 255 255 / 28%);
-    border-radius: 50%;
-    box-shadow: 0 2px 6px rgb(0 0 0 / 28%);
-
-    opacity: 0;
-    visibility: hidden;
-
-    transition:
-        color 0.2s ease,
-        background 0.2s ease,
-        border-color 0.2s ease,
-        opacity 0.2s ease,
-        visibility 0.2s ease,
-        transform 0.2s ease;
+    transform: none;
 }
 
 
 /*
- * Информационная кнопка появляется:
- * при наведении на карточку,
- * при фокусе,
- * при открытом popup.
+ * Информационная кнопка всегда справа
  */
-.custom-games-container .game-card:hover .game-info-button,
-.custom-games-container .game-card:focus-within .game-info-button,
-.custom-games-container .game-card:not(.preview-closed) .game-info-button {
-    opacity: 1;
-    visibility: visible;
+
+.custom-games-container .game-info-button {
+    top: 6px;
+    right: 6px;
+    bottom: auto;
+    left: auto;
+
+    z-index: 5;
+
+    width: 32px;
+    height: 32px;
+
+    transform: none;
 }
 
 
-.custom-games-container .game-info-button:hover {
-    color: #fff;
-    background: var(--color-primary);
-    border-color: var(--color-primary);
-    transform: scale(1.1);
+/*
+ * Не допускаем скачков при наведении.
+ */
+
+.custom-games-container
+.favorite-button:hover,
+.custom-games-container
+.game-info-button:hover {
+    transform: scale(1.08);
 }
 
-.custom-games-container .game-info-button:active {
+.custom-games-container
+.favorite-button:active,
+.custom-games-container
+.game-info-button:active {
     transform: scale(0.94);
 }
 
-.custom-games-container .game-info-button:focus-visible {
-    outline: 3px solid var(--color-primary-focus);
-    outline-offset: 2px;
-}
-
 
 /*
- * Не сдвигаем карточку во время переноса.
- * pointer-events намеренно не отключаются:
- * карточки и drop-зоны должны получать drag-события.
+ * Во время drag карточки не должны
+ * визуально подниматься при наведении.
  */
+
 body.custom-drag-active
 .custom-games-container
 .game-card:not(.is-dragging):hover {
     transform: none;
 }
-
-
 
 .custom-games-container .game-card.is-dragging {
     z-index: 2;
@@ -887,28 +1089,32 @@ body.custom-drag-active
         filter 0.24s ease;
 }
 
+
 /*
- * Плавное появление карточки
- * после завершения перетаскивания.
+ * =========================================================
+ * Popup карточки
+ * =========================================================
  */
-.custom-games-container .game-card.custom-card-enter {
-    opacity: 0;
-    transform: scale(0.82);
+
+body.custom-mode-edit
+.game-preview-popup {
+    display: none !important;
 }
 
-.custom-games-container .game-card.custom-card-enter-active {
-    opacity: 1;
-    transform: scale(1);
+body.custom-drag-active
+.game-preview-popup {
+    display: none !important;
+}
 
-    transition:
-        transform 0.28s cubic-bezier(0.22, 1, 0.36, 1),
-        opacity 0.24s ease;
+body.custom-mode-view
+.game-card-clickable {
+    cursor: pointer;
 }
 
 
 /*
  * =========================================================
- * Placeholder позиции вставки
+ * Placeholder
  * ========================================================= */
 
 .custom-drop-placeholder {
@@ -941,15 +1147,10 @@ body.custom-drag-active
         0 4px 14px rgb(37 99 235 / 12%);
 
     transform-origin: center;
-    
-    transition:
-        box-shadow 0.24s ease;
 
-
-animation:
-    custom-placeholder-breathe
-    1.4s ease-in-out infinite;
-
+    animation:
+        custom-placeholder-breathe
+        1.4s ease-in-out infinite;
 }
 
 .custom-drop-placeholder.is-visible {
@@ -960,9 +1161,6 @@ animation:
         0 8px 24px rgb(37 99 235 / 24%);
 }
 
-/*
- * Блик, проходящий по превью.
- */
 .custom-drop-placeholder::after {
     position: absolute;
     inset: -40%;
@@ -985,36 +1183,6 @@ animation:
 
     pointer-events: none;
 }
-/*
- * =========================================================
- * Фильтры в режиме просмотра
- * =========================================================
- */
-
-body.custom-mode-view .custom-edit-controls {
-    align-items: center;
-}
-
-body.custom-mode-view .custom-filter-label {
-    display: none;
-}
-
-body.custom-mode-view .custom-filter-group {
-    flex: 1 1 220px;
-    min-width: 180px;
-}
-
-body.custom-mode-view .custom-search-input,
-body.custom-mode-view .custom-tag-select {
-    min-height: var(--control-height);
-}
-
-body.custom-mode-view #custom-favorites-filter,
-body.custom-mode-view #custom-price-mode-toggle,
-body.custom-mode-view #custom-reset-filters {
-    align-self: center;
-}
-
 
 @keyframes custom-placeholder-breathe {
     0%,
@@ -1031,7 +1199,6 @@ body.custom-mode-view #custom-reset-filters {
     }
 }
 
-
 @keyframes custom-placeholder-shine {
     0%,
     35% {
@@ -1047,248 +1214,74 @@ body.custom-mode-view #custom-reset-filters {
 
 /*
  * =========================================================
- * Компактный режим редактора
- * ========================================================= */
-
-body.custom-mode-edit
-.custom-games-container
-.game-card {
-    flex-basis: 142px;
-    width: 142px;
-
-    cursor: grab;
-}
-
-body.custom-mode-edit
-.custom-games-container
-.game-title {
-    display: block;
-
-    width: calc(100% - 12px);
-    margin: 4px auto 3px;
-    overflow: hidden;
-
-    font-size: 11px;
-    line-height: 1.2;
-    text-align: center;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-
-    -webkit-line-clamp: unset;
-}
-
-/*
- * Popup не должен открываться в редакторе.
+ * Цены на кастомной странице
+ * =========================================================
  */
 
-/*
- * Popup также принудительно скрыт на время drag-and-drop.
- */
-body.custom-drag-active
-.game-preview-popup {
+body.custom-page.price-mode-active
+.custom-games-container
+.game-price {
+    right: 6px;
+    bottom: 6px;
+}
+
+body.custom-page.price-mode-active
+#custom-tier-D
+.game-price,
+body.custom-page.price-mode-active
+#custom-tier-E
+.game-price,
+body.custom-page.price-mode-active
+#custom-tier-F
+.game-price {
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    gap: 3px;
+
+    width: max-content;
+    max-width: calc(100% - 10px);
+    min-height: 20px;
+    padding: 3px 5px;
+
+    font-size: 10px;
+    line-height: 1;
+}
+
+body.custom-page.price-mode-active
+#custom-tier-D
+.game-price-old,
+body.custom-page.price-mode-active
+#custom-tier-E
+.game-price-old,
+body.custom-page.price-mode-active
+#custom-tier-F
+.game-price-old {
     display: none !important;
 }
 
-body.custom-mode-edit
-.custom-games-container
-.game-card:active {
-    cursor: grabbing;
-}
-
-body.custom-mode-edit .custom-tier-row {
-    min-height: 116px;
-}
-
-body.custom-mode-edit .custom-games-container {
-    min-height: 114px;
-    gap: 6px;
-    padding: 8px;
-}
-
-body.custom-mode-edit .custom-tier-label {
-    flex-basis: 64px;
-
-    font-size: 26px;
-}
-
-
-/*
- * =========================================================
- * Режим просмотра
- * ========================================================= */
-
-body.custom-mode-view
-.custom-games-container
-.game-card {
-    flex-basis: 190px;
-    width: 190px;
-
-    cursor: default;
-}
-
-body.custom-mode-view .custom-tier-row {
-    min-height: 150px;
-}
-
-body.custom-mode-view .custom-games-container {
-    min-height: 148px;
-    gap: 8px;
-    padding: 12px;
-}
-/*
- * =========================================================
- * Размеры карточек в режиме просмотра
- * Аналогично основной странице
- * =========================================================
- */
-
-body.custom-mode-view
-.custom-games-container
-.game-card {
-    flex: 0 0 190px;
-    width: 190px;
-}
-
-
-/*
- * Тиры S и A — крупные карточки
- */
-body.custom-mode-view
-#custom-tier-S .game-card,
-body.custom-mode-view
-#custom-tier-A .game-card {
-    width: 230px;
-    flex-basis: 230px;
-
-    grid-template-rows:
-        minmax(0, 74%)
-        minmax(0, 1fr)
-        auto;
-}
-
-
-/*
- * Тиры D, E и F — компактные карточки
- */
-body.custom-mode-view
-#custom-tier-D,
-body.custom-mode-view
-#custom-tier-E,
-body.custom-mode-view
-#custom-tier-F {
-    gap: 6px;
-}
-
-body.custom-mode-view
-#custom-tier-D .game-card,
-body.custom-mode-view
-#custom-tier-E .game-card,
-body.custom-mode-view
-#custom-tier-F .game-card {
-    width: 142px;
-    flex-basis: 142px;
-}
-
-
-/*
- * Заголовки B и C
- */
-body.custom-mode-view
-#custom-tier-B .game-title,
-body.custom-mode-view
-#custom-tier-C .game-title {
-    display: block;
-
-    width: calc(100% - 14px);
-    margin: 5px auto 3px;
-    overflow: hidden;
-
-    font-size: 13px;
-    line-height: 1.2;
-    text-align: center;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
-
-/*
- * Заголовки D, E и F
- */
-body.custom-mode-view
-#custom-tier-D .game-title,
-body.custom-mode-view
-#custom-tier-E .game-title,
-body.custom-mode-view
-#custom-tier-F .game-title {
-    display: block;
-
-    width: calc(100% - 10px);
-    margin: 4px auto 3px;
-    overflow: hidden;
-
-    font-size: 11px;
-    line-height: 1.15;
-    text-align: center;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
-
-/*
- * Теги D, E и F
- */
-body.custom-mode-view
-#custom-tier-D .game-tags,
-body.custom-mode-view
-#custom-tier-E .game-tags,
-body.custom-mode-view
-#custom-tier-F .game-tags {
-    width: calc(100% - 10px);
-    max-height: 27px;
-    margin: 0 auto 5px;
-    gap: 3px;
-}
-
-body.custom-mode-view
-#custom-tier-D .game-tag,
-body.custom-mode-view
-#custom-tier-E .game-tag,
-body.custom-mode-view
-#custom-tier-F .game-tag {
-    max-width: 100%;
+body.custom-page.price-mode-active
+#custom-tier-D
+.game-price-discount,
+body.custom-page.price-mode-active
+#custom-tier-E
+.game-price-discount,
+body.custom-page.price-mode-active
+#custom-tier-F
+.game-price-discount {
+    max-width: none;
     padding: 2px 4px;
 
-    font-size: 9px;
-    line-height: 1.1;
-}
-
-body.custom-mode-view .custom-trash-section,
-body.custom-mode-view .custom-unranked-section {
-    display: none;
+    font-size: 8px;
+    line-height: 1;
+    white-space: nowrap;
 }
 
 
 /*
  * =========================================================
- * Видимость по режимам
+ * Сообщение о пустом результате
  * ========================================================= */
-
-body.custom-mode-view #custom-edit-actions {
-    display: none;
-}
-
-
-body.custom-mode-edit #custom-view-actions {
-    display: none;
-}
-
-body.custom-mode-view #custom-view-actions {
-    display: flex;
-}
-
-body.custom-mode-view .custom-empty-message {
-    display: none;
-}
 
 .custom-empty-message {
     margin: 20px 0;
@@ -1297,6 +1290,12 @@ body.custom-mode-view .custom-empty-message {
     font-size: 15px;
     text-align: center;
 }
+
+body.custom-mode-view .custom-empty-message {
+    display: none;
+}
+
+
 /*
  * =========================================================
  * Боковые зоны корзины
@@ -1309,9 +1308,9 @@ body.custom-mode-view .custom-empty-message {
     bottom: 0;
 
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
-    flex-direction: column;
     gap: 12px;
 
     width: min(180px, 18vw);
@@ -1359,13 +1358,8 @@ body.custom-mode-view .custom-empty-message {
     transform: translateX(100%);
 }
 
-/*
- * Боковые зоны могут появляться только во время
- * активного drag-and-drop.
- */
 body.custom-page.custom-mode-edit.custom-drag-active
 .custom-side-trash-zone.is-edge-visible {
-
     opacity: 1;
     visibility: visible;
     pointer-events: auto;
@@ -1373,14 +1367,12 @@ body.custom-page.custom-mode-edit.custom-drag-active
 
     transition-delay: 0s;
 }
+
 body.custom-page.custom-mode-edit.custom-drag-active
 .custom-side-trash-zone {
     display: flex;
 }
 
-/*
- * Активная зона, над которой находится курсор.
- */
 .custom-side-trash-zone.is-drop-target {
     color: #7f1d1d;
 
@@ -1410,7 +1402,7 @@ body.custom-page.custom-mode-edit.custom-drag-active
 
     background: rgb(255 255 255 / 55%);
     border: 1px solid rgb(220 38 38 / 25%);
-    border-radius: 50%;
+    border-radius: var(--radius-round);
     box-shadow:
         0 8px 22px rgb(127 29 29 / 14%);
 }
@@ -1421,132 +1413,6 @@ body.custom-page.custom-mode-edit.custom-drag-active
     font-size: 13px;
     font-weight: 700;
     line-height: 1.3;
-}
-
-/*
- * Старую горизонтальную drop-зону больше не используем.
- * Список скрытых игр и его переключатель остаются.
- */
-.custom-trash-section
-> .custom-trash-drop-area {
-    display: none !important;
-}
-
-@media (max-width: 600px) {
-    .custom-side-trash-zone {
-        width: 92px;
-        min-width: 92px;
-        padding-right: 8px;
-        padding-left: 8px;
-    }
-
-    .custom-side-trash-icon {
-        width: 54px;
-        height: 54px;
-
-        font-size: 28px;
-    }
-
-    .custom-side-trash-label {
-        font-size: 11px;
-    }
-}
-/*
- * Размеры карточек кастомного тир-листа
- * на мобильных устройствах
- */
-body.custom-mode-view
-#custom-tier-S .game-card,
-body.custom-mode-view
-#custom-tier-A .game-card {
-    width: 165px;
-    flex-basis: 165px;
-
-    grid-template-rows:
-        minmax(0, 72%)
-        minmax(0, 1fr)
-        auto;
-}
-
-body.custom-mode-view
-#custom-tier-D,
-body.custom-mode-view
-#custom-tier-E,
-body.custom-mode-view
-#custom-tier-F {
-    gap: 6px;
-}
-
-body.custom-mode-view
-#custom-tier-D .game-card,
-body.custom-mode-view
-#custom-tier-E .game-card,
-body.custom-mode-view
-#custom-tier-F .game-card {
-    width: 108px;
-    flex-basis: 108px;
-}
-
-body.custom-mode-view
-#custom-tier-B .game-title,
-body.custom-mode-view
-#custom-tier-C .game-title,
-body.custom-mode-view
-#custom-tier-D .game-title,
-body.custom-mode-view
-#custom-tier-E .game-title,
-body.custom-mode-view
-#custom-tier-F .game-title {
-    display: block;
-
-    width: calc(100% - 10px);
-    margin: 4px auto 3px;
-    overflow: hidden;
-
-    font-size: 10px;
-    line-height: 1.15;
-    text-align: center;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
-body.custom-mode-view
-#custom-tier-D .game-title,
-body.custom-mode-view
-#custom-tier-E .game-title,
-body.custom-mode-view
-#custom-tier-F .game-title {
-    font-size: 9px;
-}
-
-body.custom-mode-view
-#custom-tier-D .game-tags,
-body.custom-mode-view
-#custom-tier-E .game-tags,
-body.custom-mode-view
-#custom-tier-F .game-tags {
-    width: calc(100% - 10px);
-    max-height: 25px;
-    margin: 0 auto 5px;
-    gap: 3px;
-}
-
-body.custom-mode-view
-#custom-tier-D .game-tag,
-body.custom-mode-view
-#custom-tier-E .game-tag,
-body.custom-mode-view
-#custom-tier-F .game-tag {
-    padding: 2px 4px;
-    font-size: 8px;
-    line-height: 1.1;
-}
-
-
-@media (prefers-reduced-motion: reduce) {
-    .custom-side-trash-zone {
-        transition: none;
-    }
 }
 
 
@@ -1570,6 +1436,7 @@ body.custom-mode-view
     }
 }
 
+
 @media (max-width: 600px) {
     .custom-main {
         width: calc(100% - 20px);
@@ -1580,14 +1447,15 @@ body.custom-mode-view
         padding: 16px;
     }
 
-    .site-header-inner {
+    .custom-page .site-header-inner {
         align-items: flex-start;
         flex-direction: column;
         gap: 12px;
     }
 
-    .site-navigation {
+    .custom-page .site-navigation {
         justify-content: flex-start;
+        width: 100%;
     }
 
     .custom-page-title {
@@ -1597,12 +1465,39 @@ body.custom-mode-view
     .custom-edit-controls {
         align-items: stretch;
         flex-direction: column;
+        gap: 10px;
+
         padding: 14px;
     }
 
-    .custom-filter-group {
+    body.custom-mode-view .custom-edit-controls {
+        align-items: stretch;
+    }
+
+    .custom-filter-group,
+    body.custom-mode-view .custom-filter-group {
+        flex: 0 0 auto;
+
         width: 100%;
         min-width: 0;
+    }
+
+    .custom-edit-controls
+    .favorites-filter-button,
+    .custom-edit-controls
+    .filter-action-button,
+    .custom-edit-controls
+    .price-mode-toggle,
+    body.custom-mode-view
+    .custom-edit-controls
+    .favorites-filter-button,
+    body.custom-mode-view
+    .custom-edit-controls
+    .filter-action-button,
+    body.custom-mode-view
+    .custom-edit-controls
+    .price-mode-toggle {
+        align-self: flex-start;
     }
 
     .custom-actions {
@@ -1622,79 +1517,199 @@ body.custom-mode-view
         padding: 10px;
     }
 
-    .custom-trash-drop-area {
-        min-height: 64px;
-        padding: 12px;
+    .custom-tier-row {
+        min-height: 120px;
     }
 
-    .custom-tier-row {
-        transition:
-            min-height 0.28s cubic-bezier(0.22, 1, 0.36, 1),
-            background 0.2s ease,
-            box-shadow 0.2s ease;
-    }    
     .custom-tier-label {
         flex-basis: 60px;
-
         font-size: 25px;
     }
 
     .custom-games-container {
-        transition:
-            min-height 0.28s cubic-bezier(0.22, 1, 0.36, 1),
-            padding 0.28s ease;
+        gap: 8px;
+        min-height: 118px;
+        padding: 10px;
     }
 
-    .custom-games-container .game-card {
-        flex-basis: 145px;
-        width: 145px;
-    }
-
-    .custom-drop-placeholder {
-        flex-basis: 145px;
-        width: 145px;
-        min-height: 145px;
+    body.custom-mode-edit .custom-tier-label {
+        flex-basis: 60px;
+        font-size: 25px;
     }
 
     body.custom-mode-edit .custom-games-container {
         gap: 6px;
+        min-height: 114px;
         padding: 8px;
     }
-    @media (max-width: 600px) {
-    .custom-games-container .game-info-button {
-        top: 5px;
-        right: 5px;
-
-        width: 30px;
-        height: 30px;
-
-        font-size: 21px;
-    }
-}
-
 
     body.custom-mode-edit
     .custom-games-container
     .game-card {
-        flex-basis: 145px;
+        flex: 0 0 145px;
         width: 145px;
     }
 
-    body.custom-mode-edit
-    .custom-games-container
     .custom-drop-placeholder {
-        flex-basis: 145px;
+        flex: 0 0 145px;
+
         width: 145px;
+        height: 145px;
         min-height: 145px;
+    }
+
+    /*
+     * Размеры карточек в просмотре:
+     *
+     * S/A — 165 px
+     * B/C — 145 px
+     * D/E/F — 108 px
+     */
+
+    body.custom-mode-view
+    #custom-tier-S
+    .game-card,
+    body.custom-mode-view
+    #custom-tier-A
+    .game-card {
+        flex: 0 0 165px;
+        width: 165px;
+
+        grid-template-rows:
+            minmax(0, 72%)
+            minmax(0, 1fr)
+            auto;
+    }
+
+    body.custom-mode-view
+    #custom-tier-B
+    .game-card,
+    body.custom-mode-view
+    #custom-tier-C
+    .game-card {
+        flex: 0 0 145px;
+        width: 145px;
+    }
+
+    body.custom-mode-view
+    #custom-tier-D,
+    body.custom-mode-view
+    #custom-tier-E,
+    body.custom-mode-view
+    #custom-tier-F {
+        gap: 6px;
+    }
+
+    body.custom-mode-view
+    #custom-tier-D
+    .game-card,
+    body.custom-mode-view
+    #custom-tier-E
+    .game-card,
+    body.custom-mode-view
+    #custom-tier-F
+    .game-card {
+        flex: 0 0 108px;
+        width: 108px;
+    }
+
+    /*
+     * Маленькие элементы внутри D/E/F
+     */
+
+    body.custom-mode-view
+    #custom-tier-D
+    .game-title,
+    body.custom-mode-view
+    #custom-tier-E
+    .game-title,
+    body.custom-mode-view
+    #custom-tier-F
+    .game-title {
+        width: calc(100% - 10px);
+        margin: 4px auto 3px;
+
+        font-size: 9px;
+        line-height: 1.15;
+    }
+
+    body.custom-mode-view
+    #custom-tier-D
+    .game-tags,
+    body.custom-mode-view
+    #custom-tier-E
+    .game-tags,
+    body.custom-mode-view
+    #custom-tier-F
+    .game-tags {
+        width: calc(100% - 10px);
+        max-height: 25px;
+        margin-bottom: 5px;
+        gap: 3px;
+    }
+
+    body.custom-mode-view
+    #custom-tier-D
+    .game-tag,
+    body.custom-mode-view
+    #custom-tier-E
+    .game-tag,
+    body.custom-mode-view
+    #custom-tier-F
+    .game-tag {
+        padding: 2px 4px;
+        font-size: 8px;
+        line-height: 1.1;
+    }
+
+    /*
+     * Фиксированные кнопки карточки
+     */
+
+    .custom-games-container .favorite-button {
+        top: 5px;
+        left: 5px;
+
+        width: 30px;
+        height: 30px;
+        font-size: 23px;
+    }
+
+    .custom-games-container .game-info-button {
+        top: 5px;
+        right: 5px;
+        left: auto;
+
+        width: 30px;
+        height: 30px;
+        font-size: 21px;
+    }
+
+    /*
+     * Боковые зоны корзины
+     */
+
+    .custom-side-trash-zone {
+        width: 92px;
+        min-width: 92px;
+        padding-right: 8px;
+        padding-left: 8px;
+    }
+
+    .custom-side-trash-icon {
+        width: 54px;
+        height: 54px;
+        font-size: 28px;
+    }
+
+    .custom-side-trash-label {
+        font-size: 11px;
     }
 }
 
-@media (max-width: 400px) {
-    .site-navigation {
-        width: 100%;
-    }
 
-    .site-navigation a {
+@media (max-width: 400px) {
+    .custom-page .site-navigation a {
         flex: 1 1 0;
 
         padding-right: 6px;
@@ -1711,15 +1726,8 @@ body.custom-mode-view
         grid-column: auto;
     }
 
-    .custom-trash-drop-area {
-        gap: 7px;
-
-        font-size: 13px;
-    }
-
     .custom-tier-label {
         flex-basis: 45px;
-
         font-size: 20px;
     }
 
@@ -1728,29 +1736,63 @@ body.custom-mode-view
         padding: 8px;
     }
 
-    .custom-games-container .game-card,
+    /*
+     * На очень узких экранах карточки
+     * занимают две колонки.
+     */
+
+    body.custom-mode-view
+    .custom-games-container
+    .game-card,
+    body.custom-mode-view
+    #custom-tier-S
+    .game-card,
+    body.custom-mode-view
+    #custom-tier-A
+    .game-card,
+    body.custom-mode-view
+    #custom-tier-B
+    .game-card,
+    body.custom-mode-view
+    #custom-tier-C
+    .game-card,
+    body.custom-mode-view
+    #custom-tier-D
+    .game-card,
+    body.custom-mode-view
+    #custom-tier-E
+    .game-card,
+    body.custom-mode-view
+    #custom-tier-F
+    .game-card {
+        flex: 0 0 calc(50% - 3px);
+        width: calc(50% - 3px);
+    }
+
     body.custom-mode-edit
     .custom-games-container
     .game-card {
-        flex-basis: calc(50% - 3px);
+        flex: 0 0 calc(50% - 3px);
         width: calc(50% - 3px);
     }
-    body.custom-mode-view
-#custom-tier-S .game-card,
-body.custom-mode-view
-#custom-tier-A .game-card,
-body.custom-mode-view
-#custom-tier-D .game-card,
-body.custom-mode-view
-#custom-tier-E .game-card,
-body.custom-mode-view
-#custom-tier-F .game-card {
-    width: calc(50% - 3px);
-    flex-basis: calc(50% - 3px);
-}
 
+    .custom-games-container .favorite-button {
+        top: 5px;
+        left: 5px;
 
+        width: 28px;
+        height: 28px;
+        font-size: 21px;
+    }
 
+    .custom-games-container .game-info-button {
+        top: 5px;
+        right: 5px;
+
+        width: 28px;
+        height: 28px;
+        font-size: 19px;
+    }
 }
 
 
@@ -1760,16 +1802,10 @@ body.custom-mode-view
  * ========================================================= */
 
 @media (prefers-reduced-motion: reduce) {
-    .site-logo,
-    .site-navigation a,
-    .custom-mode-button,
-    .custom-action-button,
-    .custom-search-input,
-    .custom-tag-select,
-    .custom-trash-drop-area,
-    .custom-removed-games-toggle,
-    .custom-tier-row,
-    .custom-games-container .game-card {
-        transition: none;
+    .custom-page *,
+    .custom-page *::before,
+    .custom-page *::after {
+        transition: none !important;
+        animation: none !important;
     }
 }
