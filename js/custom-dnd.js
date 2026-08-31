@@ -21,6 +21,20 @@ const PLACEHOLDER_SETTLE_DELAY =
     70;
 
 let placeholderAnimation = null;
+/*
+ * =========================================================
+ * Автоскролл во время перетаскивания
+ * =========================================================
+ */
+
+const DRAG_AUTO_SCROLL_EDGE_SIZE =
+    90;
+
+const DRAG_AUTO_SCROLL_MAX_SPEED =
+    16;
+
+let autoScrollAnimationFrame = null;
+
 
 
 /*
@@ -173,7 +187,10 @@ function handleDragStart(
     lastPointerSample =
         null;
 
+    stopDragAutoScroll();
+
     cancelPendingPlaceholderUpdate();
+
 
     card.classList.add(
         'is-dragging'
@@ -199,9 +216,143 @@ function handleDragStart(
 
 /*
  * =========================================================
- * Наведение во время перетаскивания
+ * Автоскролл во время перетаскивания
  * =========================================================
  */
+
+function updateDragAutoScrollPointer(
+    event
+) {
+    if (
+        !currentDragState
+    ) {
+        return;
+    }
+
+    lastPointerSample = {
+        clientX:
+            Number(
+                event.clientX
+            ),
+
+        clientY:
+            Number(
+                event.clientY
+            )
+    };
+
+    if (
+        autoScrollAnimationFrame
+    ) {
+        return;
+    }
+
+    autoScrollAnimationFrame =
+        requestAnimationFrame(
+            performDragAutoScroll
+        );
+}
+
+
+function performDragAutoScroll() {
+    autoScrollAnimationFrame =
+        null;
+
+    if (
+        !currentDragState ||
+        !isEditMode() ||
+        !lastPointerSample
+    ) {
+        return;
+    }
+
+    const viewportHeight =
+        window.innerHeight;
+
+    const pointerY =
+        lastPointerSample.clientY;
+
+    let scrollDirection =
+        0;
+
+    if (
+        pointerY <
+        DRAG_AUTO_SCROLL_EDGE_SIZE
+    ) {
+        scrollDirection =
+            -1;
+    } else if (
+        pointerY >
+        viewportHeight -
+        DRAG_AUTO_SCROLL_EDGE_SIZE
+    ) {
+        scrollDirection =
+            1;
+    }
+
+    if (
+        scrollDirection === 0
+    ) {
+        return;
+    }
+
+    const distanceToEdge =
+        scrollDirection < 0
+            ? pointerY
+            : viewportHeight - pointerY;
+
+    const edgeProgress =
+        Math.max(
+            0,
+            Math.min(
+                1,
+                (
+                    DRAG_AUTO_SCROLL_EDGE_SIZE -
+                    distanceToEdge
+                ) /
+                DRAG_AUTO_SCROLL_EDGE_SIZE
+            )
+        );
+
+    const scrollSpeed =
+        Math.max(
+            2,
+            Math.round(
+                DRAG_AUTO_SCROLL_MAX_SPEED *
+                (
+                    0.25 +
+                    edgeProgress *
+                    0.75
+                )
+            )
+        );
+
+    window.scrollBy(
+        0,
+        scrollDirection *
+        scrollSpeed
+    );
+
+    autoScrollAnimationFrame =
+        requestAnimationFrame(
+            performDragAutoScroll
+        );
+}
+
+
+function stopDragAutoScroll() {
+    if (
+        autoScrollAnimationFrame
+    ) {
+        cancelAnimationFrame(
+            autoScrollAnimationFrame
+        );
+
+        autoScrollAnimationFrame =
+            null;
+    }
+}
+
 
 function handleDragOver(
     event
@@ -213,7 +364,11 @@ function handleDragOver(
         return;
     }
 
-    event.preventDefault();
+        event.preventDefault();
+
+    updateDragAutoScrollPointer(
+        event
+    );
 
     if (
         event.dataTransfer
@@ -221,6 +376,7 @@ function handleDragOver(
         event.dataTransfer.dropEffect =
             'move';
     }
+
 
     const sideTrashZone =
         updateSideTrashZones(
@@ -1896,7 +2052,10 @@ function cloneLayout(
  */
 
 function clearDragState() {
+    stopDragAutoScroll();
+
     hideSideTrashZones();
+
 
     cancelPendingPlaceholderUpdate();
 
