@@ -593,21 +593,33 @@ iframe {
 .game-card-clickable:active {
     transform: translateY(-1px);
 }
+.game-media {
+    position: relative;
+
+    display: block;
+    flex: 0 0 70%;
+
+    width: 100%;
+    min-height: 0;
+    overflow: hidden;
+
+    background: #e5e7eb;
+    border-radius: 7px 7px 0 0;
+}
 
 .game-cover {
     display: block;
-    flex: 0 0 66.666%;
 
     width: 100%;
-    height: 66.666%;
+    height: 100%;
     min-height: 0;
 
     object-fit: cover;
     object-position: center;
 
     background: #e5e7eb;
-    border-radius: 7px 7px 0 0;
 }
+
 
 .game-title {
     display: -webkit-box;
@@ -660,29 +672,34 @@ iframe {
 
 .game-price {
     position: absolute;
-    right: 5px;
-    bottom: 5px;
-    left: 5px;
+    right: 6px;
+    bottom: 6px;
+    left: auto;
     z-index: 3;
 
-    display: flex;
+    display: inline-flex;
     align-items: center;
     justify-content: center;
     flex-wrap: wrap;
-    gap: 5px;
+    gap: 4px;
 
+    width: max-content;
+    max-width: calc(100% - 12px);
     min-height: 24px;
-    padding: 4px 6px;
+    padding: 4px 7px;
     overflow: hidden;
 
     color: #fff;
     font-size: 12px;
     line-height: 1.15;
     text-align: center;
+    white-space: nowrap;
 
-    background: rgb(32 35 42 / 94%);
+    background: rgb(32 35 42 / 90%);
+    border: 1px solid rgb(255 255 255 / 15%);
     border-radius: var(--radius-sm);
-    box-shadow: 0 1px 4px rgb(0 0 0 / 25%);
+    box-shadow: 0 2px 6px rgb(0 0 0 / 24%);
+    backdrop-filter: blur(3px);
 
     animation: price-panel-appear 280ms ease-out both;
 }
@@ -692,30 +709,7 @@ iframe {
 }
 
 .game-price::after {
-    content: '';
-
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: -70%;
-
-    width: 45%;
-
-    pointer-events: none;
-
-    background: linear-gradient(
-        105deg,
-        transparent,
-        rgb(255 255 255 / 18%),
-        transparent
-    );
-
-    animation: price-panel-shine 650ms ease-out 120ms both;
-}
-
-.game-price.game-price-hiding::after {
-    opacity: 0;
-    animation: none;
+    display: none;
 }
 
 .game-price-current {
@@ -724,18 +718,20 @@ iframe {
 }
 
 .game-price-old {
-    color: #aeb4bf;
-    font-size: 11px;
+    color: #b7bdc8;
+    font-size: 10px;
     text-decoration: line-through;
 }
 
 .game-price-discount {
     display: inline-block;
-    padding: 3px 5px;
 
-    color: #17220e;
-    font-size: 10px;
+    padding: 2px 4px;
+
+    color: #26351a;
+    font-size: 9px;
     font-weight: 700;
+    line-height: 1.1;
     white-space: nowrap;
 
     background: #b8f28b;
@@ -781,15 +777,7 @@ iframe {
     }
 }
 
-@keyframes price-panel-shine {
-    from {
-        left: -70%;
-    }
 
-    to {
-        left: 130%;
-    }
-}
 
 /*
  * =========================================================
@@ -1336,7 +1324,7 @@ iframe {
 
         background: var(--color-dark);
         border: 1px solid rgb(255 255 255 / 18%);
-        border-radius: var(--color-round, 50%);
+        border-radius: var(--radius-round);
         box-shadow: var(--shadow-floating);
 
         transform: translateY(10px) scale(0.9);
@@ -1518,35 +1506,30 @@ iframe {
         font-size: 10px;
     }
 
-    /*
-     * Мобильный режим цен.
-     */
-    body.price-mode-active .game-card {
-        display: grid;
-        grid-template-rows: minmax(0, 1fr) auto auto;
-
-        overflow: hidden;
+    .game-media {
+        flex-basis: 70%;
     }
 
-    body.price-mode-active .game-cover {
-        grid-row: 1;
+    .game-price {
+        right: 5px;
+        bottom: 5px;
 
-        width: 100%;
-        height: 100%;
-        min-height: 0;
+        min-height: 20px;
+        max-width: calc(100% - 10px);
+        padding: 3px 5px;
+
+        font-size: 10px;
     }
 
-    body.price-mode-active .game-title {
-        grid-row: 2;
-
-        margin: 4px 5px 3px;
-
-        font-size: 12px;
-        line-height: 1.15;
-
-        -webkit-line-clamp: 1;
+    .game-price-old {
+        font-size: 9px;
     }
 
+    .game-price-discount {
+        padding: 2px 4px;
+
+        font-size: 9px;
+    }
     body.price-mode-active .game-card .game-tags {
         position: absolute !important;
         top: 5px !important;
@@ -1597,27 +1580,6 @@ iframe {
         border: 1px solid rgb(255 255 255 / 22%) !important;
         border-radius: 4px !important;
         box-shadow: 0 1px 3px rgb(0 0 0 / 35%) !important;
-    }
-
-    body.price-mode-active .game-price {
-        position: static;
-        grid-row: 3;
-
-        display: flex;
-        flex: 0 0 auto;
-        align-items: center;
-        justify-content: center;
-        flex-wrap: wrap;
-        gap: 2px;
-
-        min-height: 20px;
-        max-height: 36px;
-        margin: 0 4px 4px;
-        padding: 3px 4px;
-        overflow: hidden;
-
-        font-size: 10px;
-        line-height: 1.1;
     }
 
     body.price-mode-active .game-price-old {
@@ -1797,7 +1759,6 @@ iframe {
     .back-to-top::before,
     .back-to-top span:last-child,
     .game-price,
-    .game-price::after,
     .price-mode-toggle,
     .price-mode-toggle::before,
     .price-mode-toggle::after,
