@@ -1141,9 +1141,47 @@ body {
      * Теги скрываются только в режиме отображения цен:
      * на узкой карточке они конкурируют с ценой за высоту.
      */
-    body.price-mode-active .game-tags {
-        display: none;
-    }
+/*
+ * При включённых ценах метки не занимают отдельную строку.
+ * Они располагаются поверх обложки в правом верхнем углу.
+ */
+body.price-mode-active .game-tags {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    z-index: 4;
+
+    display: flex;
+    flex: 0 1 auto;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 3px;
+
+    max-width: calc(100% - 8px);
+    max-height: calc(100% - 8px);
+    margin: 0;
+    overflow: hidden;
+
+    pointer-events: none;
+}
+
+body.price-mode-active .game-tag {
+    max-width: 100%;
+    padding: 2px 4px;
+
+    color: #fff;
+    font-size: 9px;
+    line-height: 1.15;
+    text-align: right;
+    text-shadow: 0 1px 2px rgb(0 0 0 / 45%);
+    overflow-wrap: anywhere;
+
+    background: rgb(32 35 42 / 84%);
+    border: 1px solid rgb(255 255 255 / 16%);
+    border-radius: 3px;
+    box-shadow: 0 1px 3px rgb(0 0 0 / 20%);
+}
+
 
     body.price-mode-active .game-price {
         position: static !important;
