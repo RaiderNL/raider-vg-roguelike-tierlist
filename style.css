@@ -1168,7 +1168,7 @@ body {
  * Состояние видимости по-прежнему контролируется
  * только классом .is-visible.
  */
-@media (max-width: 1349px) {
+@media (max-width: 1540px) {
     .back-to-top {
         top: auto;
         right: max(14px, env(safe-area-inset-right));
