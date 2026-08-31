@@ -2,6 +2,7 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
+
     <meta
         name="viewport"
         content="width=device-width, initial-scale=1.0"
@@ -21,75 +22,151 @@
 
     <header class="site-header">
         <h1>Raider_VG Ultimate Roguelike Tierlist</h1>
-    
+
         <p>
             Распределение всех рогаликов, что я обозрел на своем канале по тирлисту
         </p>
-    
-        </label>
     </header>
 
 
     <main class="container">
 
         <section class="controls">
-    <div class="control-group search-group">
-        <label for="search">
-            Поиск игры
-        </label>
+            <div class="control-group search-group">
+                <label for="search">
+                    Поиск игры
+                </label>
 
-        <input
-            type="search"
-            id="search"
-            placeholder="Введите название игры..."
-        >
-    </div>
+                <input
+                    type="search"
+                    id="search"
+                    placeholder="Введите название игры..."
+                >
+            </div>
 
-    <div class="control-group filter-group">
-        <label for="tag-filter">
-            Жанр
-        </label>
+            <div class="control-group filter-group">
+                <label for="tag-filter">
+                    Жанр
+                </label>
 
-        <select id="tag-filter">
-            <option value="">
-                Все жанры
-            </option>
-        </select>
-    </div>
+                <select id="tag-filter">
+                    <option value="">
+                        Все жанры
+                    </option>
+                </select>
+            </div>
 
-    <div class="video-filter-controls">
-        <div class="control-group filter-group">
-            <label for="video-filter">
-                Видео
-            </label>
+            <div class="video-filter-controls">
+                <div class="control-group filter-group">
+                    <label for="video-filter">
+                        Видео
+                    </label>
 
-            <select id="video-filter">
-                <option value="">
-                    Все ролики
-                </option>
-            </select>
-        </div>
+                    <select id="video-filter">
+                        <option value="">
+                            Все ролики
+                        </option>
+                    </select>
+                </div>
 
-        <label class="price-mode-toggle">
-            <input
-                id="price-mode-toggle"
-                type="checkbox"
-            >
+                <label class="price-mode-toggle">
+                    <input
+                        id="price-mode-toggle"
+                        type="checkbox"
+                    >
 
-            <span
-                class="price-switch"
-                aria-hidden="true"
-            >
-                <span class="price-switch-thumb"></span>
-            </span>
+                    <span
+                        class="price-switch"
+                        aria-hidden="true"
+                    >
+                        <span class="price-switch-thumb"></span>
+                    </span>
 
-            <span class="price-mode-label">
-                Показывать цены
-            </span>
-        </label>
-    </div>
-</section>
+                    <span class="price-mode-label">
+                        Показывать цены
+                    </span>
+                </label>
+            </div>
+        </section>
 
+
+        <details class="tier-legend">
+            <summary class="tier-legend-summary">
+                <span>Легенда тир-листа</span>
+            </summary>
+
+            <div class="tier-legend-list">
+                <div class="tier-legend-row">
+                    <div class="tier-legend-label tier-s">
+                        S
+                    </div>
+
+                    <p class="tier-legend-description">
+                        Лучшие представители жанра. Игры, которые я рекомендую практически без оговорок.
+                    </p>
+                </div>
+
+                <div class="tier-legend-row">
+                    <div class="tier-legend-label tier-a">
+                        A
+                    </div>
+
+                    <p class="tier-legend-description">
+                        Отличные игры с небольшими недостатками или особенностями, которые могут понравиться не всем.
+                    </p>
+                </div>
+
+                <div class="tier-legend-row">
+                    <div class="tier-legend-label tier-b">
+                        B
+                    </div>
+
+                    <p class="tier-legend-description">
+                        Хорошие игры, которые заслуживают внимания, но уступают играм более высоких уровней.
+                    </p>
+                </div>
+
+                <div class="tier-legend-row">
+                    <div class="tier-legend-label tier-c">
+                        C
+                    </div>
+
+                    <p class="tier-legend-description">
+                        Неплохие игры с заметными недостатками. Могут подойти при определённых предпочтениях.
+                    </p>
+                </div>
+
+                <div class="tier-legend-row">
+                    <div class="tier-legend-label tier-d">
+                        D
+                    </div>
+
+                    <p class="tier-legend-description">
+                        Средние игры с большим количеством проблем или спорных решений.
+                    </p>
+                </div>
+
+                <div class="tier-legend-row">
+                    <div class="tier-legend-label tier-e">
+                        E
+                    </div>
+
+                    <p class="tier-legend-description">
+                        Слабые представители жанра. Могут заинтересовать только при особом интересе к игре или её концепции.
+                    </p>
+                </div>
+
+                <div class="tier-legend-row">
+                    <div class="tier-legend-label tier-f">
+                        F
+                    </div>
+
+                    <p class="tier-legend-description">
+                        Игры, которые я не рекомендую к прохождению.
+                    </p>
+                </div>
+            </div>
+        </details>
 
 
         <div class="tier-list-layout">
@@ -189,6 +266,7 @@
 
             </section>
 
+
             <aside
                 class="selected-video-panel"
                 id="selected-video-panel"
@@ -200,7 +278,9 @@
         </div>
 
     </main>
-        <button
+
+
+    <button
         class="back-to-top"
         id="back-to-top"
         type="button"
@@ -225,11 +305,11 @@
         </p>
     </footer>
 
+
     <script
-    type="module"
-    src="js/main.js"
-></script>
+        type="module"
+        src="js/main.js"
+    ></script>
 
 </body>
 </html>
-
