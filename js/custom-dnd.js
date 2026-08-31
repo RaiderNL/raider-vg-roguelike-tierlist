@@ -610,10 +610,47 @@ function updateDropPlaceholder(
         );
 
     if (
-        !targetTier
+        !targetCard
     ) {
+        const cardsInDropZone =
+            getDropZoneCards(
+                dropZone
+            );
+    
+        if (
+            cardsInDropZone.length !== 0
+        ) {
+            return;
+        }
+    
+        const emptyTierKey =
+            `${targetTier}:EMPTY`;
+    
+        currentDragState.placement = {
+            tier: targetTier,
+            index: 0
+        };
+    
+        if (
+            currentDragState.placeholderKey ===
+            emptyTierKey &&
+            placeholder.parentElement === dropZone
+        ) {
+            return;
+        }
+    
+        currentDragState.placeholderKey =
+            emptyTierKey;
+    
+        placePlaceholderBefore(
+            placeholder,
+            dropZone,
+            null
+        );
+    
         return;
     }
+
 
     /*
      * В корзине placeholder не используется.
