@@ -15,7 +15,9 @@ import {
     createInitialLayout,
     createShareUrl
 } from './custom-tierlist.js';
-
+import {
+    setupCustomDragAndDrop
+} from './custom-dnd.js';
 
 let games = [];
 let currentLayout = null;
@@ -267,11 +269,18 @@ function renderCustomTierList() {
                         return;
                     }
 
-                    container.appendChild(
+                    const card =
                         createGameCard(
                             game
-                        )
+                        );
+                    
+                    card.dataset.gameId =
+                        gameId;
+                    
+                    container.appendChild(
+                        card
                     );
+
 
                     visibleGamesCount++;
                 }
@@ -282,6 +291,21 @@ function renderCustomTierList() {
     updateEmptyMessage(
         visibleGamesCount
     );
+    setupCustomDragAndDrop({
+    getLayout: () =>
+        currentLayout,
+
+    onLayoutChange:
+        updatedLayout => {
+            currentLayout =
+                updatedLayout;
+
+            showStatus(
+                'Порядок игр обновлён'
+            );
+        }
+});
+
 }
 
 
