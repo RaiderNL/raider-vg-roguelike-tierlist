@@ -17,6 +17,12 @@ import {
     PREVIEW_CLOSED_CLASS
 } from './config.js';
 
+import {
+    getGameId,
+    isFavorite,
+    toggleFavorite
+} from './favorites.js';
+
 
 export function createGameCard(
     game,
@@ -24,7 +30,6 @@ export function createGameCard(
         videoFilterActive = false
     } = {}
 ) {
-
     const card =
         document.createElement(
             'article'
@@ -59,7 +64,6 @@ export function createGameCard(
         game['Description'] ||
         '';
 
-
     const gameTags =
         getGameTags(
             game
@@ -76,10 +80,8 @@ export function createGameCard(
 
 
     /*
-     * Медиа-блок содержит обложку и цену.
-     *
-     * Цена добавляется позже в steam-price.js,
-     * но уже будет найдена внутри этого блока.
+     * Медиа-блок содержит обложку,
+     * цену и кнопку избранного.
      */
     const media =
         createGameMedia();
@@ -96,6 +98,16 @@ export function createGameCard(
             )
         );
     }
+
+    const favoriteButton =
+        createFavoriteButton(
+            game,
+            name
+        );
+
+    media.appendChild(
+        favoriteButton
+    );
 
     card.appendChild(
         media
@@ -140,7 +152,6 @@ export function createGameCard(
                 steamImage,
                 description
             })
-
         );
     }
 
@@ -153,8 +164,7 @@ export function createGameCard(
 
 
     /*
-     * Регистрация происходит после создания всей карточки.
-     * steam-price.js найдёт .game-media и добавит цену внутрь него.
+     * Регистрация карточки в системе цен.
      */
     registerPriceCard(
         card,
@@ -175,6 +185,122 @@ function createGameMedia() {
         'game-media';
 
     return media;
+}
+
+
+function createFavoriteButton(
+    game,
+    name
+) {
+    const button =
+        document.createElement(
+            'button'
+        );
+
+    button.className =
+        'favorite-button';
+
+    button.type =
+        'button';
+
+    const gameId =
+        getGameId(
+            game
+        );
+
+    button.dataset.gameId =
+        gameId;
+
+    updateFavoriteButton(
+        button,
+        game
+    );
+
+    button.addEventListener(
+        'click',
+        event => {
+            /*
+             * Не открываем popup при нажатии
+             * на кнопку избранного.
+             */
+            event.preventDefault();
+            event.stopPropagation();
+
+            if (
+                !gameId
+            ) {
+                return;
+            }
+
+            toggleFavorite(
+                game
+            );
+
+            updateFavoriteButton(
+                button,
+                game
+            );
+
+            /*
+             * main.js будет использовать это событие,
+             * чтобы обновить фильтр избранного.
+             */
+            window.dispatchEvent(
+                new CustomEvent(
+                    'favoriteschange'
+                )
+            );
+        }
+    );
+
+    button.addEventListener(
+        'keydown',
+        event => {
+            event.stopPropagation();
+        }
+    );
+
+    return button;
+}
+
+
+function updateFavoriteButton(
+    button,
+    game
+) {
+    const favorite =
+        isFavorite(
+            game
+        );
+
+    button.classList.toggle(
+        'is-favorite',
+        favorite
+    );
+
+    button.textContent =
+        favorite
+            ? '★'
+            : '☆';
+
+    button.setAttribute(
+        'aria-pressed',
+        String(
+            favorite
+        )
+    );
+
+    button.setAttribute(
+        'aria-label',
+        favorite
+            ? 'Удалить игру из избранного'
+            : 'Добавить игру в избранное'
+    );
+
+    button.title =
+        favorite
+            ? 'Удалить из избранного'
+            : 'Добавить в избранное';
 }
 
 
