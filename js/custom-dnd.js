@@ -56,10 +56,12 @@ export function setupCustomDragAndDrop({
         handleDragStart
     );
 
-    document.addEventListener(
+    window.addEventListener(
         'dragover',
-        handleDragOver
+        handleDragOver,
+        true
     );
+
 
     document.addEventListener(
         'dragenter',
@@ -206,9 +208,9 @@ function handleDragOver(
     }
 
     /*
-     * Сначала проверяем выход курсора
-     * за левую или правую границу основного
-     * содержимого.
+     * Сначала проверяем боковые зоны.
+     * Проверка выполняется даже если event.target
+     * является body или пустым пространством.
      */
     const sideTrashZone =
         updateSideTrashZones(
@@ -236,10 +238,6 @@ function handleDragOver(
         return;
     }
 
-    /*
-     * Если курсор вернулся в основную область,
-     * боковые зоны скрываются.
-     */
     hideSideTrashZones();
 
     const dropZone =
@@ -266,12 +264,13 @@ function handleDragOver(
     );
 }
 
+
 function updateSideTrashZones(
     event
 ) {
-    const editorContent =
+    const customMain =
         document.querySelector(
-            '#custom-editor-content'
+            '.custom-main'
         );
 
     const leftZone =
@@ -285,50 +284,65 @@ function updateSideTrashZones(
         );
 
     if (
-        !editorContent ||
+        !customMain ||
         !leftZone ||
         !rightZone
     ) {
         return null;
     }
 
-    const editorRect =
-        editorContent.getBoundingClientRect();
+    const mainRect =
+        customMain.getBoundingClientRect();
+
+    const pointerX =
+        Number(
+            event.clientX
+        );
 
     const isOutsideLeft =
-        event.clientX <
-        editorRect.left -
+        pointerX <
+        mainRect.left -
         SIDE_TRASH_EDGE_GAP;
 
     const isOutsideRight =
-        event.clientX >
-        editorRect.right +
+        pointerX >
+        mainRect.right +
         SIDE_TRASH_EDGE_GAP;
+
+    const showLeft =
+        isOutsideLeft &&
+        !isOutsideRight;
+
+    const showRight =
+        isOutsideRight &&
+        !isOutsideLeft;
 
     leftZone.classList.toggle(
         'is-edge-visible',
-        isOutsideLeft
+        showLeft
     );
 
     rightZone.classList.toggle(
         'is-edge-visible',
-        isOutsideRight
+        showRight
     );
 
     if (
-        isOutsideLeft
+        showLeft
     ) {
         return leftZone;
     }
 
     if (
-        isOutsideRight
+        showRight
     ) {
         return rightZone;
     }
 
     return null;
 }
+
+
 function hideSideTrashZones() {
     document
         .querySelectorAll(
@@ -478,6 +492,9 @@ function handleDragEnter(
         currentDragState.placement =
             null;
 
+        currentDragState.placeholderKey =
+            null;
+
         removeDropPlaceholder();
 
         setActiveDropZone(
@@ -507,6 +524,7 @@ function handleDragEnter(
         dropZone
     );
 }
+
 
 
 
