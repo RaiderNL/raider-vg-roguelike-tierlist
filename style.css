@@ -139,6 +139,102 @@ iframe {
 }
 /*
  * =========================================================
+ * Шапка основной страницы
+ * =========================================================
+ */
+
+.main-page .site-header {
+    padding: 18px 20px;
+    text-align: left;
+}
+
+.main-page .site-header-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+
+    width: min(
+        var(--page-content-width),
+        100%
+    );
+    margin: 0 auto;
+}
+
+.main-page .site-logo {
+    color: #fff;
+    font-size: 19px;
+    font-weight: 700;
+    line-height: 1.2;
+    text-decoration: none;
+}
+
+.main-page .site-logo:hover {
+    color: var(--color-accent);
+}
+
+.main-page .site-logo:focus-visible {
+    outline: 3px solid var(--color-accent-focus);
+    outline-offset: 4px;
+    border-radius: var(--radius-sm);
+}
+
+.main-page .site-navigation {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 6px;
+
+    padding: 4px;
+
+    background: rgb(255 255 255 / 8%);
+    border: 1px solid rgb(255 255 255 / 16%);
+    border-radius: var(--radius-md);
+}
+
+.main-page .site-navigation a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+
+    min-height: 36px;
+    padding: 8px 12px;
+
+    color: #d7d9df;
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 1.2;
+    text-decoration: none;
+    white-space: nowrap;
+
+    border-radius: var(--radius-sm);
+
+    transition:
+        color 0.2s ease,
+        background 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.main-page .site-navigation a:hover {
+    color: #fff;
+    background: rgb(255 255 255 / 12%);
+}
+
+.main-page .site-navigation a.is-active {
+    color: #342800;
+    background: var(--color-accent);
+    box-shadow: var(--shadow-card);
+}
+
+.main-page .site-navigation a:focus-visible {
+    outline: 3px solid var(--color-accent-focus);
+    outline-offset: 2px;
+}
+
+/*
+ * =========================================================
  * Верхушка основной страницы
  * =========================================================
  */
@@ -2157,6 +2253,17 @@ body.price-mode-active #tier-F .game-price-discount {
     border: 1px solid var(--color-border);
     border-radius: var(--radius-md);
     box-shadow: var(--shadow-panel);
+}
+/*
+ * =========================================================
+ * Цветовая схема страницы рэйдера
+ * =========================================================
+ */
+
+body.main-page {
+    --color-primary: #b8860b;
+    --color-primary-dark: #8a6508;
+    --color-primary-focus: rgb(184 134 11 / 30%);
 }
 
 
