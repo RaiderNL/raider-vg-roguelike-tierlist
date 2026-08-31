@@ -47,7 +47,171 @@ document.addEventListener(
     'DOMContentLoaded',
     init
 );
+window.addEventListener(
+    'favoriteschange',
+    () => {
+        renderCustomTierList();
+    }
+);
+function setCustomFiltersFromUrl() {
+    const url =
+        new URL(
+            window.location.href
+        );
 
+    const searchInput =
+        document
+    .querySelector(
+        '#custom-search'
+    )
+    ?.addEventListener(
+        'input',
+        renderCustomTierList
+    );
+
+
+    const tagFilter =
+        document.querySelector(
+            '#custom-tag-filter'
+        );
+
+    const videoFilter =
+        document.querySelector(
+            '#custom-video-filter'
+        );
+
+    if (
+        searchInput
+    ) {
+        searchInput.value =
+            url.searchParams.get(
+                'search'
+            ) || '';
+    }
+
+    if (
+        tagFilter
+    ) {
+        tagFilter.value =
+            url.searchParams.get(
+                'tag'
+            ) || '';
+    }
+
+    if (
+        videoFilter
+    ) {
+        videoFilter.value =
+            url.searchParams.get(
+                'video'
+            ) || '';
+    }
+}
+function updateCustomUrlFromFilters() {
+    const url =
+        new URL(
+            window.location.href
+        );
+
+    const searchValue =
+        getSearchValue();
+
+    const selectedTag =
+        getSelectedTag();
+
+    const selectedVideo =
+        getSelectedVideo();
+
+    updateUrlParameter(
+        url,
+        'search',
+        searchValue
+    );
+
+    updateUrlParameter(
+        url,
+        'tag',
+        selectedTag
+    );
+
+    updateUrlParameter(
+        url,
+        'video',
+        selectedVideo
+    );
+
+    window.history.replaceState(
+        {},
+        '',
+        url
+    );
+}
+
+
+function updateUrlParameter(
+    url,
+    parameter,
+    value
+) {
+    if (
+        value
+    ) {
+        url.searchParams.set(
+            parameter,
+            value
+        );
+
+        return;
+    }
+
+    url.searchParams.delete(
+        parameter
+    );
+}
+
+function resetCustomFilters() {
+    const searchInput =
+        document.querySelector(
+            '#custom-search'
+        );
+
+    const tagFilter =
+        document.querySelector(
+            '#custom-tag-filter'
+        );
+
+    const videoFilter =
+        document.querySelector(
+            '#custom-video-filter'
+        );
+
+    if (
+        searchInput
+    ) {
+        searchInput.value =
+            '';
+    }
+
+    if (
+        tagFilter
+    ) {
+        tagFilter.value =
+            '';
+    }
+
+    if (
+        videoFilter
+    ) {
+        videoFilter.value =
+            '';
+    }
+
+    setFavoritesFilter(
+        false
+    );
+
+    renderCustomTierList();
+}
 
 /*
  * =========================================================
