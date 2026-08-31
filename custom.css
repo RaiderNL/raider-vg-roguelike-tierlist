@@ -769,10 +769,13 @@ body.custom-drag-active
     min-height: 190px;
     box-sizing: border-box;
 
+    pointer-events: none;
+
     background: rgb(37 99 235 / 10%);
     border: 2px dashed var(--color-primary);
     border-radius: var(--radius-md);
 }
+
 
 body.custom-mode-edit
 .custom-games-container
