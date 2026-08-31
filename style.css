@@ -1040,7 +1040,7 @@ body {
     top: 0;
     bottom: 0;
     left: 0;
-    z-index: 1000;
+    z-index: 100004;
 
     display: flex;
     align-items: center;
@@ -1629,3 +1629,74 @@ body {
         animation: none;
     }
 }
+/*
+ * Исправление кнопки «Наверх» на очень узких экранах.
+ *
+ * Кнопка должна находиться поверх тир-листа
+ * и оставаться внутри видимой области viewport.
+ */
+@media (max-width: 900px) {
+    body {
+        min-width: 0;
+    }
+
+    .back-to-top {
+        position: fixed !important;
+        top: auto !important;
+        right: 12px !important;
+        bottom: 12px !important;
+        left: auto !important;
+        z-index: 100004 !important;
+
+        display: flex !important;
+
+        width: 42px !important;
+        min-width: 42px !important;
+        max-width: 42px !important;
+        height: 42px !important;
+        min-height: 42px !important;
+        max-height: 42px !important;
+
+        flex: 0 0 42px !important;
+        align-items: center !important;
+        justify-content: center !important;
+
+        overflow: visible !important;
+        visibility: visible;
+    }
+
+    .back-to-top span:first-child {
+        display: block !important;
+
+        width: 100%;
+        color: #fff;
+        font-size: 22px;
+        line-height: 1;
+        text-align: center;
+    }
+
+    .back-to-top span:last-child {
+        display: none !important;
+    }
+}
+
+@media (max-width: 400px) {
+    .back-to-top {
+        right: 8px !important;
+        bottom: 8px !important;
+
+        width: 38px !important;
+        min-width: 38px !important;
+        max-width: 38px !important;
+        height: 38px !important;
+        min-height: 38px !important;
+        max-height: 38px !important;
+
+        flex-basis: 38px !important;
+    }
+
+    .back-to-top span:first-child {
+        font-size: 20px;
+    }
+}
+
