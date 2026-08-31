@@ -2,6 +2,7 @@ let currentDragState = null;
 
 let currentLayoutGetter = null;
 let currentLayoutChangeHandler = null;
+let flipAnimationFrame = null;
 
 let dragAndDropIsInitialized = false;
 
@@ -562,9 +563,15 @@ function placePlaceholderAtEnd(
         return;
     }
 
-    dropZone.appendChild(
-        placeholder
-    );
+    animateDropZoneChange(
+    dropZone,
+    () => {
+        dropZone.appendChild(
+            placeholder
+        );
+    }
+);
+
 }
 
 
@@ -599,10 +606,122 @@ function placePlaceholderBefore(
         return;
     }
 
-    dropZone.insertBefore(
-        placeholder,
-        referenceCard
+    animateDropZoneChange(
+    dropZone,
+    () => {
+        dropZone.insertBefore(
+            placeholder,
+            referenceCard
+        );
+    }
+);
+
+}
+function animateDropZoneChange(
+    dropZone,
+    change
+) {
+    if (
+        typeof change !== 'function'
+    ) {
+        return;
+    }
+
+    if (
+        flipAnimationFrame
+    ) {
+        cancelAnimationFrame(
+            flipAnimationFrame
+        );
+
+        flipAnimationFrame =
+            null;
+    }
+
+    const cards =
+        [
+            ...dropZone.querySelectorAll(
+                '[data-game-id]'
+            )
+        ].filter(
+            card =>
+                card !==
+                currentDragState?.card
+        );
+
+    const previousPositions =
+        new Map();
+
+    cards.forEach(
+        card => {
+            previousPositions.set(
+                card,
+                card.getBoundingClientRect()
+            );
+        }
     );
+
+    change();
+
+    flipAnimationFrame =
+        requestAnimationFrame(
+            () => {
+                cards.forEach(
+                    card => {
+                        const previous =
+                            previousPositions.get(
+                                card
+                            );
+
+                        if (
+                            !previous
+                        ) {
+                            return;
+                        }
+
+                        const current =
+                            card.getBoundingClientRect();
+
+                        const deltaX =
+                            previous.left -
+                            current.left;
+
+                        const deltaY =
+                            previous.top -
+                            current.top;
+
+                        if (
+                            Math.abs(deltaX) < 1 &&
+                            Math.abs(deltaY) < 1
+                        ) {
+                            return;
+                        }
+
+                        card.animate(
+                            [
+                                {
+                                    transform:
+                                        `translate(${deltaX}px, ${deltaY}px)`
+                                },
+                                {
+                                    transform:
+                                        'translate(0, 0)'
+                                }
+                            ],
+                            {
+                                duration: 220,
+                                easing:
+                                    'cubic-bezier(0.22, 1, 0.36, 1)',
+                                fill: 'both'
+                            }
+                        );
+                    }
+                );
+
+                flipAnimationFrame =
+                    null;
+            }
+        );
 }
 
 
