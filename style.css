@@ -2129,6 +2129,43 @@ body.price-mode-active #tier-F .game-price-discount {
         outline-offset: 3px;
     }
 }
+/*
+ * =========================================================
+ * Положение верхушки основной страницы
+ * =========================================================
+ */
+
+.main-page-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 20px;
+
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+.main-page-heading {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.main-mode-switcher {
+    display: inline-flex;
+    flex: 0 0 auto;
+    align-self: flex-start;
+
+    gap: 4px;
+    margin-left: auto;
+    padding: 4px;
+
+    white-space: nowrap;
+
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-panel);
+}
 
 
 /*
