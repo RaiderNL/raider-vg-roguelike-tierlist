@@ -92,9 +92,6 @@ async function init() {
  * =========================================================
  */
 
-/*
- * Находит контейнеры UNRANKED, S-F и REMOVED.
- */
 function cacheTierContainers() {
     [
         ...CUSTOM_TIER_NAMES,
@@ -517,10 +514,6 @@ function fillTagFilter() {
  * =========================================================
  */
 
-/*
- * Обёртка позволяет включать FLIP-анимацию
- * только после завершения drag-and-drop.
- */
 function renderCustomTierList(
     transitionInfo = null
 ) {
@@ -629,7 +622,12 @@ function renderCustomTierListNow(
 
                     const card =
                         createGameCard(
-                            game
+                            game,
+                            {
+                                showFavorite: false,
+                                showInfo: true,
+                                openOnCardClick: false
+                            }
                         );
 
                     card.dataset.gameId =
