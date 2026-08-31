@@ -43,9 +43,6 @@ body {
     margin: 24px auto;
 }
 
-/*
- * Панель фильтров.
- */
 .controls {
     display: flex;
     flex-wrap: wrap;
@@ -112,9 +109,6 @@ body {
     gap: 12px;
 }
 
-/*
- * Переключатель отображения цен.
- */
 .price-mode-toggle {
     position: relative;
 
@@ -224,9 +218,6 @@ body {
     color: inherit;
 }
 
-/*
- * Компоновка тир-листа и панели видео.
- */
 .tier-list-layout {
     display: block;
 }
@@ -263,9 +254,6 @@ body {
     box-shadow: 0 2px 8px rgb(0 0 0 / 8%);
 }
 
-/*
- * Едва заметный оттенок фона для каждого тира.
- */
 .tier-row:has(.tier-s) {
     background: #fffcf1;
 }
@@ -378,9 +366,6 @@ body {
     width: 142px;
 }
 
-/*
- * Карточки игр.
- */
 .game-card {
     position: relative;
 
@@ -483,9 +468,6 @@ body {
     border-radius: 4px;
 }
 
-/*
- * Плашки цен.
- */
 .game-price {
     position: absolute;
     right: 5px;
@@ -621,9 +603,6 @@ body {
     }
 }
 
-/*
- * Popup карточки на десктопе.
- */
 .game-preview-popup {
     position: absolute;
     z-index: 100002;
@@ -663,9 +642,6 @@ body {
     width: min(330px, calc(100vw - 16px));
 }
 
-/*
- * Кнопка доступна только в мобильном popup.
- */
 .game-preview-close {
     position: absolute;
     top: 9px;
@@ -704,9 +680,6 @@ body {
     outline-offset: 2px;
 }
 
-/*
- * При выбранном видео popup скрыт.
- */
 .tier-list-layout.video-filter-active
 .game-preview-popup {
     display: none !important;
@@ -732,9 +705,6 @@ body {
     transform: none;
 }
 
-/*
- * Прозрачный мост между карточкой и popup.
- */
 .game-preview-popup::after {
     content: '';
 
@@ -891,9 +861,6 @@ body {
     text-align: center;
 }
 
-/*
- * Панель выбранного видео.
- */
 .selected-video-panel {
     position: sticky;
     top: 16px;
@@ -986,9 +953,6 @@ body {
     text-align: center;
 }
 
-/*
- * Подвал.
- */
 .site-footer {
     padding: 24px;
 
@@ -1013,9 +977,6 @@ body {
     border-radius: 3px;
 }
 
-/*
- * Планшеты.
- */
 @media (max-width: 900px) {
     .tier-list-layout,
     .tier-list-layout:has(.selected-video-panel.is-visible) {
@@ -1030,13 +991,17 @@ body {
     }
 }
 
-/*
- * Мобильная версия.
- */
 @media (max-width: 600px) {
-    html,
+    /*
+     * Не допускаем горизонтального расширения документа.
+     */
+    html {
+        overflow-x: clip;
+    }
+
     body {
-        overflow-x: hidden;
+        position: relative;
+        overflow-x: clip;
     }
 
     img,
@@ -1172,11 +1137,19 @@ body {
     }
 
     /*
-     * Мобильное окно preview.
-     * popup переносится в body через previews.js,
-     * поэтому оно всегда считается от viewport.
+     * Пока popup находится в карточке, он не должен
+     * участвовать в ширине страницы. При открытии JS
+     * переносит его в body и добавляет mobile-modal.
      */
-    .game-preview-popup.game-preview-popup-mobile-modal {
+    .game-card .game-preview-popup {
+        display: none !important;
+    }
+
+    /*
+     * Popup всегда прямой потомок body, поэтому
+     * центрируется по viewport телефона.
+     */
+    body > .game-preview-popup.game-preview-popup-mobile-modal {
         position: fixed !important;
         top: 50dvh !important;
         right: auto !important;
@@ -1205,19 +1178,14 @@ body {
         -webkit-overflow-scrolling: touch;
     }
 
-    .game-preview-popup.game-preview-popup-mobile-modal.game-preview-popup-with-description.game-preview-popup-with-actions {
+    body > .game-preview-popup.game-preview-popup-mobile-modal.game-preview-popup-with-description.game-preview-popup-with-actions {
         flex-direction: column;
     }
 
-    .game-preview-popup.game-preview-popup-mobile-modal::after {
+    body > .game-preview-popup.game-preview-popup-mobile-modal::after {
         display: none;
     }
 
-    /*
-     * Крестик отображается только в mobile modal.
-     * order: -1 ставит кнопку перед контентом, поэтому
-     * sticky фиксирует её сверху при прокрутке содержимого.
-     */
     .game-preview-popup-mobile-modal
     .game-preview-close {
         position: sticky;
@@ -1238,10 +1206,6 @@ body {
         background: rgb(32 35 42 / 94%);
     }
 
-    /*
-     * На телефоне цитата сохраняет реальную высоту текста,
-     * а не пытается быть квадратной.
-     */
     .game-preview-popup-mobile-modal
     .preview-description {
         flex: 0 0 auto;
@@ -1287,9 +1251,6 @@ body {
     }
 }
 
-/*
- * Очень узкие экраны.
- */
 @media (max-width: 400px) {
     .tier-label {
         flex-basis: 45px;
