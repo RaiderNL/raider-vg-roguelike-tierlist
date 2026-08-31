@@ -1028,19 +1028,84 @@ body.custom-mode-view
  * Информационная кнопка всегда справа
  */
 
-.custom-games-container .game-info-button {
+/*
+ * Информационная кнопка доступна только
+ * в режиме редактирования.
+ */
+
+body.custom-mode-edit
+.custom-games-container
+.game-info-button {
+    position: absolute;
+    z-index: 6;
+
     top: 6px;
     right: 6px;
     bottom: auto;
     left: auto;
 
-    z-index: 5;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
 
     width: 32px;
     height: 32px;
+    margin: 0;
+    padding: 0;
+
+    color: #fff;
+    font-size: 20px;
+    line-height: 1;
+
+    cursor: pointer;
+
+    background: rgb(32 35 42 / 82%);
+    border: 1px solid rgb(255 255 255 / 28%);
+    border-radius: var(--radius-round);
+    box-shadow: 0 2px 6px rgb(0 0 0 / 28%);
+
+    opacity: 1;
+    visibility: visible;
 
     transform: none;
+
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease,
+        transform 0.2s ease;
 }
+
+body.custom-mode-edit
+.custom-games-container
+.game-info-button:hover {
+    background: rgb(32 35 42 / 100%);
+    border-color: var(--color-primary);
+    transform: scale(1.08);
+}
+
+body.custom-mode-edit
+.custom-games-container
+.game-info-button:active {
+    transform: scale(0.94);
+}
+
+body.custom-mode-edit
+.custom-games-container
+.game-info-button:focus-visible {
+    outline: 3px solid var(--color-primary-focus);
+    outline-offset: 2px;
+}
+
+/*
+ * В просмотре кнопка не создаётся, но это правило
+ * защищает от старых карточек или временного DOM.
+ */
+body.custom-mode-view
+.custom-games-container
+.game-info-button {
+    display: none !important;
+}
+
 
 
 /*
@@ -1908,56 +1973,3 @@ body.custom-mode-view #custom-view-actions {
     opacity: 1 !important;
     filter: none !important;
 }
-/*
- * =========================================================
- * Информационная кнопка в режиме просмотра
- * =========================================================
- */
-
-
-body.custom-mode-view
-.custom-games-container
-.game-media {
-    position: relative;
-    isolation: isolate;
-}
-
-body.custom-mode-view
-.custom-games-container
-.game-info-button {
-    position: absolute;
-    z-index: 20;
-
-    top: 6px;
-    right: 6px;
-    bottom: auto;
-    left: auto;
-
-    display: inline-flex !important;
-    align-items: center;
-    justify-content: center;
-
-    width: 32px;
-    height: 32px;
-    margin: 0;
-    padding: 0;
-
-    opacity: 1 !important;
-    visibility: visible !important;
-    pointer-events: auto !important;
-
-    transform: none;
-}
-
-body.custom-mode-view
-.custom-games-container
-.game-info-button:hover {
-    transform: scale(1.08);
-}
-
-body.custom-mode-view
-.custom-games-container
-.game-info-button:active {
-    transform: scale(0.94);
-}
-
