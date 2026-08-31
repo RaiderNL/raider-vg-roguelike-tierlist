@@ -565,7 +565,7 @@ function updateDropPlaceholder(
         return;
     }
 
-    if (
+if (
         !targetCard
     ) {
         const cardsInDropZone =
@@ -573,6 +573,13 @@ function updateDropPlaceholder(
                 dropZone
             );
 
+        const layout =
+            currentLayoutGetter?.();
+
+        /*
+         * Полностью пустой тир:
+         * ставим placeholder в начало.
+         */
         if (
             cardsInDropZone.length === 0
         ) {
@@ -600,10 +607,122 @@ function updateDropPlaceholder(
                 dropZone,
                 null
             );
+
+            return;
+        }
+
+        const firstCard =
+            cardsInDropZone[0];
+
+        const lastCard =
+            cardsInDropZone[
+                cardsInDropZone.length - 1
+            ];
+
+        const firstBounds =
+            firstCard.getBoundingClientRect();
+
+        const lastBounds =
+            lastCard.getBoundingClientRect();
+
+        /*
+         * Если курсор находится после последней
+         * карточки, placeholder должен попасть
+         * в конец тира.
+         *
+         * Это особенно важно для тира
+         * с одним объектом.
+         */
+        const pointerAfterLastCard =
+            isPointerAfterCard(
+                event,
+                lastBounds
+            );
+
+        if (
+            pointerAfterLastCard
+        ) {
+            const endIndex =
+                Array.isArray(
+                    layout?.[targetTier]
+                )
+                    ? layout[targetTier].length
+                    : cardsInDropZone.length;
+
+            const endPlaceholderKey =
+                `${targetTier}:END`;
+
+            currentDragState.placement = {
+                tier: targetTier,
+                index: endIndex
+            };
+
+            if (
+                currentDragState.placeholderKey ===
+                endPlaceholderKey &&
+                placeholder.parentElement === dropZone &&
+                placeholder ===
+                dropZone.lastElementChild
+            ) {
+                return;
+            }
+
+            currentDragState.placeholderKey =
+                endPlaceholderKey;
+
+            placePlaceholderBefore(
+                placeholder,
+                dropZone,
+                null
+            );
+
+            return;
+        }
+
+        /*
+         * Если курсор находится перед первой
+         * карточкой, ставим placeholder в начало.
+         */
+        const pointerBeforeFirstCard =
+            !isPointerAfterCard(
+                event,
+                firstBounds
+            );
+
+        if (
+            pointerBeforeFirstCard
+        ) {
+            const startPlaceholderKey =
+                `${targetTier}:START`;
+
+            currentDragState.placement = {
+                tier: targetTier,
+                index: 0
+            };
+
+            if (
+                currentDragState.placeholderKey ===
+                startPlaceholderKey &&
+                placeholder.parentElement === dropZone &&
+                placeholder.nextElementSibling ===
+                firstCard
+            ) {
+                return;
+            }
+
+            currentDragState.placeholderKey =
+                startPlaceholderKey;
+
+            placePlaceholderBefore(
+                placeholder,
+                dropZone,
+                firstCard
+            );
         }
 
         return;
     }
+
 
     const targetGameId =
         String(
