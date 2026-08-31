@@ -64,6 +64,7 @@ let searchRenderTimer =
 let shareButtonResetTimer =
     null;
 
+
 const tierContainers =
     {};
 
@@ -225,6 +226,7 @@ function init() {
 
     setupMobileTierNavigation();
 
+
     setupBackToTop(
         backToTopButton
     );
@@ -255,11 +257,13 @@ async function loadApplicationData() {
         fillVideoFilter();
 
         setFiltersFromUrl();
+
         renderGames();
     } catch (
         error
     ) {
         console.error(
+            'Ошибка загрузки игр:',
             error
         );
 
@@ -374,8 +378,7 @@ function clearTierContainers() {
             if (
                 container
             ) {
-                container.innerHTML =
-                    '';
+                container.replaceChildren();
             }
         }
     );
@@ -440,8 +443,6 @@ function resetFilters() {
             '';
     }
 
-    renderGames();
-
     const url =
         new URL(
             window.location.href
@@ -454,53 +455,46 @@ function resetFilters() {
         '',
         url
     );
+
+    renderGames();
 }
 
 
-function showShareButtonMessage(
-    button,
-    message
+async function shareCurrentFilters(
+    button
 ) {
-    if (
-        !button
+    /*
+     * Перед копированием принудительно
+     * синхронизируем URL с текущими фильтрами.
+     */
+    updateUrlFromFilters();
+
+    const url =
+        window.location.href;
+
+    try {
+        await copyText(
+            url
+        );
+
+        showShareButtonMessage(
+            button,
+            SHARE_BUTTON_SUCCESS_LABEL
+        );
+    } catch (
+        error
     ) {
-        return;
-    }
+        console.warn(
+            'Не удалось скопировать ссылку:',
+            error
+        );
 
-    button.title =
-        message;
-
-    button.setAttribute(
-        'aria-label',
-        message
-    );
-
-    if (
-        shareButtonResetTimer
-    ) {
-        clearTimeout(
-            shareButtonResetTimer
+        showShareButtonMessage(
+            button,
+            SHARE_BUTTON_ERROR_LABEL
         );
     }
-
-    shareButtonResetTimer =
-        setTimeout(
-            () => {
-                button.title =
-                    SHARE_BUTTON_DEFAULT_LABEL;
-
-                button.setAttribute(
-                    'aria-label',
-                    SHARE_BUTTON_DEFAULT_LABEL
-                );
-
-                shareButtonResetTimer =
-                    null;
-            },
-            1800
-        );
 }
-
 
 
 async function copyText(
@@ -517,6 +511,7 @@ async function copyText(
         return;
     }
 
+
     const textarea =
         document.createElement(
             'textarea'
@@ -527,6 +522,18 @@ async function copyText(
 
     textarea.style.position =
         'fixed';
+
+    textarea.style.top =
+        '0';
+
+    textarea.style.left =
+        '0';
+
+    textarea.style.width =
+        '1px';
+
+    textarea.style.height =
+        '1px';
 
     textarea.style.opacity =
         '0';
@@ -565,8 +572,14 @@ function showShareButtonMessage(
         return;
     }
 
-    button.textContent =
+    button.title =
         message;
+
+    button.setAttribute(
+        'aria-label',
+        message
+    );
+
 
     if (
         shareButtonResetTimer
@@ -576,11 +589,17 @@ function showShareButtonMessage(
         );
     }
 
+
     shareButtonResetTimer =
         setTimeout(
             () => {
-                button.textContent =
-                    SHARE_BUTTON_DEFAULT_TEXT;
+                button.title =
+                    SHARE_BUTTON_DEFAULT_LABEL;
+
+                button.setAttribute(
+                    'aria-label',
+                    SHARE_BUTTON_DEFAULT_LABEL
+                );
 
                 shareButtonResetTimer =
                     null;
@@ -602,6 +621,7 @@ function setupMobileTierNavigation() {
         return;
     }
 
+
     navigation.addEventListener(
         'click',
         event => {
@@ -616,12 +636,25 @@ function setupMobileTierNavigation() {
                 return;
             }
 
-            const tier =
+            const target =
                 button.dataset.tierTarget;
+
+
+            if (
+                target === 'HOME'
+            ) {
+                window.scrollTo({
+                    top: 0,
+                    behavior: 'smooth'
+                });
+
+                return;
+            }
+
 
             const container =
                 document.querySelector(
-                    `#tier-${tier}`
+                    `#tier-${target}`
                 );
 
             const tierRow =
