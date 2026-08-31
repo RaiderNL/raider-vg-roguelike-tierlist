@@ -306,8 +306,12 @@ function renderGames() {
 
             container.appendChild(
                 createGameCard(
-                    game
+                    game,
+                    {
+                        videoFilterActive: selectedVideo !== ''
+                    }
                 )
+
             );
         }
     );
