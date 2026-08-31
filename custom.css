@@ -437,17 +437,23 @@
 /*
  * Корзина нужна только как цель во время drag-and-drop.
  */
-body.custom-mode-edit .custom-trash-section {
+/*
+ * Только drop-зона корзины появляется во время переноса.
+ * Список скрытых игр и кнопка остаются доступными всегда.
+ */
+body.custom-mode-edit .custom-trash-drop-area {
     display: none;
 }
 
 body.custom-mode-edit.custom-drag-active
-.custom-trash-section {
-    display: block;
+.custom-trash-drop-area {
+    display: flex;
 }
-body.custom-mode-view .custom-trash-section {
+
+body.custom-mode-view .custom-trash-drop-area {
     display: none;
 }
+
 
 .custom-trash-section {
     margin: 0 0 16px;
