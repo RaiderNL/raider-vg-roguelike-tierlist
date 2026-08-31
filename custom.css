@@ -775,9 +775,28 @@ body.custom-mode-edit .custom-games-container .game-card {
     width: 142px;
 }
 /*
+ * Позиция, в которую попадёт карточка после отпускания.
+ */
+body.custom-mode-edit
+.custom-games-container
+.custom-drop-placeholder {
+    flex: 0 0 142px;
+
+    width: 142px;
+    min-height: 180px;
+
+    box-sizing: border-box;
+
+    background: rgb(37 99 235 / 8%);
+    border: 2px dashed var(--color-primary);
+    border-radius: var(--radius-sm);
+}
+
+/*
  * Компактные карточки редактора используют
  * однострочное название, чтобы не занимать место.
  */
+
 body.custom-mode-edit
 .custom-games-container
 .game-title {
