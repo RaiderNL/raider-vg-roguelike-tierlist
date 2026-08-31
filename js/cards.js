@@ -125,7 +125,7 @@ export function createGameCard(
             createInfoButton(
                 name
             );
-
+    
         media.appendChild(
             infoButton
         );
