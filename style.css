@@ -233,16 +233,7 @@ iframe {
     outline-offset: 2px;
 }
 
-/*
- * =========================================================
- * Верхушка основной страницы
- * =========================================================
- */
 
-.main-page .site-header {
-    padding: 18px 20px;
-    text-align: left;
-}
 
 .main-page .site-header-inner {
     display: flex;
