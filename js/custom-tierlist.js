@@ -383,7 +383,10 @@ export function createShareUrl(
             window.location.href
         );
 
-    url.search = '';
+    url.searchParams.delete(
+    CUSTOM_TIERLIST_PARAMETER
+);
+
 
     url.searchParams.set(
         CUSTOM_TIERLIST_PARAMETER,
