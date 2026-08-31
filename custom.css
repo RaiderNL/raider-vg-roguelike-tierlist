@@ -775,9 +775,18 @@ body.custom-drag-active
 
 
 .custom-games-container .game-card.is-dragging {
-    opacity: 0.35;
+    opacity: 0.18;
     cursor: grabbing;
+
+    transform: scale(0.88);
+    filter: saturate(0.7);
+
+    transition:
+        transform 0.24s cubic-bezier(0.22, 1, 0.36, 1),
+        opacity 0.24s ease,
+        filter 0.24s ease;
 }
+
 
 
 /*
@@ -797,6 +806,7 @@ body.custom-drag-active
 
     pointer-events: none;
 
+    opacity: 0.9;
     overflow: hidden;
 
     background:
@@ -810,12 +820,25 @@ body.custom-drag-active
     border-radius: var(--radius-md);
 
     box-shadow:
-        inset 0 0 0 1px rgb(255 255 255 / 65%),
-        0 4px 14px rgb(37 99 235 / 10%);
+        inset 0 0 0 1px rgb(255 255 255 / 70%),
+        0 4px 14px rgb(37 99 235 / 12%);
 
-    animation:
-        custom-placeholder-breathe
-        1.4s ease-in-out infinite;
+    transform: scale(0.82);
+    transform-origin: center;
+
+    transition:
+        transform 0.24s cubic-bezier(0.22, 1, 0.36, 1),
+        opacity 0.24s ease,
+        box-shadow 0.24s ease;
+}
+
+.custom-drop-placeholder.is-visible {
+    opacity: 1;
+    transform: scale(1);
+
+    box-shadow:
+        inset 0 0 0 1px rgb(255 255 255 / 85%),
+        0 8px 24px rgb(37 99 235 / 24%);
 }
 
 /*
@@ -1085,9 +1108,11 @@ body.custom-mode-view .custom-empty-message {
     }
 
     .custom-tier-row {
-        min-height: 120px;
-    }
-
+        transition:
+            min-height 0.28s cubic-bezier(0.22, 1, 0.36, 1),
+            background 0.2s ease,
+            box-shadow 0.2s ease;
+    }    
     .custom-tier-label {
         flex-basis: 60px;
 
@@ -1095,9 +1120,9 @@ body.custom-mode-view .custom-empty-message {
     }
 
     .custom-games-container {
-        gap: 8px;
-        min-height: 118px;
-        padding: 10px;
+        transition:
+            min-height 0.28s cubic-bezier(0.22, 1, 0.36, 1),
+            padding 0.28s ease;
     }
 
     .custom-games-container .game-card {
