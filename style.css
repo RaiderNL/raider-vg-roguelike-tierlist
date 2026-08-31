@@ -1732,3 +1732,42 @@ body {
         transition: none;
     }
 }
+/*
+ * Полностью запрещаем горизонтальный скролл
+ * на всех разрешениях.
+ */
+html,
+body {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+}
+
+/*
+ * Современные браузеры используют clip:
+ * содержимое обрезается без создания горизонтального
+ * scroll-контейнера.
+ */
+@supports (overflow-x: clip) {
+    html,
+    body {
+        overflow-x: clip;
+    }
+}
+
+/*
+ * Все элементы не должны раздувать страницу
+ * за пределы viewport.
+ */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+/*
+ * Дополнительная защита для плавающей кнопки.
+ */
+.back-to-top {
+    max-width: 100vw;
+}
