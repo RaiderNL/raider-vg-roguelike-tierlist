@@ -1195,6 +1195,18 @@ body.custom-mode-view
     cursor: pointer;
 }
 
+body.custom-mode-edit
+.custom-games-container
+.game-card:not(.preview-closed) {
+    z-index: 100001;
+}
+
+body.custom-mode-edit
+.custom-tier-row:has(
+    .game-card:not(.preview-closed)
+) {
+    z-index: 100000;
+}
 
 /*
  * =========================================================
