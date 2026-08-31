@@ -695,17 +695,12 @@ function setupBackToTop(
 
     const updateButtonVisibility =
         () => {
-            const isDesktop =
-                window.matchMedia(
-                    '(min-width: 901px)'
-                ).matches;
-
             const controlsRect =
                 controls.getBoundingClientRect();
-
+            
             const shouldShow =
-                isDesktop &&
                 controlsRect.bottom < 0;
+
 
             button.classList.toggle(
                 BACK_TO_TOP_VISIBLE_CLASS,
