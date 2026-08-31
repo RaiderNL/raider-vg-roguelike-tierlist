@@ -1879,3 +1879,32 @@ body.custom-mode-view #custom-edit-actions {
 body.custom-mode-view #custom-view-actions {
     display: flex;
 }
+/*
+ * =========================================================
+ * Подготовка тир-листа к скриншоту
+ * =========================================================
+ */
+
+.custom-screenshot-render {
+    isolation: isolate;
+    overflow: hidden !important;
+}
+
+.custom-screenshot-render
+.custom-tier-row {
+    overflow: hidden !important;
+    box-shadow: none !important;
+}
+
+.custom-screenshot-render
+.custom-games-container {
+    overflow: hidden !important;
+}
+
+.custom-screenshot-render
+.game-card {
+    transform: none !important;
+    box-shadow: none !important;
+    opacity: 1 !important;
+    filter: none !important;
+}
