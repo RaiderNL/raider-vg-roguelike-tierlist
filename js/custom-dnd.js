@@ -128,8 +128,9 @@ function handleDragStart(
     if (
         event.target instanceof Element &&
         event.target.closest(
-            '.game-info-button'
-        )
+    '.game-info-button, .favorite-button'
+)
+
     ) {
         event.preventDefault();
 
