@@ -5,7 +5,6 @@ const PRICES_FILE_URL =
     ).href;
 
 
-
 const PRICE_MODE_CLASS =
     'price-mode-active';
 
@@ -25,8 +24,10 @@ const PRICE_UNAVAILABLE_CLASS =
 const PRICE_RELOAD_INTERVAL =
     24 * 60 * 60 * 1000;
 
+
 const PRICE_HIDE_DURATION =
     220;
+
 
 const priceRemovalTimers =
     new WeakMap();
@@ -94,8 +95,7 @@ export function setPriceMode(
 
 
 /*
- * Альтернативное имя функции,
- * если оно используется в script.js.
+ * Альтернативное имя функции.
  */
 export function togglePriceMode(
     isEnabled
@@ -108,10 +108,6 @@ export function togglePriceMode(
 
 /*
  * Регистрация карточки игры.
- *
- * Эту функцию нужно вызвать после создания карточки:
- *
- * registerPriceCard(card, game);
  */
 export function registerPriceCard(
     card,
@@ -175,90 +171,98 @@ export async function loadStaticPrices() {
                     'no-cache'
             }
         )
-            .then(response => {
-                if (
-                    !response.ok
-                ) {
-                    throw new Error(
-                        `Не удалось загрузить prices.json: HTTP ${response.status}`
-                    );
-                }
-
-
-                return response.json();
-            })
-            .then(result => {
-                const prices =
-                    result?.prices ||
-                    result ||
-                    {};
-
-
-                priceCache.clear();
-
-
-                Object.entries(
-                    prices
-                ).forEach(
-                    ([appId, priceData]) => {
-                        priceCache.set(
-                            String(appId),
-                            priceData
+            .then(
+                response => {
+                    if (
+                        !response.ok
+                    ) {
+                        throw new Error(
+                            `Не удалось загрузить prices.json: HTTP ${response.status}`
                         );
                     }
-                );
 
 
-                pricesUpdatedAt =
-                    result?.updatedAt ||
-                    null;
+                    return response.json();
+                }
+            )
+            .then(
+                result => {
+                    const prices =
+                        result?.prices ||
+                        result ||
+                        {};
 
 
-                pricesLoaded =
-                    true;
+                    priceCache.clear();
 
 
-                console.info(
-                    `Цены загружены из prices.json: ${priceCache.size}`
-                );
-
-
-                if (
-                    pricesUpdatedAt
-                ) {
-                    console.info(
-                        'Дата обновления цен:',
-                        pricesUpdatedAt
+                    Object.entries(
+                        prices
+                    ).forEach(
+                        ([appId, priceData]) => {
+                            priceCache.set(
+                                String(appId),
+                                priceData
+                            );
+                        }
                     );
+
+
+                    pricesUpdatedAt =
+                        result?.updatedAt ||
+                        null;
+
+
+                    pricesLoaded =
+                        true;
+
+
+                    console.info(
+                        `Цены загружены из prices.json: ${priceCache.size}`
+                    );
+
+
+                    if (
+                        pricesUpdatedAt
+                    ) {
+                        console.info(
+                            'Дата обновления цен:',
+                            pricesUpdatedAt
+                        );
+                    }
+
+
+                    if (
+                        priceModeEnabled
+                    ) {
+                        renderAllPrices();
+                    }
+
+
+                    return priceCache;
                 }
+            )
+            .catch(
+                error => {
+                    pricesLoaded =
+                        false;
 
 
-                if (
-                    priceModeEnabled
-                ) {
-                    renderAllPrices();
+                    console.warn(
+                        'Ошибка загрузки prices.json:',
+                        error
+                    );
+
+
+                    return priceCache;
                 }
-
-
-                return priceCache;
-            })
-            .catch(error => {
-                pricesLoaded =
-                    false;
-
-
-                console.warn(
-                    'Ошибка загрузки prices.json:',
-                    error
-                );
-
-
-                return priceCache;
-            })
-            .finally(() => {
-                pricesLoadingPromise =
-                    null;
-            });
+            )
+            .finally(
+                () => {
+                    pricesLoadingPromise =
+                        null;
+                }
+            );
 
 
     return pricesLoadingPromise;
@@ -267,9 +271,6 @@ export async function loadStaticPrices() {
 
 /*
  * Повторная загрузка файла раз в сутки.
- *
- * Обычно она не нужна при обычном открытии страницы,
- * но полезна, если вкладка остаётся открытой.
  */
 setInterval(
     () => {
@@ -299,7 +300,7 @@ export function getPrice(
 
 
 /*
- * Возвращает дату обновления prices.json.
+ * Возвращает дату обновления цен.
  */
 export function getPricesUpdatedAt() {
     return pricesUpdatedAt;
@@ -307,25 +308,27 @@ export function getPricesUpdatedAt() {
 
 
 /*
- * Обновление цен на всех зарегистрированных карточках.
+ * Обновляет цены на всех зарегистрированных карточках.
  */
 export function renderAllPrices() {
-    registeredCards.forEach(card => {
-        if (
-            !card.isConnected
-        ) {
-            registeredCards.delete(
+    registeredCards.forEach(
+        card => {
+            if (
+                !card.isConnected
+            ) {
+                registeredCards.delete(
+                    card
+                );
+
+                return;
+            }
+
+
+            renderPriceForCard(
                 card
             );
-
-            return;
         }
-
-
-        renderPriceForCard(
-            card
-        );
-    });
+    );
 }
 
 
@@ -336,8 +339,10 @@ function renderPriceForCard(
     card
 ) {
     cancelPriceRemoval(
-    card
-);
+        card
+    );
+
+
     const game =
         card._steamPriceGame;
 
@@ -438,7 +443,7 @@ function getSteamAppIdFromGame(
 
 /*
  * Получение App ID из ссылки Steam
- * или из уже готового числового значения.
+ * или из числового значения.
  */
 function getSteamAppId(
     value
@@ -472,6 +477,9 @@ function getSteamAppId(
 
 /*
  * Получение или создание элемента цены.
+ *
+ * Цена помещается внутрь .game-media,
+ * чтобы позиционироваться относительно изображения.
  */
 function getPriceElement(
     card
@@ -483,18 +491,41 @@ function getPriceElement(
 
 
     if (
-        !priceElement
+        priceElement
     ) {
-        priceElement =
-            document.createElement(
-                'div'
-            );
+        return priceElement;
+    }
 
 
-        priceElement.className =
-            PRICE_ELEMENT_CLASS;
+    priceElement =
+        document.createElement(
+            'div'
+        );
+
+    priceElement.className =
+        PRICE_ELEMENT_CLASS;
 
 
+    const media =
+        card.querySelector(
+            '.game-media'
+        );
+
+
+    /*
+     * Основной вариант — добавить цену
+     * в блок изображения.
+     *
+     * Запасной вариант оставлен для совместимости
+     * со старыми карточками.
+     */
+    if (
+        media
+    ) {
+        media.appendChild(
+            priceElement
+        );
+    } else {
         card.appendChild(
             priceElement
         );
@@ -521,11 +552,9 @@ function showPriceLoading(
         PRICE_UNAVAILABLE_CLASS
     );
 
-
     priceElement.classList.add(
         PRICE_LOADING_CLASS
     );
-
 
     priceElement.textContent =
         'Загрузка…';
@@ -548,11 +577,9 @@ function showPriceUnavailable(
         PRICE_LOADING_CLASS
     );
 
-
     priceElement.classList.add(
         PRICE_UNAVAILABLE_CLASS
     );
-
 
     priceElement.textContent =
         'Цена недоступна';
@@ -586,15 +613,12 @@ function renderPrice(
             'span'
         );
 
-
     currentPrice.className =
         'game-price-current';
-
 
     currentPrice.textContent =
         priceData.finalFormatted ||
         'Цена недоступна';
-
 
     priceElement.appendChild(
         currentPrice
@@ -616,10 +640,8 @@ function renderPrice(
                 'span'
             );
 
-
         oldPrice.className =
             'game-price-old';
-
 
         oldPrice.textContent =
             priceData.initialFormatted;
@@ -630,10 +652,8 @@ function renderPrice(
                 'span'
             );
 
-
         discount.className =
             'game-price-discount';
-
 
         discount.textContent =
             `−${priceData.discountPercent}%`;
@@ -643,12 +663,12 @@ function renderPrice(
             oldPrice
         );
 
-
         priceElement.appendChild(
             discount
         );
     }
 }
+
 
 function cancelPriceRemoval(
     card
@@ -657,6 +677,7 @@ function cancelPriceRemoval(
         priceRemovalTimers.get(
             card
         );
+
 
     if (
         timer
@@ -670,10 +691,12 @@ function cancelPriceRemoval(
         );
     }
 
+
     const priceElement =
         card.querySelector(
             `.${PRICE_ELEMENT_CLASS}`
         );
+
 
     if (
         priceElement
@@ -684,44 +707,53 @@ function cancelPriceRemoval(
     }
 }
 
+
 /*
- * Удаление отображения цен при выключении режима.
+ * Удаление цены при выключении режима.
  */
 function hideAllPrices() {
-    registeredCards.forEach(card => {
-        const priceElement =
-            card.querySelector(
-                `.${PRICE_ELEMENT_CLASS}`
+    registeredCards.forEach(
+        card => {
+            const priceElement =
+                card.querySelector(
+                    `.${PRICE_ELEMENT_CLASS}`
+                );
+
+
+            if (
+                !priceElement
+            ) {
+                return;
+            }
+
+
+            cancelPriceRemoval(
+                card
             );
 
-        if (
-            !priceElement
-        ) {
-            return;
-        }
 
-        cancelPriceRemoval(
-            card
-        );
+            priceElement.classList.add(
+                'game-price-hiding'
+            );
 
-        priceElement.classList.add(
-            'game-price-hiding'
-        );
 
-        const timer =
-            setTimeout(() => {
-                priceElement.remove();
+            const timer =
+                setTimeout(
+                    () => {
+                        priceElement.remove();
 
-                priceRemovalTimers.delete(
-                    card
+                        priceRemovalTimers.delete(
+                            card
+                        );
+                    },
+                    PRICE_HIDE_DURATION
                 );
-            }, PRICE_HIDE_DURATION);
 
-        priceRemovalTimers.set(
-            card,
-            timer
-        );
-    });
+
+            priceRemovalTimers.set(
+                card,
+                timer
+            );
+        }
+    );
 }
-
-
