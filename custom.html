@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <link
+        rel="icon"
+        type="image/x-icon"
+        href="Ico-min.ico"
+    >
+
+    <title>Мой Roguelike Tierlist</title>
+
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="custom.css">
+</head>
+<body>
+
+    <header class="site-header custom-site-header">
+        <h1>Мой Roguelike Tierlist</h1>
+
+        <p id="custom-page-description">
+            Соберите собственную версию тир-листа
+        </p>
+    </header>
+
+
+    <main class="container custom-container">
+
+        <section class="custom-toolbar">
+
+            <div class="custom-toolbar-title">
+                <h2 id="custom-mode-title">
+                    Создание собственного тир-листа
+                </h2>
+
+                <p id="custom-mode-status">
+                    Перетащите игры в нужные уровни
+                </p>
+            </div>
+
+
+            <div class="custom-toolbar-actions">
+                <button
+                    class="custom-button custom-button-primary"
+                    id="save-custom-tierlist"
+                    type="button"
+                >
+                    Сохранить
+                </button>
+
+                <button
+                    class="custom-button"
+                    id="share-custom-tierlist"
+                    type="button"
+                >
+                    Поделиться
+                </button>
+
+                <button
+                    class="custom-button"
+                    id="reset-custom-tierlist"
+                    type="button"
+                >
+                    Сбросить
+                </button>
+
+                <a
+                    class="custom-button custom-button-link"
+                    href="index.html"
+                >
+                    Вернуться к общему тир-листу
+                </a>
+            </div>
+
+        </section>
+
+
+        <section
+            class="custom-shared-notice"
+            id="custom-shared-notice"
+            hidden
+        >
+            <p>
+                Вы просматриваете пользовательскую версию тир-листа.
+            </p>
+
+            <button
+                class="custom-button"
+                id="save-shared-tierlist"
+                type="button"
+            >
+                Сохранить как свою версию
+            </button>
+        </section>
+
+
+        <section class="custom-controls">
+
+            <div class="control-group custom-search-group">
+                <label for="custom-search">
+                    Поиск игры
+                </label>
+
+                <input
+                    type="search"
+                    id="custom-search"
+                    placeholder="🔍 Название игры..."
+                    aria-label="Поиск игры"
+                >
+            </div>
+
+
+            <div class="control-group custom-tag-group">
+                <label for="custom-tag-filter">
+                    Жанр
+                </label>
+
+                <select id="custom-tag-filter">
+                    <option value="">
+                        Все жанры
+                    </option>
+                </select>
+            </div>
+
+        </section>
+
+
+        <p
+            class="custom-empty-message"
+            id="custom-empty-message"
+            hidden
+        >
+            По выбранным параметрам игры не найдены.
+        </p>
+
+
+        <section class="custom-tier-list">
+
+            <div
+                class="custom-tier-row custom-unranked-row"
+                data-tier="UNRANKED"
+            >
+                <div class="custom-tier-label custom-unranked-label">
+                    <span>?</span>
+                    <small>Не распределены</small>
+                </div>
+
+                <div
+                    class="custom-games-container"
+                    id="custom-tier-UNRANKED"
+                    data-tier-container="UNRANKED"
+                >
+                    <!-- Игры добавляются через custom-main.js -->
+                </div>
+            </div>
+
+
+            <div
+                class="custom-tier-row"
+                data-tier="S"
+            >
+                <div class="custom-tier-label tier-s">
+                    S
+                </div>
+
+                <div
+                    class="custom-games-container"
+                    id="custom-tier-S"
+                    data-tier-container="S"
+                >
+                    <!-- Игры добавляются через custom-main.js -->
+                </div>
+            </div>
+
+
+            <div
+                class="custom-tier-row"
+                data-tier="A"
+            >
+                <div class="custom-tier-label tier-a">
+                    A
+                </div>
+
+                <div
+                    class="custom-games-container"
+                    id="custom-tier-A"
+                    data-tier-container="A"
+                >
+                    <!-- Игры добавляются через custom-main.js -->
+                </div>
+            </div>
+
+
+            <div
+                class="custom-tier-row"
+                data-tier="B"
+            >
+                <div class="custom-tier-label tier-b">
+                    B
+                </div>
+
+                <div
+                    class="custom-games-container"
+                    id="custom-tier-B"
+                    data-tier-container="B"
+                >
+                    <!-- Игры добавляются через custom-main.js -->
+                </div>
+            </div>
+
+
+            <div
+                class="custom-tier-row"
+                data-tier="C"
+            >
+                <div class="custom-tier-label tier-c">
+                    C
+                </div>
+
+                <div
+                    class="custom-games-container"
+                    id="custom-tier-C"
+                    data-tier-container="C"
+                >
+                    <!-- Игры добавляются через custom-main.js -->
+                </div>
+            </div>
+
+
+            <div
+                class="custom-tier-row"
+                data-tier="D"
+            >
+                <div class="custom-tier-label tier-d">
+                    D
+                </div>
+
+                <div
+                    class="custom-games-container"
+                    id="custom-tier-D"
+                    data-tier-container="D"
+                >
+                    <!-- Игры добавляются через custom-main.js -->
+                </div>
+            </div>
+
+
+            <div
+                class="custom-tier-row"
+                data-tier="E"
+            >
+                <div class="custom-tier-label tier-e">
+                    E
+                </div>
+
+                <div
+                    class="custom-games-container"
+                    id="custom-tier-E"
+                    data-tier-container="E"
+                >
+                    <!-- Игры добавляются через custom-main.js -->
+                </div>
+            </div>
+
+
+            <div
+                class="custom-tier-row"
+                data-tier="F"
+            >
+                <div class="custom-tier-label tier-f">
+                    F
+                </div>
+
+                <div
+                    class="custom-games-container"
+                    id="custom-tier-F"
+                    data-tier-container="F"
+                >
+                    <!-- Игры добавляются через custom-main.js -->
+                </div>
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <footer class="site-footer">
+        <p>
+            Все обзоры доступны на
+            <a
+                class="channel-link"
+                href="https://www.youtube.com/@raider_videogame"
+                target="_blank"
+                rel="noopener noreferrer"
+            >
+                моём YouTube-канале
+            </a>
+        </p>
+    </footer>
+
+
+    <script
+        type="module"
+        src="js/custom-main.js"
+    ></script>
+
+</body>
+</html>
