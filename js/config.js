@@ -41,3 +41,21 @@ export const PREVIEW_LAYER_CLEANUP_DELAY =
 export const SCREEN_PADDING = 8;
 
 export const PREVIEW_GAP = 10;
+
+/*
+ * =========================================================
+ * Избранное
+ * =========================================================
+ */
+
+export const FAVORITES_STORAGE_KEY =
+    'roguelike-tierlist-favorites';
+
+export const FAVORITES_FILTER_PARAMETER =
+    'favorites';
+
+export const SHARED_FAVORITES_PARAMETER =
+    'favoriteList';
+
+export const FAVORITES_ONLY_VALUE =
+    '1';
