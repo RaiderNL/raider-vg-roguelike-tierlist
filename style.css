@@ -1467,70 +1467,132 @@ body {
  * Кнопка возврата к началу страницы.
  * По умолчанию скрыта и включается только на десктопе.
  */
+/*
+ * Левая область возврата наверх
+ * в стиле десктопной версии VK.
+ */
 .back-to-top {
     position: fixed;
-    right: 24px;
-    bottom: 24px;
+    top: 0;
+    bottom: 0;
+    left: 0;
     z-index: 1000;
 
-    display: inline-flex;
+    display: flex;
     align-items: center;
-    gap: 7px;
+    justify-content: center;
 
-    min-height: 42px;
-    padding: 9px 14px;
+    width: 76px;
+    height: 100vh;
+    padding: 0;
 
-    color: #374151;
+    color: #2563eb;
     font: inherit;
-    font-size: 14px;
-    font-weight: 700;
 
     cursor: pointer;
 
-    background: rgb(255 255 255 / 94%);
-    border: 1px solid #d8dde5;
-    border-radius: 999px;
-    box-shadow: 0 4px 14px rgb(0 0 0 / 14%);
+    background: transparent;
+    border: 0;
 
     opacity: 0;
     visibility: hidden;
     pointer-events: none;
-    transform: translateY(10px);
+}
+
+/*
+ * Стрелка-кнопка внутри большой кликабельной области.
+ */
+.back-to-top span:first-child {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 48px;
+    height: 48px;
+
+    color: #fff;
+    font-size: 28px;
+    font-weight: 400;
+    line-height: 1;
+
+    background: #2563eb;
+    border-radius: 50%;
+    box-shadow:
+        0 4px 12px rgb(37 99 235 / 28%),
+        0 8px 24px rgb(0 0 0 / 16%);
+
+    opacity: 0;
+    transform: translateX(-12px) scale(0.85);
 
     transition:
         opacity 0.2s ease,
-        visibility 0.2s ease,
         transform 0.2s ease,
         background 0.2s ease,
         box-shadow 0.2s ease;
 }
 
-.back-to-top span:first-child {
-    color: #2563eb;
-    font-size: 20px;
-    line-height: 1;
+.back-to-top span:last-child {
+    display: none;
 }
 
-.back-to-top:hover {
-    background: #fff;
-    box-shadow: 0 6px 18px rgb(0 0 0 / 20%);
-    transform: translateY(-2px);
-}
-
-.back-to-top:focus-visible {
-    outline: 3px solid rgb(37 99 235 / 25%);
-    outline-offset: 3px;
-}
-
+/*
+ * Область становится активной после прокрутки.
+ */
 .back-to-top.is-visible {
     opacity: 1;
     visibility: visible;
     pointer-events: auto;
-    transform: translateY(0);
+}
+
+/*
+ * Стрелка появляется при наведении
+ * на любую часть левой области.
+ */
+.back-to-top.is-visible:hover
+span:first-child {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+}
+
+.back-to-top.is-visible:hover {
+    background: linear-gradient(
+        90deg,
+        rgb(37 99 235 / 7%),
+        transparent
+    );
+}
+
+/*
+ * Небольшой эффект при наведении
+ * непосредственно на стрелку.
+ */
+.back-to-top.is-visible:hover
+span:first-child {
+    background: #1d4ed8;
+    box-shadow:
+        0 6px 16px rgb(37 99 235 / 38%),
+        0 10px 28px rgb(0 0 0 / 20%);
+}
+
+.back-to-top:active
+span:first-child {
+    transform: translateX(0) scale(0.94);
+}
+
+.back-to-top:focus-visible {
+    outline: 3px solid rgb(37 99 235 / 35%);
+    outline-offset: -5px;
+}
+
+.back-to-top:focus-visible
+span:first-child {
+    opacity: 1;
+    transform: translateX(0) scale(1);
 }
 
 /*
  * На мобильных кнопка полностью отключена.
+ * Текущая мобильная версия не изменяется.
  */
 @media (max-width: 900px) {
     .back-to-top {
@@ -1539,12 +1601,10 @@ body {
 }
 
 /*
- * Убираем анимацию при системной настройке
- * уменьшения движения.
+ * Отключение анимаций.
  */
 @media (prefers-reduced-motion: reduce) {
-    .back-to-top {
+    .back-to-top span:first-child {
         transition: none;
     }
 }
-
