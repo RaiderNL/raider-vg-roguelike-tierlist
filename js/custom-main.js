@@ -59,15 +59,11 @@ function setCustomFiltersFromUrl() {
             window.location.href
         );
 
-    const searchInput =
-        document
-    .querySelector(
+const searchInput =
+    document.querySelector(
         '#custom-search'
-    )
-    ?.addEventListener(
-        'input',
-        renderCustomTierList
     );
+
 
 
     const tagFilter =
@@ -349,10 +345,15 @@ function updateInterface() {
         !isEditMode
     );
 
+    /*
+ * Фильтры доступны и при редактировании,
+ * и при просмотре.
+ */
     setHidden(
         '#custom-edit-controls',
-        !isEditMode
+        false
     );
+
 
     setHidden(
         '#custom-edit-actions',
