@@ -677,7 +677,8 @@ function updateRemovedCounters() {
         toggleButton.textContent =
             isExpanded
                 ? 'Скрыть скрытые игры'
-                : `Показать скрытые игры (${removedCount})`;
+                : 'Показать скрытые игры';
+
 
 }
 
