@@ -8,7 +8,6 @@ let dragAndDropIsInitialized = false;
 
 /*
  * Подключает drag-and-drop к пользовательскому тир-листу.
- * Обработчики документа добавляются один раз.
  */
 export function setupCustomDragAndDrop({
     getLayout,
@@ -70,7 +69,7 @@ export function setupCustomDragAndDrop({
 
 
 /*
- * Начало перетаскивания карточки.
+ * Начало переноса: запоминаем исходную позицию.
  */
 function handleDragStart(
     event
@@ -99,35 +98,40 @@ function handleDragStart(
             card.dataset.gameId || ''
         ).trim();
 
-    if (
-        !gameId
-    ) {
-        return;
-    }
-
     const layout =
         currentLayoutGetter?.();
-    
+
     const sourceTier =
         findGameTier(
             layout,
             gameId
         );
-    
+
+    if (
+        !gameId ||
+        !sourceTier
+    ) {
+        return;
+    }
+
     currentDragState = {
         gameId,
         card,
-        sourceTier
+        sourceTier,
+        sourceIndex:
+            layout[sourceTier].indexOf(
+                gameId
+            ),
+        placement: null
     };
-
 
     card.classList.add(
         'is-dragging'
     );
-    document.body.classList.add(
-    'custom-drag-active'
-);
 
+    document.body.classList.add(
+        'custom-drag-active'
+    );
 
     event.dataTransfer.effectAllowed =
         'move';
@@ -140,13 +144,14 @@ function handleDragStart(
 
 
 /*
- * Разрешает сброс над допустимой зоной.
+ * Показывает допустимую область и позицию вставки.
  */
 function handleDragOver(
     event
 ) {
     if (
-        !isEditMode()
+        !isEditMode() ||
+        !currentDragState
     ) {
         return;
     }
@@ -166,12 +171,18 @@ function handleDragOver(
 
     event.dataTransfer.dropEffect =
         'move';
+
+    dropZone.classList.add(
+        'is-drop-target'
+    );
+
+    updateDropPlaceholder(
+        event,
+        dropZone
+    );
 }
 
 
-/*
- * Подсвечивает целевую область.
- */
 function handleDragEnter(
     event
 ) {
@@ -187,20 +198,15 @@ function handleDragEnter(
         );
 
     if (
-        !dropZone
+        dropZone
     ) {
-        return;
+        dropZone.classList.add(
+            'is-drop-target'
+        );
     }
-
-    dropZone.classList.add(
-        'is-drop-target'
-    );
 }
 
 
-/*
- * Убирает подсветку при выходе из области.
- */
 function handleDragLeave(
     event
 ) {
@@ -210,12 +216,7 @@ function handleDragLeave(
         );
 
     if (
-        !dropZone
-    ) {
-        return;
-    }
-
-    if (
+        !dropZone ||
         dropZone.contains(
             event.relatedTarget
         )
@@ -230,13 +231,14 @@ function handleDragLeave(
 
 
 /*
- * Перемещает игру в целевой тир или корзину.
+ * Вставляет игру в рассчитанную позицию.
  */
 function handleDrop(
     event
 ) {
     if (
-        !isEditMode()
+        !isEditMode() ||
+        !currentDragState
     ) {
         return;
     }
@@ -247,8 +249,7 @@ function handleDrop(
         );
 
     if (
-        !dropZone ||
-        !currentDragState
+        !dropZone
     ) {
         return;
     }
@@ -271,24 +272,29 @@ function handleDrop(
 
         return;
     }
+
+    const placement =
+        currentDragState.placement;
+
     /*
- * Если игру отпустили в той же группе,
- * оставляем её на исходной позиции.
- */
-if (
-    targetTier === currentDragState.sourceTier
-) {
-    clearDropZoneState();
+     * Сброс в пустую часть исходного тира
+     * не должен менять порядок списка.
+     */
+    if (
+        targetTier === currentDragState.sourceTier &&
+        !placement
+    ) {
+        clearDropZoneState();
 
-    return;
-}
-
+        return;
+    }
 
     const updatedLayout =
         moveGameToTier(
             layout,
             currentDragState.gameId,
-            targetTier
+            targetTier,
+            placement?.index
         );
 
     clearDropZoneState();
@@ -299,16 +305,243 @@ if (
 }
 
 
-/*
- * Завершение перетаскивания.
- */
 function handleDragEnd() {
     clearDropZoneState();
 }
 
+
 /*
- * Находит тир, в котором игра была до начала переноса.
+ * Рисует временное свободное место перед или после карточки.
  */
+function updateDropPlaceholder(
+    event,
+    dropZone
+) {
+    if (
+        dropZone.hasAttribute(
+            'data-trash-container'
+        )
+    ) {
+        removeDropPlaceholder();
+
+        currentDragState.placement =
+            null;
+
+        return;
+    }
+
+    const targetTier =
+        getTargetTier(
+            dropZone
+        );
+
+    const targetCard =
+        event.target.closest(
+            '[data-game-id]'
+        );
+
+    /*
+     * В пустой части тира не создаём вставку.
+     * Это сохраняет позицию карточки при отмене переноса.
+     */
+    if (
+        !targetTier ||
+        !targetCard ||
+        targetCard === currentDragState.card
+    ) {
+        removeDropPlaceholder();
+
+        currentDragState.placement =
+            null;
+
+        return;
+    }
+
+    const targetGameId =
+        String(
+            targetCard.dataset.gameId || ''
+        ).trim();
+
+    const layout =
+        currentLayoutGetter?.();
+
+    const targetIndex =
+        layout?.[targetTier]?.indexOf(
+            targetGameId
+        );
+
+    if (
+        targetIndex === undefined ||
+        targetIndex < 0
+    ) {
+        return;
+    }
+
+    const cardBounds =
+        targetCard.getBoundingClientRect();
+
+    const insertAfter =
+        isPointerAfterCard(
+            event,
+            cardBounds
+        );
+
+    const insertionIndex =
+        targetIndex +
+        (
+            insertAfter
+                ? 1
+                : 0
+        );
+
+    const placeholder =
+        getDropPlaceholder();
+
+    /*
+     * Убираем placeholder перед расчётом nextElementSibling,
+     * иначе он может стать точкой вставки для самого себя.
+     */
+    placeholder.remove();
+
+    const referenceCard =
+        insertAfter
+            ? targetCard.nextElementSibling
+            : targetCard;
+
+    dropZone.insertBefore(
+        placeholder,
+        referenceCard
+    );
+
+    currentDragState.placement = {
+        tier: targetTier,
+        index: insertionIndex
+    };
+}
+
+
+/*
+ * На карточках в одной строке ориентируемся по X,
+ * на разных строках - по Y.
+ */
+function isPointerAfterCard(
+    event,
+    cardBounds
+) {
+    const verticalMiddle =
+        cardBounds.top +
+        (
+            cardBounds.height / 2
+        );
+
+    const horizontalMiddle =
+        cardBounds.left +
+        (
+            cardBounds.width / 2
+        );
+
+    const isSameRow =
+        Math.abs(
+            event.clientY - verticalMiddle
+        ) <
+        (
+            cardBounds.height / 3
+        );
+
+    return isSameRow
+        ? event.clientX > horizontalMiddle
+        : event.clientY > verticalMiddle;
+}
+
+
+/*
+ * Удаляет игру из всех тиров и вставляет в нужный индекс.
+ */
+function moveGameToTier(
+    layout,
+    gameId,
+    targetTier,
+    requestedIndex
+) {
+    const updatedLayout =
+        cloneLayout(
+            layout
+        );
+
+    const sourceTier =
+        findGameTier(
+            updatedLayout,
+            gameId
+        );
+
+    const sourceIndex =
+        sourceTier
+            ? updatedLayout[sourceTier].indexOf(
+                gameId
+            )
+            : -1;
+
+    Object.keys(
+        updatedLayout
+    ).forEach(
+        tier => {
+            updatedLayout[tier] =
+                updatedLayout[tier].filter(
+                    value =>
+                        String(
+                            value
+                        ) !== gameId
+                );
+        }
+    );
+
+    if (
+        !Array.isArray(
+            updatedLayout[targetTier]
+        )
+    ) {
+        updatedLayout[targetTier] =
+            [];
+    }
+
+    let insertionIndex =
+        Number.isInteger(
+            requestedIndex
+        )
+            ? requestedIndex
+            : updatedLayout[targetTier].length;
+
+    /*
+     * После удаления из этого же тира
+     * все элементы после исходной карточки смещаются влево.
+     */
+    if (
+        sourceTier === targetTier &&
+        sourceIndex >= 0 &&
+        sourceIndex < insertionIndex
+    ) {
+        insertionIndex--;
+    }
+
+    insertionIndex =
+        Math.max(
+            0,
+            Math.min(
+                insertionIndex,
+                updatedLayout[targetTier].length
+            )
+        );
+
+    updatedLayout[targetTier].splice(
+        insertionIndex,
+        0,
+        gameId
+    );
+
+    return updatedLayout;
+}
+
+
 function findGameTier(
     layout,
     gameId
@@ -335,53 +568,7 @@ function findGameTier(
     ) || null;
 }
 
-/*
- * Перемещает игру, удаляя её из всех остальных зон.
- */
-function moveGameToTier(
-    layout,
-    gameId,
-    targetTier
-) {
-    const updatedLayout =
-        cloneLayout(
-            layout
-        );
 
-    Object.keys(
-        updatedLayout
-    ).forEach(
-        tier => {
-            updatedLayout[tier] =
-                updatedLayout[tier].filter(
-                    value =>
-                        String(
-                            value
-                        ) !== gameId
-                );
-        }
-    );
-
-    if (
-        !Array.isArray(
-            updatedLayout[targetTier]
-        )
-    ) {
-        updatedLayout[targetTier] =
-            [];
-    }
-
-    updatedLayout[targetTier].push(
-        gameId
-    );
-
-    return updatedLayout;
-}
-
-
-/*
- * Определяет допустимую drop-зону.
- */
 function getDropZone(
     element
 ) {
@@ -397,10 +584,6 @@ function getDropZone(
 }
 
 
-/*
- * Корзина использует REMOVED,
- * остальные зоны берут значение data-tier-container.
- */
 function getTargetTier(
     dropZone
 ) {
@@ -421,9 +604,47 @@ function getTargetTier(
 }
 
 
-/*
- * Создаёт независимую копию структуры.
- */
+function getDropPlaceholder() {
+    let placeholder =
+        document.querySelector(
+            '#custom-drop-placeholder'
+        );
+
+    if (
+        placeholder
+    ) {
+        return placeholder;
+    }
+
+    placeholder =
+        document.createElement(
+            'div'
+        );
+
+    placeholder.id =
+        'custom-drop-placeholder';
+
+    placeholder.className =
+        'custom-drop-placeholder';
+
+    placeholder.setAttribute(
+        'aria-hidden',
+        'true'
+    );
+
+    return placeholder;
+}
+
+
+function removeDropPlaceholder() {
+    document
+        .querySelector(
+            '#custom-drop-placeholder'
+        )
+        ?.remove();
+}
+
+
 function cloneLayout(
     layout
 ) {
@@ -451,10 +672,9 @@ function cloneLayout(
 }
 
 
-/*
- * Очищает временные состояния drag-and-drop.
- */
 function clearDropZoneState() {
+    removeDropPlaceholder();
+
     document
         .querySelectorAll(
             '.is-drop-target'
@@ -478,18 +698,16 @@ function clearDropZoneState() {
                 );
             }
         );
+
     document.body.classList.remove(
-    'custom-drag-active'
-);
+        'custom-drag-active'
+    );
 
     currentDragState =
         null;
 }
 
 
-/*
- * После повторной отрисовки обновляет draggable.
- */
 function updateDraggableCards() {
     const editable =
         isEditMode();
