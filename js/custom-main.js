@@ -33,6 +33,9 @@ import {
     setupCustomDragAndDrop,
     animateCustomLayoutChange
 } from './custom-dnd.js';
+import {
+    closeAllPreviews
+} from './previews.js';
 
 
 let games = [];
@@ -582,6 +585,15 @@ function setupControls() {
         'change',
         renderCustomTierList
     );
+    document
+    .querySelector(
+        '#download-custom-screenshot'
+    )
+    ?.addEventListener(
+        'click',
+        downloadCustomScreenshot
+    );
+
 
 document
     .querySelector(
@@ -1603,6 +1615,134 @@ function createOption(
     return option;
 }
 
+async function downloadCustomScreenshot() {
+    const tierList =
+        document.querySelector(
+            '.custom-tier-list'
+        );
+
+    if (
+        !tierList
+    ) {
+        return;
+    }
+
+    if (
+        typeof window.html2canvas !==
+        'function'
+    ) {
+        showStatus(
+            'Модуль скриншота ещё не загрузился'
+        );
+
+        return;
+    }
+
+    const button =
+        document.querySelector(
+            '#download-custom-screenshot'
+        );
+
+    if (
+        button
+    ) {
+        button.disabled =
+            true;
+
+        button.textContent =
+            'Создание скриншота…';
+    }
+
+    /*
+     * Popup не должен попасть
+     * в изображение.
+     */
+    closeAllPreviews();
+
+    try {
+        const canvas =
+            await window.html2canvas(
+                tierList,
+                {
+                    backgroundColor:
+                        '#f3f4f6',
+
+                    scale:
+                        Math.min(
+                            2,
+                            window.devicePixelRatio ||
+                            1
+                        ),
+
+                    useCORS:
+                        true,
+
+                    allowTaint:
+                        false,
+
+                    logging:
+                        false,
+
+                    imageTimeout:
+                        15000,
+
+                    scrollX:
+                        0,
+
+                    scrollY:
+                        -window.scrollY,
+
+                    windowWidth:
+                        document.documentElement
+                            .scrollWidth,
+
+                    windowHeight:
+                        document.documentElement
+                            .scrollHeight
+                }
+            );
+
+        const link =
+            document.createElement(
+                'a'
+            );
+
+        link.download =
+            'my-roguelike-tierlist.png';
+
+        link.href =
+            canvas.toDataURL(
+                'image/png'
+            );
+
+        link.click();
+
+        showStatus(
+            'Скриншот сохранён'
+        );
+    } catch (
+        error
+    ) {
+        console.error(
+            'Не удалось создать скриншот:',
+            error
+        );
+
+        showStatus(
+            'Не удалось создать скриншот'
+        );
+    } finally {
+        if (
+            button
+        ) {
+            button.disabled =
+                false;
+
+            button.textContent =
+                'Скачать скриншот';
+        }
+    }
+}
 
 function showLoadingError() {
     const tierList =
