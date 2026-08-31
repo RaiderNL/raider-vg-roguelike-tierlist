@@ -648,10 +648,6 @@ function updateRemovedCounters() {
         removedCount
     );
 
-    setText(
-        '#custom-removed-games-count',
-        removedCount
-    );
 
     const toggleButton =
         document.querySelector(
@@ -678,10 +674,11 @@ function updateRemovedCounters() {
         return;
     }
 
-    toggleButton.textContent =
-        isExpanded
-            ? 'Скрыть скрытые игры'
-            : `Показать скрытые игры (${removedCount})`;
+        toggleButton.textContent =
+            isExpanded
+                ? 'Скрыть скрытые игры'
+                : `Показать скрытые игры (${removedCount})`;
+
 }
 
 
