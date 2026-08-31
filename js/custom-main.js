@@ -409,6 +409,55 @@ function setupControls() {
             'click',
             saveSharedLayout
         );
+    document
+    .querySelector(
+        '#custom-video-filter'
+    )
+    ?.addEventListener(
+        'change',
+        renderCustomTierList
+    );
+
+document
+    .querySelector(
+        '#custom-favorites-filter'
+    )
+    ?.addEventListener(
+        'click',
+        () => {
+            const isActive =
+                isFavoritesFilterActive();
+
+            setFavoritesFilter(
+                !isActive
+            );
+
+            renderCustomTierList();
+        }
+    );
+
+document
+    .querySelector(
+        '#custom-price-mode-toggle'
+    )
+    ?.addEventListener(
+        'change',
+        event => {
+            setPriceMode(
+                event.target.checked
+            );
+        }
+    );
+
+document
+    .querySelector(
+        '#custom-reset-filters'
+    )
+    ?.addEventListener(
+        'click',
+        resetCustomFilters
+    );
+
 }
 
 
@@ -522,6 +571,114 @@ function fillTagFilter() {
     );
 }
 
+function fillVideoFilter() {
+    const videoFilter =
+        document.querySelector(
+            '#custom-video-filter'
+        );
+
+    if (
+        !videoFilter
+    ) {
+        return;
+    }
+
+    const videoMap =
+        new Map();
+
+    games.forEach(
+        game => {
+            const videoUrl =
+                getVideoUrl(
+                    game
+                );
+
+            if (
+                !videoUrl ||
+                videoMap.has(
+                    videoUrl
+                )
+            ) {
+                return;
+            }
+
+            videoMap.set(
+                videoUrl,
+                game
+            );
+        }
+    );
+
+    const videos =
+        [...videoMap.entries()]
+            .map(
+                ([
+                    videoUrl,
+                    game
+                ]) => ({
+                    videoUrl,
+                    game,
+                    videoNumber:
+                        getVideoNumber(
+                            game
+                        )
+                })
+            );
+
+    const numberedVideos =
+        videos
+            .map(
+                video =>
+                    video.videoNumber
+            )
+            .filter(
+                Number.isFinite
+            );
+
+    const latestVideoNumber =
+        numberedVideos.length > 0
+            ? Math.max(
+                ...numberedVideos
+            )
+            : null;
+
+    videos.sort(
+        (
+            firstVideo,
+            secondVideo
+        ) => (
+            (
+                secondVideo.videoNumber ??
+                -Infinity
+            ) -
+            (
+                firstVideo.videoNumber ??
+                -Infinity
+            )
+        )
+    );
+
+    videoFilter.replaceChildren(
+        createOption(
+            '',
+            'Все ролики'
+        )
+    );
+
+    videos.forEach(
+        video => {
+            videoFilter.appendChild(
+                createOption(
+                    video.videoUrl,
+                    getVideoLabel(
+                        video.game,
+                        latestVideoNumber
+                    )
+                )
+            );
+        }
+    );
+}
 
 /*
  * =========================================================
@@ -596,6 +753,15 @@ function renderCustomTierListNow(
 
     const selectedTag =
         getSelectedTag();
+    const selectedVideo =
+    getSelectedVideo();
+
+const favoritesFilterActive =
+    isFavoritesFilterActive();
+
+const activeFavoriteIds =
+    getActiveFavoriteIds();
+
 
     let visibleGamesCount =
         0;
@@ -629,21 +795,31 @@ function renderCustomTierListNow(
                         !gameMatchesFilters(
                             game,
                             searchValue,
-                            selectedTag
+                            selectedTag,
+                            selectedVideo,
+                            favoritesFilterActive,
+                            activeFavoriteIds
                         )
                     ) {
                         return;
                     }
 
-                    const card =
+
+                   const card =
                         createGameCard(
                             game,
                             {
-                                showFavorite: false,
+                                videoFilterActive:
+                                    selectedVideo !== '',
+                    
+                                showFavorite: true,
                                 showInfo: true,
-                                openOnCardClick: false
+                    
+                                openOnCardClick:
+                                    currentMode === 'view'
                             }
                         );
+
 
                     card.dataset.gameId =
                         gameId;
@@ -689,8 +865,11 @@ function renderCustomTierListNow(
     updateEmptyMessage(
         visibleGamesCount
     );
-
+    
     updateRemovedCounters();
+    updateCustomFavoritesFilterState();
+    updateCustomUrlFromFilters();
+
 
     if (
         currentMode === 'edit'
@@ -847,7 +1026,10 @@ function setText(
 function gameMatchesFilters(
     game,
     searchValue,
-    selectedTag
+    selectedTag,
+    selectedVideo,
+    favoritesFilterActive,
+    activeFavoriteIds
 ) {
     const name =
         String(
@@ -869,11 +1051,91 @@ function gameMatchesFilters(
             selectedTag
         );
 
+    const matchesVideo =
+        !selectedVideo ||
+        getVideoUrl(
+            game
+        ) === selectedVideo;
+
+    const matchesFavorites =
+        !favoritesFilterActive ||
+        activeFavoriteIds.has(
+            String(
+                game?.ID || ''
+            ).trim()
+        );
+
     return (
         matchesSearch &&
-        matchesTag
+        matchesTag &&
+        matchesVideo &&
+        matchesFavorites
     );
 }
+function getSelectedVideo() {
+    const select =
+        document.querySelector(
+            '#custom-video-filter'
+        );
+
+    return select
+        ? select.value
+        : '';
+}
+function updateCustomFavoritesFilterState() {
+    const button =
+        document.querySelector(
+            '#custom-favorites-filter'
+        );
+
+    if (
+        !button
+    ) {
+        return;
+    }
+
+    const isActive =
+        isFavoritesFilterActive();
+
+    button.classList.toggle(
+        'is-active',
+        isActive
+    );
+
+    button.setAttribute(
+        'aria-pressed',
+        String(
+            isActive
+        )
+    );
+
+    button.setAttribute(
+        'aria-label',
+        isActive
+            ? 'Показывать все игры'
+            : 'Показывать только избранные игры'
+    );
+
+    button.title =
+        isActive
+            ? 'Показывать все игры'
+            : 'Показывать только избранные игры';
+
+    const icon =
+        button.querySelector(
+            'span'
+        );
+
+    if (
+        icon
+    ) {
+        icon.textContent =
+            isActive
+                ? '★'
+                : '☆';
+    }
+}
+
 
 
 function getSearchValue() {
