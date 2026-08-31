@@ -552,8 +552,8 @@ iframe {
 .game-card {
     position: relative;
 
-    display: flex;
-    flex-direction: column;
+    display: grid;
+    grid-template-rows: minmax(0, 66.666%) minmax(0, 1fr) auto;
 
     width: 190px;
     max-width: 100%;
@@ -568,6 +568,7 @@ iframe {
         transform 0.2s ease,
         box-shadow 0.2s ease;
 }
+
 
 .game-card:hover,
 .game-card:focus-within {
@@ -597,9 +598,7 @@ iframe {
     position: relative;
 
     display: block;
-    flex: 0 0 70%;
-
-    width: 100%;
+    min-width: 0;
     min-height: 0;
     overflow: hidden;
 
@@ -621,12 +620,14 @@ iframe {
 }
 
 
+
 .game-title {
     display: -webkit-box;
-    flex: 0 0 auto;
+    align-self: center;
     overflow: hidden;
 
-    margin: 7px 8px 4px;
+    width: calc(100% - 16px);
+    margin: 5px auto 3px;
 
     font-size: 15px;
     font-weight: 700;
@@ -638,17 +639,20 @@ iframe {
     -webkit-line-clamp: 2;
 }
 
+
 .game-tags {
     display: flex;
-    flex: 0 0 auto;
+    align-items: flex-end;
     flex-wrap: wrap;
     justify-content: center;
     gap: 4px;
 
+    width: calc(100% - 16px);
     max-height: 34px;
-    margin: 0 8px 6px;
+    margin: 0 auto 7px;
     overflow: hidden;
 }
+
 
 .game-tag {
     display: inline-block;
@@ -1488,17 +1492,18 @@ iframe {
     }
 
     .game-title {
-        margin: 6px 6px 3px;
-
+        width: calc(100% - 12px);
+        margin: 4px auto 2px;
+    
         font-size: 13px;
     }
-
+    
     .game-tags {
-        gap: 3px;
-
+        width: calc(100% - 12px);
         max-height: 30px;
-        margin: 0 6px 5px;
+        margin: 0 auto 5px;
     }
+
 
     .game-tag {
         padding: 2px 5px;
