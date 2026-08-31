@@ -15,6 +15,9 @@ export const CUSTOM_TIER_NAMES = [
     ...TIER_NAMES
 ];
 
+export const REMOVED_TIER_NAME =
+    'REMOVED';
+
 
 /*
  * Создаёт пустую структуру
@@ -28,6 +31,9 @@ export function createEmptyLayout() {
             layout[tier] = [];
         }
     );
+
+    layout[REMOVED_TIER_NAME] =
+        [];
 
     return layout;
 }
@@ -260,11 +266,11 @@ export function getStartLayout(
 /*
  * Приводит структуру к безопасному виду.
  *
- * В структуру попадают только ID,
+ * В структуру попадают только ID игр,
  * которые существуют в Google Sheets.
  *
  * Повторяющиеся ID удаляются.
- * Игры, отсутствующие в ссылке или сохранении,
+ * Игры, отсутствующие в сохранённой структуре,
  * помещаются в UNRANKED.
  */
 export function normalizeLayout(
@@ -291,7 +297,12 @@ export function normalizeLayout(
     const usedIds =
         new Set();
 
-    CUSTOM_TIER_NAMES.forEach(
+    const layoutTiers = [
+        ...CUSTOM_TIER_NAMES,
+        REMOVED_TIER_NAME
+    ];
+
+    layoutTiers.forEach(
         tier => {
             const tierGames =
                 Array.isArray(
@@ -331,6 +342,11 @@ export function normalizeLayout(
         }
     );
 
+    /*
+     * Новые игры и игры из старой версии
+     * без отдельной зоны REMOVED попадают
+     * в «Не распределены».
+     */
     games.forEach(
         game => {
             const gameId =
@@ -361,7 +377,7 @@ export function normalizeLayout(
 
 /*
  * Кодирует структуру тир-листа
- * в безопасную строку для URL.
+ * в строку для URL.
  */
 export function encodeLayout(
     layout
@@ -440,7 +456,10 @@ function isLayoutObject(
         return false;
     }
 
-    return CUSTOM_TIER_NAMES.some(
+    return [
+        ...CUSTOM_TIER_NAMES,
+        REMOVED_TIER_NAME
+    ].some(
         tier =>
             Array.isArray(
                 layout[tier]
