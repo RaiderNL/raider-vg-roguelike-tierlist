@@ -27,7 +27,10 @@ import {
 export function createGameCard(
     game,
     {
-        videoFilterActive = false
+        videoFilterActive = false,
+        showFavorite = true,
+        showInfo = false,
+        openOnCardClick = true
     } = {}
 ) {
     const card =
@@ -81,7 +84,7 @@ export function createGameCard(
 
     /*
      * Медиа-блок содержит обложку,
-     * цену и кнопку избранного.
+     * кнопки и цену.
      */
     const media =
         createGameMedia();
@@ -99,15 +102,34 @@ export function createGameCard(
         );
     }
 
-    const favoriteButton =
-        createFavoriteButton(
-            game,
-            name
-        );
+    if (
+        showFavorite
+    ) {
+        const favoriteButton =
+            createFavoriteButton(
+                game,
+                name
+            );
 
-    media.appendChild(
-        favoriteButton
-    );
+        media.appendChild(
+            favoriteButton
+        );
+    }
+
+    let infoButton = null;
+
+    if (
+        showInfo
+    ) {
+        infoButton =
+            createInfoButton(
+                name
+            );
+
+        media.appendChild(
+            infoButton
+        );
+    }
 
     card.appendChild(
         media
@@ -156,11 +178,31 @@ export function createGameCard(
     }
 
 
-    setupCardHover(
-        card,
-        name,
-        steamLink
-    );
+    const openPreview =
+        setupCardHover(
+            card,
+            name,
+            steamLink,
+            {
+                openOnCardClick
+            }
+        );
+
+
+    if (
+        infoButton &&
+        openPreview
+    ) {
+        infoButton.addEventListener(
+            'click',
+            event => {
+                event.preventDefault();
+                event.stopPropagation();
+
+                openPreview();
+            }
+        );
+    }
 
 
     /*
@@ -252,6 +294,45 @@ function createFavoriteButton(
             );
         }
     );
+
+    button.addEventListener(
+        'keydown',
+        event => {
+            event.stopPropagation();
+        }
+    );
+
+    return button;
+}
+
+
+function createInfoButton(
+    name
+) {
+    const button =
+        document.createElement(
+            'button'
+        );
+
+    button.className =
+        'game-info-button';
+
+    button.type =
+        'button';
+
+    button.textContent =
+        'ⓘ';
+
+    button.setAttribute(
+        'aria-label',
+        `Информация об игре ${name}`
+    );
+
+    button.title =
+        'Показать информацию об игре';
+
+    button.draggable =
+        false;
 
     button.addEventListener(
         'keydown',
