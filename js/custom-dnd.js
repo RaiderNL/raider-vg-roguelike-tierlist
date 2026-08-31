@@ -7,6 +7,12 @@ let dragAndDropIsInitialized = false;
 let customCardsObserver = null;
 
 let layoutAnimationFrame = null;
+let pendingPlaceholderUpdateTimer = null;
+let lastPointerSample = null;
+
+const PLACEHOLDER_SPEED_LIMIT = 0.45;
+const PLACEHOLDER_SETTLE_DELAY = 70;
+
 let placeholderAnimation = null;
 
 
@@ -140,6 +146,11 @@ function handleDragStart(
         dropZone: null,
         placement: null
     };
+    lastPointerSample =
+    null;
+
+cancelPendingPlaceholderUpdate();
+
 
     card.classList.add(
         'is-dragging'
@@ -206,12 +217,166 @@ function handleDragOver(
         dropZone
     );
 
+    const pointerSpeed =
+        updatePointerSpeed(
+            event
+        );
+
+    const placeholder =
+        document.querySelector(
+            '#custom-drop-placeholder'
+        );
+
+    /*
+     * Первое появление placeholder выполняем сразу.
+     */
+    if (
+        !placeholder ||
+        !placeholder.isConnected
+    ) {
+        cancelPendingPlaceholderUpdate();
+
+        updateDropPlaceholder(
+            event,
+            dropZone
+        );
+
+        return;
+    }
+
+    /*
+     * При быстром движении не переставляем
+     * рамку на каждую промежуточную позицию.
+     */
+    if (
+        pointerSpeed >
+        PLACEHOLDER_SPEED_LIMIT
+    ) {
+        schedulePlaceholderUpdate(
+            event,
+            dropZone
+        );
+
+        return;
+    }
+
+    /*
+     * Движение замедлилось — применяем
+     * последнюю позицию сразу.
+     */
+    cancelPendingPlaceholderUpdate();
+
     updateDropPlaceholder(
         event,
         dropZone
     );
 }
 
+function updatePointerSpeed(
+    event
+) {
+    const now =
+        performance.now();
+
+    const currentSample = {
+        x: event.clientX,
+        y: event.clientY,
+        time: now
+    };
+
+    if (
+        !lastPointerSample
+    ) {
+        lastPointerSample =
+            currentSample;
+
+        return 0;
+    }
+
+    const elapsed =
+        Math.max(
+            1,
+            now -
+            lastPointerSample.time
+        );
+
+    const distance =
+        Math.hypot(
+            currentSample.x -
+                lastPointerSample.x,
+            currentSample.y -
+                lastPointerSample.y
+        );
+
+    const speed =
+        distance /
+        elapsed;
+
+    lastPointerSample =
+        currentSample;
+
+    return speed;
+}
+
+function schedulePlaceholderUpdate(
+    event,
+    dropZone
+) {
+    if (
+        pendingPlaceholderUpdateTimer
+    ) {
+        clearTimeout(
+            pendingPlaceholderUpdateTimer
+        );
+    }
+
+    const pointerPosition = {
+        clientX: event.clientX,
+        clientY: event.clientY
+    };
+
+    pendingPlaceholderUpdateTimer =
+        window.setTimeout(
+            () => {
+                pendingPlaceholderUpdateTimer =
+                    null;
+
+                if (
+                    !currentDragState ||
+                    !isEditMode() ||
+                    !dropZone.isConnected
+                ) {
+                    return;
+                }
+
+                /*
+                 * К этому моменту курсор должен был
+                 * немного замедлиться или остановиться.
+                 * Используем последнюю запомненную
+                 * координату, а не старый DragEvent.
+                 */
+                updateDropPlaceholder(
+                    pointerPosition,
+                    dropZone
+                );
+            },
+            PLACEHOLDER_SETTLE_DELAY
+        );
+}
+
+
+function cancelPendingPlaceholderUpdate() {
+    if (
+        pendingPlaceholderUpdateTimer
+    ) {
+        clearTimeout(
+            pendingPlaceholderUpdateTimer
+        );
+
+        pendingPlaceholderUpdateTimer =
+            null;
+    }
+}
 
 function handleDragEnter(
     event
@@ -1346,6 +1511,8 @@ function getDropPlaceholder() {
 
 
 function removeDropPlaceholder() {
+    cancelPendingPlaceholderUpdate();
+
     const placeholder =
         document.querySelector(
             '#custom-drop-placeholder'
@@ -1372,6 +1539,7 @@ function removeDropPlaceholder() {
 
     placeholder.remove();
 }
+
 
 
 
@@ -1603,6 +1771,11 @@ function cloneLayout(
  */
 
 function clearDragState() {
+    cancelPendingPlaceholderUpdate();
+
+    lastPointerSample =
+        null;
+
     removeDropPlaceholder();
 
     document
@@ -1616,6 +1789,7 @@ function clearDragState() {
                 );
             }
         );
+
 
     document
         .querySelectorAll(
