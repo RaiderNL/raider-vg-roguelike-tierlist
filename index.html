@@ -33,22 +33,17 @@
 
         <section class="controls">
             <div class="control-group search-group">
-                <label for="search">
-                    Поиск игры
-                </label>
-
                 <input
                     type="search"
                     id="search"
-                    placeholder="Введите название игры..."
+                    placeholder="🔍 Название игры..."
+                    aria-label="Поиск игры"
                 >
             </div>
 
-            <div class="control-group filter-group">
-                <label for="tag-filter">
-                    Жанр
-                </label>
 
+            <div class="control-group filter-group">
+               
                 <select id="tag-filter">
                     <option value="">
                         Все жанры
@@ -58,9 +53,6 @@
 
             <div class="video-filter-controls">
                 <div class="control-group filter-group">
-                    <label for="video-filter">
-                        Видео
-                    </label>
 
                     <select id="video-filter">
                         <option value="">
@@ -87,23 +79,28 @@
                     </span>
                 </label>
             </div>
-                        <div class="filter-actions">
-                <button
-                    class="filter-action-button"
-                    id="reset-filters"
-                    type="button"
-                >
-                    Сбросить фильтры
-                </button>
+        <div class="filter-actions">
+            <button
+                class="filter-action-button"
+                id="reset-filters"
+                type="button"
+                aria-label="Сбросить фильтры"
+                title="Сбросить фильтры"
+            >
+                <span aria-hidden="true">↻</span>
+            </button>
+        
+            <button
+                class="filter-action-button"
+                id="share-filters"
+                type="button"
+                aria-label="Скопировать ссылку на подборку"
+                title="Скопировать ссылку на подборку"
+            >
+                <span aria-hidden="true">🔗</span>
+            </button>
+        </div>
 
-                <button
-                    class="filter-action-button"
-                    id="share-filters"
-                    type="button"
-                >
-                    Скопировать ссылку
-                </button>
-            </div>
 
         </section>
                 <nav
