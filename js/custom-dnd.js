@@ -26,10 +26,6 @@ export function setupCustomDragAndDrop({
             ? onLayoutChange
             : null;
 
-    /*
-     * Повторно обработчики событий не подключаем.
-     * Обновляем только состояние draggable у карточек.
-     */
     if (
         dragAndDropIsInitialized
     ) {
@@ -77,7 +73,7 @@ export function setupCustomDragAndDrop({
 
 /*
  * =========================================================
- * Начало переноса карточки
+ * Начало переноса
  * =========================================================
  */
 
@@ -93,8 +89,8 @@ function handleDragStart(
     }
 
     const card =
-        event.target.closest(
-            '[data-game-id]'
+        getGameCard(
+            event.target
         );
 
     if (
@@ -119,7 +115,10 @@ function handleDragStart(
 
     if (
         !gameId ||
-        !sourceTier
+        !sourceTier ||
+        !Array.isArray(
+            layout?.[sourceTier]
+        )
     ) {
         return;
     }
@@ -132,7 +131,8 @@ function handleDragStart(
             layout[sourceTier].indexOf(
                 gameId
             ),
-        placement: null
+        placement: null,
+        lastDropZone: null
     };
 
     card.classList.add(
@@ -180,42 +180,18 @@ function handleDragOver(
         return;
     }
 
-    /*
-     * Обязательно вызываем preventDefault(),
-     * иначе браузер не разрешит drop.
-     */
     event.preventDefault();
 
     event.dataTransfer.dropEffect =
         'move';
 
-    /*
-     * Активной оставляем только текущую drop-зону.
-     */
-    document
-        .querySelectorAll(
-            '.is-drop-target'
-        )
-        .forEach(
-            element => {
-                if (
-                    element !== dropZone
-                ) {
-                    element.classList.remove(
-                        'is-drop-target'
-                    );
-                }
-            }
-        );
-
-    dropZone.classList.add(
-        'is-drop-target'
+    setActiveDropZone(
+        dropZone
     );
 
-    /*
-     * Placeholder перемещается только здесь.
-     * Вторая вставка из handleDragOver удалена.
-     */
+    currentDragState.lastDropZone =
+        dropZone;
+
     updateDropPlaceholder(
         event,
         dropZone
@@ -225,7 +201,7 @@ function handleDragOver(
 
 /*
  * =========================================================
- * Наведение на drop-зону
+ * Вход в drop-зону
  * =========================================================
  */
 
@@ -250,31 +226,18 @@ function handleDragEnter(
         return;
     }
 
-    document
-        .querySelectorAll(
-            '.is-drop-target'
-        )
-        .forEach(
-            element => {
-                if (
-                    element !== dropZone
-                ) {
-                    element.classList.remove(
-                        'is-drop-target'
-                    );
-                }
-            }
-        );
-
-    dropZone.classList.add(
-        'is-drop-target'
+    setActiveDropZone(
+        dropZone
     );
+
+    currentDragState.lastDropZone =
+        dropZone;
 }
 
 
 /*
  * =========================================================
- * Выход курсора из drop-зоны
+ * Выход из drop-зоны
  * =========================================================
  */
 
@@ -292,10 +255,6 @@ function handleDragLeave(
         return;
     }
 
-    /*
-     * При переходе с контейнера на его дочерний элемент
-     * drop-зону не деактивируем.
-     */
     if (
         event.relatedTarget instanceof Node &&
         dropZone.contains(
@@ -313,7 +272,7 @@ function handleDragLeave(
 
 /*
  * =========================================================
- * Drop
+ * Завершение drop
  * =========================================================
  */
 
@@ -357,6 +316,9 @@ function handleDrop(
         return;
     }
 
+    const gameId =
+        currentDragState.gameId;
+
     const placement =
         currentDragState.placement;
 
@@ -369,7 +331,7 @@ function handleDrop(
         const updatedLayout =
             moveGameToTier(
                 layout,
-                currentDragState.gameId,
+                gameId,
                 targetTier,
                 null
             );
@@ -384,11 +346,10 @@ function handleDrop(
     }
 
     /*
-     * Если карточка была брошена в пустую часть
-     * исходного тира, порядок не меняем.
+     * Если позиция не рассчитана,
+     * оставляем карточку на прежнем месте.
      */
     if (
-        targetTier === currentDragState.sourceTier &&
         !placement
     ) {
         clearDropZoneState();
@@ -399,9 +360,9 @@ function handleDrop(
     const updatedLayout =
         moveGameToTier(
             layout,
-            currentDragState.gameId,
-            targetTier,
-            placement?.index
+            gameId,
+            placement.tier,
+            placement.index
         );
 
     clearDropZoneState();
@@ -411,12 +372,6 @@ function handleDrop(
     );
 }
 
-
-/*
- * =========================================================
- * Завершение переноса
- * =========================================================
- */
 
 function handleDragEnd() {
     clearDropZoneState();
@@ -440,7 +395,7 @@ function updateDropPlaceholder(
     }
 
     /*
-     * В корзине placeholder не нужен.
+     * Для корзины placeholder не используется.
      */
     if (
         dropZone.hasAttribute(
@@ -460,26 +415,37 @@ function updateDropPlaceholder(
             dropZone
         );
 
+    if (
+        !targetTier
+    ) {
+        return;
+    }
+
     const targetCard =
-        getTargetCard(
+        getGameCard(
             event.target
         );
 
     /*
-     * Если курсор находится не на карточке
-     * или наведён на саму перетаскиваемую карточку,
-     * позицию вставки не показываем.
+     * Из-за pointer-events: none у placeholder
+     * event.target может быть drop-контейнером.
+     *
+     * В этом случае нельзя удалять текущий placeholder:
+     * курсор может находиться прямо над ним.
      */
     if (
-        !targetTier ||
-        !targetCard ||
+        !targetCard
+    ) {
+        return;
+    }
+
+    /*
+     * Нельзя вставлять карточку относительно самой себя.
+     * При этом текущую позицию также не сбрасываем.
+     */
+    if (
         targetCard === currentDragState.card
     ) {
-        removeDropPlaceholder();
-
-        currentDragState.placement =
-            null;
-
         return;
     }
 
@@ -520,28 +486,25 @@ function updateDropPlaceholder(
                 : 0
         );
 
-    /*
-     * Получаем placeholder, но не вставляем его сразу.
-     */
     const placeholder =
         getDropPlaceholder();
 
     /*
-     * Берём referenceCard до удаления placeholder.
-     * При этом placeholder пропускается.
+     * Ищем карточку, перед которой должен стоять
+     * placeholder. Сам placeholder пропускаем.
      */
     const referenceCard =
         insertAfter
-            ? getNextCard(
+            ? getNextGameCard(
                 targetCard
             )
             : targetCard;
 
     /*
-     * Если placeholder уже находится
-     * в точно такой же позиции, DOM не изменяем.
+     * Если placeholder уже находится перед нужной
+     * карточкой в нужном контейнере, DOM не меняем.
      *
-     * Это основное исправление мерцания.
+     * Это устраняет моргание.
      */
     const isAlreadyInPosition =
         placeholder.parentElement === dropZone &&
@@ -550,8 +513,6 @@ function updateDropPlaceholder(
     if (
         !isAlreadyInPosition
     ) {
-        placeholder.remove();
-
         dropZone.insertBefore(
             placeholder,
             referenceCard
@@ -566,10 +527,12 @@ function updateDropPlaceholder(
 
 
 /*
- * Возвращает карточку под курсором.
- * Placeholder намеренно не учитывается.
+ * =========================================================
+ * Работа с карточками
+ * =========================================================
  */
-function getTargetCard(
+
+function getGameCard(
     element
 ) {
     if (
@@ -594,25 +557,27 @@ function getTargetCard(
 }
 
 
-/*
- * Возвращает следующую карточку после targetCard.
- * Placeholder пропускается.
- */
-function getNextCard(
-    targetCard
+function getNextGameCard(
+    card
 ) {
     let nextElement =
-        targetCard.nextElementSibling;
+        card.nextElementSibling;
 
     while (
-        nextElement &&
-        nextElement.id === 'custom-drop-placeholder'
+        nextElement
     ) {
+        if (
+            nextElement.id !==
+            'custom-drop-placeholder'
+        ) {
+            return nextElement;
+        }
+
         nextElement =
             nextElement.nextElementSibling;
     }
 
-    return nextElement;
+    return null;
 }
 
 
@@ -682,9 +647,6 @@ function moveGameToTier(
             )
             : -1;
 
-    /*
-     * Удаляем игру из всех тиров.
-     */
     Object.keys(
         updatedLayout
     ).forEach(
@@ -701,10 +663,6 @@ function moveGameToTier(
         }
     );
 
-    /*
-     * Если целевого тира ещё нет,
-     * создаём пустой массив.
-     */
     if (
         !Array.isArray(
             updatedLayout[targetTier]
@@ -723,8 +681,7 @@ function moveGameToTier(
 
     /*
      * При переносе внутри одного тира
-     * после удаления исходной карточки
-     * индекс уменьшается на единицу.
+     * индекс корректируется после удаления карточки.
      */
     if (
         sourceTier === targetTier &&
@@ -853,12 +810,34 @@ function getTargetTier(
         return 'REMOVED';
     }
 
-    const tier =
-        String(
-            dropZone.dataset.tierContainer || ''
-        ).trim();
+    return String(
+        dropZone.dataset.tierContainer || ''
+    ).trim() || null;
+}
 
-    return tier || null;
+
+function setActiveDropZone(
+    dropZone
+) {
+    document
+        .querySelectorAll(
+            '.is-drop-target'
+        )
+        .forEach(
+            element => {
+                if (
+                    element !== dropZone
+                ) {
+                    element.classList.remove(
+                        'is-drop-target'
+                    );
+                }
+            }
+        );
+
+    dropZone.classList.add(
+        'is-drop-target'
+    );
 }
 
 
@@ -896,10 +875,6 @@ function getDropPlaceholder() {
         'true'
     );
 
-    /*
-     * Placeholder не должен становиться
-     * самостоятельной целью dragover.
-     */
     placeholder.style.pointerEvents =
         'none';
 
@@ -960,7 +935,7 @@ function clearDropZoneState() {
 
 /*
  * =========================================================
- * Обновление draggable-состояния
+ * Draggable-состояние карточек
  * =========================================================
  */
 
