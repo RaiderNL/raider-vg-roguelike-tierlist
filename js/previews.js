@@ -3,7 +3,6 @@ import {
     PREVIEW_READY_CLASS,
     ACTIVE_ROW_CLASS,
     ACTIVE_CARD_CLASS,
-    VIDEO_FILTER_ACTIVE_CLASS,
     PREVIEW_CLOSE_DELAY,
     PREVIEW_LAYER_CLEANUP_DELAY,
     SCREEN_PADDING,
@@ -143,40 +142,6 @@ export function setupCardHover(
         );
     };
 
-    /*
-     * При выборе видео popup карточек скрыт.
-     * Клик по карточке должен вести в Steam.
-     */
-    const openSteamPageForSelectedVideo = () => {
-        const layout =
-            document.querySelector(
-                '.tier-list-layout'
-            );
-
-        const isVideoFilterActive =
-            layout?.classList.contains(
-                VIDEO_FILTER_ACTIVE_CLASS
-            );
-
-        const normalizedSteamLink =
-            String(
-                steamLink || ''
-            ).trim();
-
-        if (
-            !isVideoFilterActive ||
-            !normalizedSteamLink
-        ) {
-            return false;
-        }
-
-        window.location.assign(
-            normalizedSteamLink
-        );
-
-        return true;
-    };
-
     const movePopupToMobileModalLayer = () => {
         closeOtherMobilePreviews(
             popup
@@ -211,19 +176,6 @@ export function setupCardHover(
 
     const openPreview = () => {
         cancelClose();
-
-        const layout =
-            document.querySelector(
-                '.tier-list-layout'
-            );
-
-        if (
-            layout?.classList.contains(
-                VIDEO_FILTER_ACTIVE_CLASS
-            )
-        ) {
-            return;
-        }
 
         const mobilePreview =
             isMobilePreview();
@@ -308,7 +260,9 @@ export function setupCardHover(
         }
 
         if (closeTimer) {
-            clearTimeout(closeTimer);
+            clearTimeout(
+                closeTimer
+            );
         }
 
         closeTimer =
@@ -407,12 +361,6 @@ export function setupCardHover(
                 return;
             }
 
-            if (
-                openSteamPageForSelectedVideo()
-            ) {
-                return;
-            }
-
             openPreview();
         }
     );
@@ -436,12 +384,6 @@ export function setupCardHover(
             }
 
             event.preventDefault();
-
-            if (
-                openSteamPageForSelectedVideo()
-            ) {
-                return;
-            }
 
             openPreview();
         }
@@ -728,8 +670,13 @@ function createSteamPreview({
     label.textContent =
         'Открыть в Steam';
 
-    preview.appendChild(image);
-    preview.appendChild(label);
+    preview.appendChild(
+        image
+    );
+
+    preview.appendChild(
+        label
+    );
 
     return preview;
 }
@@ -760,7 +707,9 @@ function createVideoPreview(
         `Смотреть обзор игры ${name}`;
 
     const thumbnail =
-        getYouTubeThumbnail(video);
+        getYouTubeThumbnail(
+            video
+        );
 
     if (thumbnail) {
         const image =
@@ -997,7 +946,9 @@ export function updateVisiblePreviewPositions() {
             `.game-card:not(.${PREVIEW_CLOSED_CLASS})`
         )
         .forEach(card => {
-            positionPreview(card);
+            positionPreview(
+                card
+            );
         });
 }
 
@@ -1035,7 +986,10 @@ function clamp(
     max
 ) {
     return Math.min(
-        Math.max(value, min),
+        Math.max(
+            value,
+            min
+        ),
         max
     );
 }
