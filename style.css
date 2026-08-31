@@ -1475,6 +1475,10 @@ body {
  * Левая кликабельная область возврата наверх
  * для десктопной версии.
  */
+/*
+ * Левая кликабельная область возврата наверх
+ * для десктопной версии.
+ */
 .back-to-top {
     position: fixed;
     top: 0;
@@ -1486,15 +1490,15 @@ body {
     align-items: center;
     justify-content: center;
 
-    width: 100px;
+    width: clamp(110px, 6vw, 150px);
     height: 100vh;
     padding: 0;
+    overflow: hidden;
 
     color: #2563eb;
     font: inherit;
     font-size: 14px;
     font-weight: 700;
-    writing-mode: vertical-rl;
 
     cursor: pointer;
 
@@ -1506,22 +1510,48 @@ body {
     pointer-events: none;
 
     transition:
-        background 0.2s ease,
-        opacity 0.2s ease,
-        visibility 0.2s ease;
+        opacity 0.25s ease,
+        visibility 0.25s ease;
 }
 
 /*
- * Скрываем стрелку.
+ * Плавный слой подсветки всей области.
+ */
+.back-to-top::before {
+    content: '';
+
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+
+    background: linear-gradient(
+        90deg,
+        rgb(37 99 235 / 18%),
+        rgb(37 99 235 / 8%),
+        rgb(37 99 235 / 2%),
+        transparent
+    );
+
+    opacity: 0;
+
+    transition:
+        opacity 0.4s ease;
+}
+
+/*
+ * Стрелка скрыта — используется текст «Наверх».
  */
 .back-to-top span:first-child {
     display: none;
 }
 
 /*
- * Надпись «Наверх» видна после появления области.
+ * Надпись видна после прокрутки.
  */
 .back-to-top span:last-child {
+    position: relative;
+    z-index: 1;
+
     display: block;
 
     color: #6b7280;
@@ -1529,15 +1559,15 @@ body {
     font-weight: 700;
     letter-spacing: 0.04em;
     line-height: 1;
-    writing-mode: horizontal-tb;
     white-space: nowrap;
 
     opacity: 1;
     transform: scale(1);
 
     transition:
-        color 0.2s ease,
-        transform 0.2s ease;
+        color 0.35s ease,
+        transform 0.35s ease,
+        text-shadow 0.35s ease;
 }
 
 /*
@@ -1550,23 +1580,30 @@ body {
 }
 
 /*
- * При наведении подсвечивается вся область.
+ * Плавная подсветка всей левой области.
  */
-.back-to-top.is-visible:hover {
-    background: linear-gradient(
-        90deg,
-        rgb(37 99 235 / 14%),
-        rgb(37 99 235 / 4%),
-        transparent
-    );
+.back-to-top.is-visible:hover::before {
+    opacity: 1;
 }
 
 /*
- * Надпись выделяется вместе с областью.
+ * Выделение надписи при наведении.
  */
 .back-to-top.is-visible:hover span:last-child {
     color: #2563eb;
+    text-shadow: 0 2px 8px rgb(37 99 235 / 20%);
     transform: scale(1.08);
+}
+
+/*
+ * Небольшое затемнение при нажатии.
+ */
+.back-to-top.is-visible:active::before {
+    opacity: 0.7;
+}
+
+.back-to-top.is-visible:active span:last-child {
+    transform: scale(1.02);
 }
 
 /*
@@ -1575,6 +1612,10 @@ body {
 .back-to-top:focus-visible {
     outline: 3px solid rgb(37 99 235 / 35%);
     outline-offset: -5px;
+}
+
+.back-to-top:focus-visible::before {
+    opacity: 1;
 }
 
 .back-to-top:focus-visible span:last-child {
@@ -1596,6 +1637,7 @@ body {
  */
 @media (prefers-reduced-motion: reduce) {
     .back-to-top,
+    .back-to-top::before,
     .back-to-top span:last-child {
         transition: none;
     }
