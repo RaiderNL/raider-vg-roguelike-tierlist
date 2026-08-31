@@ -20,6 +20,14 @@ import {
 } from './filters.js';
 
 import {
+    isFavoritesFilterActive,
+    getActiveFavoriteIds,
+    getGameId,
+    setFavoritesFilter
+} from './favorites.js';
+
+
+import {
     createGameCard
 } from './cards.js';
 
@@ -116,6 +124,7 @@ window.addEventListener(
 );
 
 
+
 function init() {
     const searchInput =
         document.querySelector(
@@ -131,6 +140,11 @@ function init() {
         document.querySelector(
             '#video-filter'
         );
+    const favoritesFilter =
+    document.querySelector(
+        '#favorites-filter'
+    );
+
 
     const priceModeToggle =
         document.querySelector(
@@ -184,6 +198,24 @@ function init() {
             renderGames
         );
     }
+    if (
+    favoritesFilter
+    ) {
+        favoritesFilter.addEventListener(
+            'click',
+            () => {
+                const isActive =
+                    isFavoritesFilterActive();
+    
+                setFavoritesFilter(
+                    !isActive
+                );
+    
+                renderGames();
+            }
+        );
+    }
+
 
 
     if (
@@ -225,6 +257,13 @@ function init() {
 
 
     setupMobileTierNavigation();
+    window.addEventListener(
+    'favoriteschange',
+    () => {
+        renderGames();
+    }
+);
+
 
 
     setupBackToTop(
@@ -315,22 +354,45 @@ function renderGames() {
     updateVideoFilterState(
         selectedVideo
     );
+    updateFavoritesFilterState();
 
 
-    const filteredGames =
-        appState.games
-            .filter(
-                game =>
+
+    const favoritesFilterActive =
+    isFavoritesFilterActive();
+
+const activeFavoriteIds =
+    getActiveFavoriteIds();
+
+const filteredGames =
+    appState.games
+        .filter(
+            game => {
+                const matchesRegularFilters =
                     gameMatchesFilters(
                         game,
                         searchValue,
                         selectedTag,
                         selectedVideo
-                    )
-            )
-            .sort(
-                compareGamesByOrder
-            );
+                    );
+
+                const matchesFavorites =
+                    !favoritesFilterActive ||
+                    activeFavoriteIds.has(
+                        getGameId(
+                            game
+                        )
+                    );
+
+                return (
+                    matchesRegularFilters &&
+                    matchesFavorites
+                );
+            }
+        )
+        .sort(
+            compareGamesByOrder
+        );
 
 
     filteredGames.forEach(
@@ -405,6 +467,59 @@ function updateVideoFilterState(
     );
 }
 
+function updateFavoritesFilterState() {
+    const button =
+        document.querySelector(
+            '#favorites-filter'
+        );
+
+    if (
+        !button
+    ) {
+        return;
+    }
+
+    const isActive =
+        isFavoritesFilterActive();
+
+    button.classList.toggle(
+        'is-active',
+        isActive
+    );
+
+    button.setAttribute(
+        'aria-pressed',
+        String(
+            isActive
+        )
+    );
+
+    button.setAttribute(
+        'aria-label',
+        isActive
+            ? 'Показывать все игры'
+            : 'Показывать только избранные игры'
+    );
+
+    button.title =
+        isActive
+            ? 'Показывать все игры'
+            : 'Показывать только избранные игры';
+
+    const icon =
+        button.querySelector(
+            'span'
+        );
+
+    if (
+        icon
+    ) {
+        icon.textContent =
+            isActive
+                ? '★'
+                : '☆';
+    }
+}
 
 function resetFilters() {
     const searchInput =
