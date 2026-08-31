@@ -9,19 +9,25 @@ import {
 
 import {
     CUSTOM_TIER_NAMES,
+    REMOVED_TIER_NAME,
     getGameId,
     getStartLayout,
     saveLocalLayout,
     createInitialLayout,
     createShareUrl
 } from './custom-tierlist.js';
+
 import {
     setupCustomDragAndDrop
 } from './custom-dnd.js';
 
+
 let games = [];
 let currentLayout = null;
 let isSharedLayout = false;
+let currentMode = 'edit';
+
+let dragAndDropInitialized = false;
 
 
 const tierContainers = {};
@@ -36,6 +42,7 @@ document.addEventListener(
 async function init() {
     cacheTierContainers();
 
+    setupModeSwitcher();
     setupControls();
 
     try {
@@ -55,7 +62,16 @@ async function init() {
         isSharedLayout =
             startData.isShared;
 
-        updateSharedNotice();
+        /*
+         * Чужая версия открывается
+         * сразу в режиме просмотра.
+         */
+        currentMode =
+            isSharedLayout
+                ? 'view'
+                : 'edit';
+
+        updateInterface();
 
         renderCustomTierList();
     } catch (
@@ -72,14 +88,21 @@ async function init() {
 
 
 /*
- * Запоминаем контейнеры уровней.
+ * Кэшируем все контейнеры:
+ *
+ * UNRANKED — нераспределённые игры;
+ * S–F — уровни тир-листа;
+ * REMOVED — удалённые игры.
  */
 function cacheTierContainers() {
-    CUSTOM_TIER_NAMES.forEach(
+    [
+        ...CUSTOM_TIER_NAMES,
+        REMOVED_TIER_NAME
+    ].forEach(
         tier => {
             tierContainers[tier] =
                 document.querySelector(
-                    `#custom-tier-${tier}`
+                    `[data-tier-container="${tier}"]`
                 );
         }
     );
@@ -87,7 +110,264 @@ function cacheTierContainers() {
 
 
 /*
- * Подключаем элементы управления.
+ * Настраиваем переключатель режимов.
+ */
+function setupModeSwitcher() {
+    const modeButtons =
+        document.querySelectorAll(
+            '[data-custom-mode]'
+        );
+
+    modeButtons.forEach(
+        button => {
+            button.addEventListener(
+                'click',
+                () => {
+                    const mode =
+                        button.dataset.customMode;
+
+                    if (
+                        mode !== 'edit' &&
+                        mode !== 'view'
+                    ) {
+                        return;
+                    }
+
+                    setCustomMode(
+                        mode
+                    );
+                }
+            );
+        }
+    );
+}
+
+
+/*
+ * Переключает режим страницы.
+ */
+function setCustomMode(
+    mode
+) {
+    currentMode =
+        mode === 'view'
+            ? 'view'
+            : 'edit';
+
+    updateInterface();
+
+    renderCustomTierList();
+}
+
+
+/*
+ * Обновляет классы body,
+ * кнопки и видимость блоков.
+ */
+function updateInterface() {
+    const isEditMode =
+        currentMode === 'edit';
+
+    const editModeButton =
+        document.querySelector(
+            '#custom-edit-mode-button'
+        );
+
+    const viewModeButton =
+        document.querySelector(
+            '#custom-view-mode-button'
+        );
+
+    const editActions =
+        document.querySelector(
+            '#custom-edit-actions'
+        );
+
+    const viewActions =
+        document.querySelector(
+            '#custom-view-actions'
+        );
+
+    const editControls =
+        document.querySelector(
+            '#custom-edit-controls'
+        );
+
+    const editorContent =
+        document.querySelector(
+            '#custom-editor-content'
+        );
+
+    const sharedNotice =
+        document.querySelector(
+            '#custom-shared-notice'
+        );
+
+    const saveSharedButton =
+        document.querySelector(
+            '#save-shared-tierlist'
+        );
+
+    document.body.classList.toggle(
+        'custom-mode-edit',
+        isEditMode
+    );
+
+    document.body.classList.toggle(
+        'custom-mode-view',
+        !isEditMode
+    );
+
+
+    editModeButton?.classList.toggle(
+        'is-active',
+        isEditMode
+    );
+
+    viewModeButton?.classList.toggle(
+        'is-active',
+        !isEditMode
+    );
+
+    editModeButton?.setAttribute(
+        'aria-pressed',
+        String(
+            isEditMode
+        )
+    );
+
+    viewModeButton?.setAttribute(
+        'aria-pressed',
+        String(
+            !isEditMode
+        )
+    );
+
+
+    if (
+        editActions
+    ) {
+        editActions.hidden =
+            !isEditMode;
+    }
+
+    if (
+        viewActions
+    ) {
+        viewActions.hidden =
+            isEditMode;
+    }
+
+    if (
+        editControls
+    ) {
+        editControls.hidden =
+            !isEditMode;
+    }
+
+    if (
+        editorContent
+    ) {
+        editorContent.hidden =
+            !isEditMode;
+    }
+
+    if (
+        sharedNotice
+    ) {
+        sharedNotice.hidden =
+            !isSharedLayout;
+    }
+
+    if (
+        saveSharedButton
+    ) {
+        saveSharedButton.hidden =
+            !isSharedLayout;
+    }
+
+    updateModeTexts();
+}
+
+
+/*
+ * Обновляет заголовки и описания
+ * в зависимости от режима.
+ */
+function updateModeTexts() {
+    const title =
+        document.querySelector(
+            '#custom-mode-title'
+        );
+
+    const status =
+        document.querySelector(
+            '#custom-mode-status'
+        );
+
+    const description =
+        document.querySelector(
+            '#custom-page-description'
+        );
+
+    if (
+        currentMode === 'view'
+    ) {
+        if (
+            title
+        ) {
+            title.textContent =
+                isSharedLayout
+                    ? 'Просмотр чужого тир-листа'
+                    : 'Просмотр собственного тир-листа';
+        }
+
+        if (
+            status
+        ) {
+            status.textContent =
+                isSharedLayout
+                    ? 'Это готовая версия из ссылки'
+                    : 'Режим просмотра без редактирования';
+        }
+
+        if (
+            description
+        ) {
+            description.textContent =
+                'Готовая пользовательская версия тир-листа';
+        }
+
+        return;
+    }
+
+    if (
+        title
+    ) {
+        title.textContent =
+            isSharedLayout
+                ? 'Редактирование копии тир-листа'
+                : 'Создание собственного тир-листа';
+    }
+
+    if (
+        status
+    ) {
+        status.textContent =
+            'Перетащите игры в нужные уровни';
+    }
+
+    if (
+        description
+    ) {
+        description.textContent =
+            'Соберите собственную версию тир-листа';
+    }
+}
+
+
+/*
+ * Подключаем фильтры и кнопки.
  */
 function setupControls() {
     const searchInput =
@@ -212,8 +492,7 @@ function fillTagFilter() {
 
 
 /*
- * Отрисовываем карточки
- * в соответствии с текущей структурой.
+ * Отрисовываем все группы игр.
  */
 function renderCustomTierList() {
     if (
@@ -234,7 +513,10 @@ function renderCustomTierList() {
         0;
 
 
-    CUSTOM_TIER_NAMES.forEach(
+    [
+        ...CUSTOM_TIER_NAMES,
+        REMOVED_TIER_NAME
+    ].forEach(
         tier => {
             const container =
                 tierContainers[tier];
@@ -273,14 +555,28 @@ function renderCustomTierList() {
                         createGameCard(
                             game
                         );
-                    
+
                     card.dataset.gameId =
                         gameId;
-                    
+
+                    /*
+                     * В режиме просмотра карточки
+                     * не должны быть перетаскиваемыми.
+                     */
+                    card.draggable =
+                        currentMode === 'edit';
+
+                    if (
+                        currentMode === 'view'
+                    ) {
+                        card.classList.add(
+                            'custom-card-view-only'
+                        );
+                    }
+
                     container.appendChild(
                         card
                     );
-
 
                     visibleGamesCount++;
                 }
@@ -291,29 +587,47 @@ function renderCustomTierList() {
     updateEmptyMessage(
         visibleGamesCount
     );
-    setupCustomDragAndDrop({
-    getLayout: () =>
-        currentLayout,
 
-    onLayoutChange:
-        updatedLayout => {
-            currentLayout =
-                updatedLayout;
+    updateRemovedCounters();
 
-            showStatus(
-                'Порядок игр обновлён'
-            );
-        }
-});
+    /*
+     * Drag-and-drop подключается
+     * только в режиме редактирования.
+     */
+    if (
+        currentMode === 'edit'
+    ) {
+        setupCustomDragAndDrop({
+            getLayout: () =>
+                currentLayout,
 
+            onLayoutChange:
+                updatedLayout => {
+                    currentLayout =
+                        updatedLayout;
+
+                    updateRemovedCounters();
+
+                    showStatus(
+                        'Порядок игр обновлён'
+                    );
+                }
+        });
+
+        dragAndDropInitialized =
+            true;
+    }
 }
 
 
 /*
- * Очищаем все зоны перед новой отрисовкой.
+ * Очищаем контейнеры перед отрисовкой.
  */
 function clearTierContainers() {
-    CUSTOM_TIER_NAMES.forEach(
+    [
+        ...CUSTOM_TIER_NAMES,
+        REMOVED_TIER_NAME
+    ].forEach(
         tier => {
             const container =
                 tierContainers[tier];
@@ -321,6 +635,44 @@ function clearTierContainers() {
             container?.replaceChildren();
         }
     );
+}
+
+
+/*
+ * Обновляем счётчики корзины.
+ */
+function updateRemovedCounters() {
+    const removedCount =
+        currentLayout?.[REMOVED_TIER_NAME]
+            ?.length || 0;
+
+    const trashCount =
+        document.querySelector(
+            '#custom-trash-count'
+        );
+
+    const removedGamesCount =
+        document.querySelector(
+            '#custom-removed-games-count'
+        );
+
+    if (
+        trashCount
+    ) {
+        trashCount.textContent =
+            String(
+                removedCount
+            );
+    }
+
+    if (
+        removedGamesCount
+    ) {
+        removedGamesCount.textContent =
+            String(
+                removedCount
+            );
+    }
 }
 
 
@@ -386,8 +738,7 @@ function getSelectedTag() {
 
 
 /*
- * Показываем сообщение,
- * если фильтры ничего не нашли.
+ * Сообщение об отсутствии игр.
  */
 function updateEmptyMessage(
     visibleGamesCount
@@ -409,89 +760,7 @@ function updateEmptyMessage(
 
 
 /*
- * Обновляем уведомление
- * о просмотре чужой версии.
- */
-function updateSharedNotice() {
-    const notice =
-        document.querySelector(
-            '#custom-shared-notice'
-        );
-
-    const title =
-        document.querySelector(
-            '#custom-mode-title'
-        );
-
-    const status =
-        document.querySelector(
-            '#custom-mode-status'
-        );
-
-    const description =
-        document.querySelector(
-            '#custom-page-description'
-        );
-
-    if (
-        notice
-    ) {
-        notice.hidden =
-            !isSharedLayout;
-    }
-
-    if (
-        isSharedLayout
-    ) {
-        if (
-            title
-        ) {
-            title.textContent =
-                'Просмотр чужого тир-листа';
-        }
-
-        if (
-            status
-        ) {
-            status.textContent =
-                'Эта версия не изменяет ваш локальный список';
-        }
-
-        if (
-            description
-        ) {
-            description.textContent =
-                'Пользовательская версия тир-листа из ссылки';
-        }
-
-        return;
-    }
-
-    if (
-        title
-    ) {
-        title.textContent =
-            'Создание собственного тир-листа';
-    }
-
-    if (
-        status
-    ) {
-        status.textContent =
-            'Перетащите игры в нужные уровни';
-    }
-
-    if (
-        description
-    ) {
-        description.textContent =
-            'Соберите собственную версию тир-листа';
-    }
-}
-
-
-/*
- * Сохраняем текущую структуру локально.
+ * Сохраняем текущую структуру.
  */
 function saveCurrentLayout() {
     if (
@@ -500,14 +769,27 @@ function saveCurrentLayout() {
         return;
     }
 
-    saveLocalLayout(
-        currentLayout
-    );
+    const saved =
+        saveLocalLayout(
+            currentLayout
+        );
+
+    if (
+        !saved
+    ) {
+        showStatus(
+            'Не удалось сохранить тир-лист'
+        );
+
+        return;
+    }
 
     isSharedLayout =
         false;
 
-    updateSharedNotice();
+    removeLayoutFromCurrentUrl();
+
+    updateInterface();
 
     showStatus(
         'Ваш тир-лист сохранён'
@@ -526,14 +808,27 @@ function saveSharedLayout() {
         return;
     }
 
-    saveLocalLayout(
-        currentLayout
-    );
+    const saved =
+        saveLocalLayout(
+            currentLayout
+        );
+
+    if (
+        !saved
+    ) {
+        showStatus(
+            'Не удалось сохранить тир-лист'
+        );
+
+        return;
+    }
 
     isSharedLayout =
         false;
 
-    updateSharedNotice();
+    removeLayoutFromCurrentUrl();
+
+    updateInterface();
 
     showStatus(
         'Версия сохранена как ваша'
@@ -542,7 +837,7 @@ function saveSharedLayout() {
 
 
 /*
- * Создаём ссылку на текущую структуру.
+ * Формируем ссылку на текущий тир-лист.
  */
 async function shareCurrentLayout() {
     if (
@@ -580,10 +875,7 @@ async function shareCurrentLayout() {
 
 
 /*
- * Сбрасываем текущую версию.
- *
- * В режиме чужой ссылки локальное
- * избранное и сохранение не изменяются.
+ * Возвращает все игры в UNRANKED.
  */
 function resetCurrentLayout() {
     if (
@@ -617,8 +909,63 @@ function resetCurrentLayout() {
 
 
 /*
- * Копирование текста с запасным вариантом
- * для браузеров без Clipboard API.
+ * Удаляет параметр чужой версии
+ * из текущего URL.
+ */
+function removeLayoutFromCurrentUrl() {
+    const url =
+        new URL(
+            window.location.href
+        );
+
+    url.searchParams.delete(
+        'layout'
+    );
+
+    window.history.replaceState(
+        {},
+        '',
+        url
+    );
+}
+
+
+/*
+ * Показывает временный статус.
+ */
+function showStatus(
+    message
+) {
+    const status =
+        document.querySelector(
+            '#custom-mode-status'
+        );
+
+    if (
+        !status
+    ) {
+        return;
+    }
+
+    status.textContent =
+        message;
+
+    window.clearTimeout(
+        showStatus.timer
+    );
+
+    showStatus.timer =
+        window.setTimeout(
+            () => {
+                updateModeTexts();
+            },
+            1800
+        );
+}
+
+
+/*
+ * Копирование текста.
  */
 async function copyText(
     text
@@ -645,6 +992,18 @@ async function copyText(
     textarea.style.position =
         'fixed';
 
+    textarea.style.top =
+        '0';
+
+    textarea.style.left =
+        '0';
+
+    textarea.style.width =
+        '1px';
+
+    textarea.style.height =
+        '1px';
+
     textarea.style.opacity =
         '0';
 
@@ -669,42 +1028,6 @@ async function copyText(
             'Копирование не поддерживается'
         );
     }
-}
-
-
-/*
- * Показываем временный статус
- * в заголовке страницы.
- */
-function showStatus(
-    message
-) {
-    const status =
-        document.querySelector(
-            '#custom-mode-status'
-        );
-
-    if (
-        !status
-    ) {
-        return;
-    }
-
-    const originalText =
-        isSharedLayout
-            ? 'Эта версия не изменяет ваш локальный список'
-            : 'Перетащите игры в нужные уровни';
-
-    status.textContent =
-        message;
-
-    setTimeout(
-        () => {
-            status.textContent =
-                originalText;
-        },
-        1800
-    );
 }
 
 
