@@ -601,17 +601,20 @@ function renderCustomTierList() {
             getLayout: () =>
                 currentLayout,
 
-            onLayoutChange:
+                        onLayoutChange:
                 updatedLayout => {
                     currentLayout =
                         updatedLayout;
-
+            
+                    renderCustomTierList();
+            
                     updateRemovedCounters();
-
+            
                     showStatus(
                         'Порядок игр обновлён'
                     );
                 }
+
         });
 
         dragAndDropInitialized =
