@@ -8,7 +8,6 @@ let customCardsObserver = null;
 
 let layoutAnimationFrame = null;
 let placeholderAnimation = null;
-let placeholderAnimationFrame = null;
 
 
 
@@ -665,7 +664,10 @@ function showPlaceholder(
  */
 export function animateCustomLayoutChange(
     root,
-    change
+    change,
+    {
+        animateRows: shouldAnimateRows = true
+    } = {}
 ) {
     if (
         !root ||
@@ -689,11 +691,13 @@ export function animateCustomLayoutChange(
         );
 
     const rows =
-        [
-            ...root.querySelectorAll(
-                '.custom-tier-row'
-            )
-        ];
+        shouldAnimateRows
+            ? [
+                ...root.querySelectorAll(
+                    '.custom-tier-row'
+                )
+            ]
+            : [];
 
     const previousCardRects =
         new Map();
@@ -721,6 +725,12 @@ export function animateCustomLayoutChange(
 
     change();
 
+    /*
+     * Принудительно рассчитываем новый layout
+     * до начала анимации.
+     */
+    root.getBoundingClientRect();
+
     if (
         layoutAnimationFrame
     ) {
@@ -737,10 +747,14 @@ export function animateCustomLayoutChange(
                     previousCardRects
                 );
 
-                animateRows(
-                    rows,
-                    previousRowRects
-                );
+                if (
+                    shouldAnimateRows
+                ) {
+                    animateRows(
+                        rows,
+                        previousRowRects
+                    );
+                }
 
                 layoutAnimationFrame =
                     null;
@@ -764,41 +778,39 @@ function animateDropZoneChange(
             '#custom-drop-placeholder'
         );
 
-    /*
-     * Если предыдущая анимация ещё идёт,
-     * фиксируем её текущее визуальное положение.
-     */
     const previousRect =
         capturePlaceholderRect(
             placeholder
         );
 
+    /*
+     * Во время перемещения placeholder
+     * не анимируем transform самих строк.
+     *
+     * Иначе transform строки и transform
+     * placeholder начинают складываться.
+     */
     animateCustomLayoutChange(
         root,
-        change
+        change,
+        {
+            animateRows: false
+        }
     );
 
-    if (
-        placeholderAnimationFrame
-    ) {
-        cancelAnimationFrame(
-            placeholderAnimationFrame
-        );
-    }
-
-    placeholderAnimationFrame =
-        requestAnimationFrame(
-            () => {
-                placeholderAnimationFrame =
-                    null;
-
-                animatePlaceholderMove(
-                    placeholder,
-                    previousRect
-                );
-            }
-        );
+    /*
+     * Сразу после изменения DOM измеряем новое
+     * реальное положение placeholder.
+     *
+     * Не откладываем это ещё на один rAF:
+     * именно это вызывало первые рывки.
+     */
+    animatePlaceholderMove(
+        placeholder,
+        previousRect
+    );
 }
+
 
 function capturePlaceholderRect(
     placeholder
@@ -810,39 +822,25 @@ function capturePlaceholderRect(
         return null;
     }
 
+    /*
+     * Сначала получаем фактическое визуальное
+     * положение placeholder на экране.
+     */
     const rect =
         placeholder.getBoundingClientRect();
 
-    /*
-     * Перед новым измерением убираем старую
-     * transform-анимацию, иначе новая позиция
-     * будет рассчитана относительно промежуточного
-     * положения placeholder.
-     */
     if (
         placeholderAnimation
     ) {
-        try {
-            placeholderAnimation.commitStyles();
-        } catch (
-            error
-        ) {
-            /*
-             * commitStyles может отсутствовать
-             * в некоторых старых браузерах.
-             */
-        }
-
         placeholderAnimation.cancel();
+
         placeholderAnimation =
             null;
-
-        placeholder.style.transform =
-            '';
     }
 
     return rect;
 }
+
 
 function animatePlaceholderMove(
     placeholder,
@@ -868,13 +866,9 @@ function animatePlaceholderMove(
         previousRect.top -
         currentRect.top;
 
-    /*
-     * Если положение практически не изменилось,
-     * новую анимацию не запускаем.
-     */
     if (
-        Math.abs(deltaX) < 2 &&
-        Math.abs(deltaY) < 2
+        Math.abs(deltaX) < 1 &&
+        Math.abs(deltaY) < 1
     ) {
         return;
     }
@@ -883,34 +877,33 @@ function animatePlaceholderMove(
         placeholderAnimation
     ) {
         placeholderAnimation.cancel();
+
         placeholderAnimation =
             null;
     }
 
-    placeholderAnimation =
+    const animation =
         placeholder.animate(
             [
                 {
-                    opacity: 0.72,
                     transform:
-                        `translate(${deltaX}px, ${deltaY}px) scale(0.82)`
+                        `translate(${deltaX}px, ${deltaY}px)`
                 },
                 {
-                    opacity: 1,
                     transform:
-                        'translate(0, 0) scale(1)'
+                        'translate(0, 0)'
                 }
             ],
             {
-                duration: 220,
+                duration: 180,
                 easing:
                     'cubic-bezier(0.22, 1, 0.36, 1)',
                 fill: 'both'
             }
         );
 
-    const animation =
-        placeholderAnimation;
+    placeholderAnimation =
+        animation;
 
     animation.onfinish =
         () => {
@@ -919,12 +912,6 @@ function animatePlaceholderMove(
             ) {
                 return;
             }
-
-            placeholder.style.transform =
-                '';
-
-            placeholder.style.opacity =
-                '';
 
             animation.cancel();
 
@@ -942,6 +929,7 @@ function animatePlaceholderMove(
             }
         };
 }
+
 
 
 function animateCards(
@@ -1364,17 +1352,6 @@ function removeDropPlaceholder() {
         );
 
     if (
-        placeholderAnimationFrame
-    ) {
-        cancelAnimationFrame(
-            placeholderAnimationFrame
-        );
-
-        placeholderAnimationFrame =
-            null;
-    }
-
-    if (
         placeholderAnimation
     ) {
         placeholderAnimation.cancel();
@@ -1395,6 +1372,7 @@ function removeDropPlaceholder() {
 
     placeholder.remove();
 }
+
 
 
 /*
