@@ -113,6 +113,10 @@ function handleDragStart(
     card.classList.add(
         'is-dragging'
     );
+    document.body.classList.add(
+    'custom-drag-active'
+);
+
 
     event.dataTransfer.effectAllowed =
         'move';
@@ -423,6 +427,9 @@ function clearDropZoneState() {
                 );
             }
         );
+    document.body.classList.remove(
+    'custom-drag-active'
+);
 
     currentDragState =
         null;
