@@ -180,6 +180,30 @@ export function setupCardHover(
             'game-preview-popup-mobile-modal',
             mobilePreview
         );
+                if (
+            mobilePreview
+        ) {
+            popup.style.top =
+                '50%';
+
+            popup.style.left =
+                '50%';
+
+            popup.style.right =
+                'auto';
+
+            popup.style.bottom =
+                'auto';
+        } else {
+            popup.style.removeProperty(
+                'top'
+            );
+
+            popup.style.removeProperty(
+                'left'
+            );
+        }
+
 
         card.classList.remove(
             PREVIEW_CLOSED_CLASS
