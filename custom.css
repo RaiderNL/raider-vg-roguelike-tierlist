@@ -768,9 +768,11 @@ body.custom-drag-active
  */
 body.custom-drag-active
 .custom-games-container
-.game-card:hover {
+.game-card:not(.is-dragging):hover {
     transform: none;
 }
+
+
 
 .custom-games-container .game-card.is-dragging {
     opacity: 0.35;
