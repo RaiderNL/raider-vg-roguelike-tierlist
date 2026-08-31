@@ -2,6 +2,12 @@
     box-sizing: border-box;
 }
 
+html,
+body {
+    width: 100%;
+    max-width: 100%;
+}
+
 body {
     min-width: 320px;
     margin: 0;
@@ -288,9 +294,6 @@ body {
     background: #f7f9fc;
 }
 
-/*
- * Открытый popup должен быть выше остальных тиров.
- */
 .tier-row-active,
 .tier-row:has(.game-card:not(.preview-closed)) {
     z-index: 100000;
@@ -661,8 +664,7 @@ body {
 }
 
 /*
- * Кнопка существует в DOM на всех экранах,
- * но на десктопе всегда скрыта.
+ * Кнопка доступна только в мобильном popup.
  */
 .game-preview-close {
     position: absolute;
@@ -703,7 +705,7 @@ body {
 }
 
 /*
- * При выбранном видео popup карточек скрыт.
+ * При выбранном видео popup скрыт.
  */
 .tier-list-layout.video-filter-active
 .game-preview-popup {
@@ -1032,6 +1034,17 @@ body {
  * Мобильная версия.
  */
 @media (max-width: 600px) {
+    html,
+    body {
+        overflow-x: hidden;
+    }
+
+    img,
+    video,
+    iframe {
+        max-width: 100%;
+    }
+
     .site-header {
         padding: 24px 16px;
     }
@@ -1159,25 +1172,23 @@ body {
     }
 
     /*
-     * Обычный popup на мобильном до его открытия.
-     */
-        /*
-     * На мобильном popup переносится в body через JS.
-     * Он не является потомком карточки и всегда центрируется
-     * относительно viewport телефона.
+     * Мобильное окно preview.
+     * popup переносится в body через previews.js,
+     * поэтому оно всегда считается от viewport.
      */
     .game-preview-popup.game-preview-popup-mobile-modal {
         position: fixed !important;
-        top: 50% !important;
+        top: 50dvh !important;
         right: auto !important;
         bottom: auto !important;
-        left: 50% !important;
+        left: 50vw !important;
         z-index: 100003 !important;
 
         display: flex !important;
         flex-direction: column;
 
-        width: min(440px, calc(100vw - 24px)) !important;
+        width: calc(100vw - 24px) !important;
+        max-width: calc(100vw - 24px);
         max-height: calc(100dvh - 24px);
         padding: 12px;
         overflow-x: hidden;
@@ -1198,16 +1209,24 @@ body {
         flex-direction: column;
     }
 
+    .game-preview-popup.game-preview-popup-mobile-modal::after {
+        display: none;
+    }
+
     /*
-     * Крестик закреплён в пределах popup и не уезжает
-     * при прокрутке содержимого.
+     * Крестик отображается только в mobile modal.
+     * order: -1 ставит кнопку перед контентом, поэтому
+     * sticky фиксирует её сверху при прокрутке содержимого.
      */
-    .game-preview-popup-mobile-modal .game-preview-close {
+    .game-preview-popup-mobile-modal
+    .game-preview-close {
         position: sticky;
         top: 0;
+        right: auto;
         z-index: 4;
 
         display: inline-flex;
+        order: -1;
         align-self: flex-end;
         align-items: center;
         justify-content: center;
@@ -1216,17 +1235,15 @@ body {
         height: 32px;
         margin-bottom: -32px;
 
-        background: rgb(32 35 42 / 92%);
-    }
-
-    .game-preview-popup.game-preview-popup-mobile-modal::after {
-        display: none;
+        background: rgb(32 35 42 / 94%);
     }
 
     /*
-     * На мобильном цитата не ограничивается квадратом.
+     * На телефоне цитата сохраняет реальную высоту текста,
+     * а не пытается быть квадратной.
      */
-    .game-preview-popup-mobile-modal .preview-description {
+    .game-preview-popup-mobile-modal
+    .preview-description {
         flex: 0 0 auto;
 
         min-height: 0;
@@ -1239,22 +1256,17 @@ body {
         aspect-ratio: auto;
     }
 
-    .game-preview-popup-mobile-modal .preview-actions {
+    .game-preview-popup-mobile-modal
+    .preview-actions {
         flex: 0 0 auto;
     }
 
-    .game-preview-popup-mobile-modal .preview-image {
-        width: 100%;
-        height: auto;
-        aspect-ratio: 16 / 9;
-    }
-
+    .game-preview-popup-mobile-modal
     .preview-image {
         width: 100%;
         height: auto;
         aspect-ratio: 16 / 9;
     }
-
 
     .preview-image {
         height: 117px;
@@ -1306,10 +1318,6 @@ body {
     }
 }
 
-/*
- * Отключение анимаций для системной настройки
- * "уменьшение движения".
- */
 @media (prefers-reduced-motion: reduce) {
     .game-price,
     .game-price::after {
