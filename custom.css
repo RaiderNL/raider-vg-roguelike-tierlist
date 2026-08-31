@@ -985,6 +985,36 @@ animation:
 
     pointer-events: none;
 }
+/*
+ * =========================================================
+ * Фильтры в режиме просмотра
+ * =========================================================
+ */
+
+body.custom-mode-view .custom-edit-controls {
+    align-items: center;
+}
+
+body.custom-mode-view .custom-filter-label {
+    display: none;
+}
+
+body.custom-mode-view .custom-filter-group {
+    flex: 1 1 220px;
+    min-width: 180px;
+}
+
+body.custom-mode-view .custom-search-input,
+body.custom-mode-view .custom-tag-select {
+    min-height: var(--control-height);
+}
+
+body.custom-mode-view #custom-favorites-filter,
+body.custom-mode-view #custom-price-mode-toggle,
+body.custom-mode-view #custom-reset-filters {
+    align-self: center;
+}
+
 
 @keyframes custom-placeholder-breathe {
     0%,
@@ -1104,6 +1134,132 @@ body.custom-mode-view .custom-games-container {
     min-height: 148px;
     gap: 8px;
     padding: 12px;
+}
+/*
+ * =========================================================
+ * Размеры карточек в режиме просмотра
+ * Аналогично основной странице
+ * =========================================================
+ */
+
+body.custom-mode-view
+.custom-games-container
+.game-card {
+    flex: 0 0 190px;
+    width: 190px;
+}
+
+
+/*
+ * Тиры S и A — крупные карточки
+ */
+body.custom-mode-view
+#custom-tier-S .game-card,
+body.custom-mode-view
+#custom-tier-A .game-card {
+    width: 230px;
+    flex-basis: 230px;
+
+    grid-template-rows:
+        minmax(0, 74%)
+        minmax(0, 1fr)
+        auto;
+}
+
+
+/*
+ * Тиры D, E и F — компактные карточки
+ */
+body.custom-mode-view
+#custom-tier-D,
+body.custom-mode-view
+#custom-tier-E,
+body.custom-mode-view
+#custom-tier-F {
+    gap: 6px;
+}
+
+body.custom-mode-view
+#custom-tier-D .game-card,
+body.custom-mode-view
+#custom-tier-E .game-card,
+body.custom-mode-view
+#custom-tier-F .game-card {
+    width: 142px;
+    flex-basis: 142px;
+}
+
+
+/*
+ * Заголовки B и C
+ */
+body.custom-mode-view
+#custom-tier-B .game-title,
+body.custom-mode-view
+#custom-tier-C .game-title {
+    display: block;
+
+    width: calc(100% - 14px);
+    margin: 5px auto 3px;
+    overflow: hidden;
+
+    font-size: 13px;
+    line-height: 1.2;
+    text-align: center;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+
+/*
+ * Заголовки D, E и F
+ */
+body.custom-mode-view
+#custom-tier-D .game-title,
+body.custom-mode-view
+#custom-tier-E .game-title,
+body.custom-mode-view
+#custom-tier-F .game-title {
+    display: block;
+
+    width: calc(100% - 10px);
+    margin: 4px auto 3px;
+    overflow: hidden;
+
+    font-size: 11px;
+    line-height: 1.15;
+    text-align: center;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+
+/*
+ * Теги D, E и F
+ */
+body.custom-mode-view
+#custom-tier-D .game-tags,
+body.custom-mode-view
+#custom-tier-E .game-tags,
+body.custom-mode-view
+#custom-tier-F .game-tags {
+    width: calc(100% - 10px);
+    max-height: 27px;
+    margin: 0 auto 5px;
+    gap: 3px;
+}
+
+body.custom-mode-view
+#custom-tier-D .game-tag,
+body.custom-mode-view
+#custom-tier-E .game-tag,
+body.custom-mode-view
+#custom-tier-F .game-tag {
+    max-width: 100%;
+    padding: 2px 4px;
+
+    font-size: 9px;
+    line-height: 1.1;
 }
 
 body.custom-mode-view .custom-trash-section,
@@ -1295,6 +1451,97 @@ body.custom-page.custom-mode-edit.custom-drag-active
         font-size: 11px;
     }
 }
+/*
+ * Размеры карточек кастомного тир-листа
+ * на мобильных устройствах
+ */
+body.custom-mode-view
+#custom-tier-S .game-card,
+body.custom-mode-view
+#custom-tier-A .game-card {
+    width: 165px;
+    flex-basis: 165px;
+
+    grid-template-rows:
+        minmax(0, 72%)
+        minmax(0, 1fr)
+        auto;
+}
+
+body.custom-mode-view
+#custom-tier-D,
+body.custom-mode-view
+#custom-tier-E,
+body.custom-mode-view
+#custom-tier-F {
+    gap: 6px;
+}
+
+body.custom-mode-view
+#custom-tier-D .game-card,
+body.custom-mode-view
+#custom-tier-E .game-card,
+body.custom-mode-view
+#custom-tier-F .game-card {
+    width: 108px;
+    flex-basis: 108px;
+}
+
+body.custom-mode-view
+#custom-tier-B .game-title,
+body.custom-mode-view
+#custom-tier-C .game-title,
+body.custom-mode-view
+#custom-tier-D .game-title,
+body.custom-mode-view
+#custom-tier-E .game-title,
+body.custom-mode-view
+#custom-tier-F .game-title {
+    display: block;
+
+    width: calc(100% - 10px);
+    margin: 4px auto 3px;
+    overflow: hidden;
+
+    font-size: 10px;
+    line-height: 1.15;
+    text-align: center;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+body.custom-mode-view
+#custom-tier-D .game-title,
+body.custom-mode-view
+#custom-tier-E .game-title,
+body.custom-mode-view
+#custom-tier-F .game-title {
+    font-size: 9px;
+}
+
+body.custom-mode-view
+#custom-tier-D .game-tags,
+body.custom-mode-view
+#custom-tier-E .game-tags,
+body.custom-mode-view
+#custom-tier-F .game-tags {
+    width: calc(100% - 10px);
+    max-height: 25px;
+    margin: 0 auto 5px;
+    gap: 3px;
+}
+
+body.custom-mode-view
+#custom-tier-D .game-tag,
+body.custom-mode-view
+#custom-tier-E .game-tag,
+body.custom-mode-view
+#custom-tier-F .game-tag {
+    padding: 2px 4px;
+    font-size: 8px;
+    line-height: 1.1;
+}
+
 
 @media (prefers-reduced-motion: reduce) {
     .custom-side-trash-zone {
@@ -1488,6 +1735,20 @@ body.custom-page.custom-mode-edit.custom-drag-active
         flex-basis: calc(50% - 3px);
         width: calc(50% - 3px);
     }
+    body.custom-mode-view
+#custom-tier-S .game-card,
+body.custom-mode-view
+#custom-tier-A .game-card,
+body.custom-mode-view
+#custom-tier-D .game-card,
+body.custom-mode-view
+#custom-tier-E .game-card,
+body.custom-mode-view
+#custom-tier-F .game-card {
+    width: calc(50% - 3px);
+    flex-basis: calc(50% - 3px);
+}
+
 
 
 }
