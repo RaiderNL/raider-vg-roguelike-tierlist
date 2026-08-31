@@ -1471,6 +1471,10 @@ body {
  * Левая область возврата наверх
  * в стиле десктопной версии VK.
  */
+/*
+ * Левая кликабельная область возврата наверх
+ * для десктопной версии.
+ */
 .back-to-top {
     position: fixed;
     top: 0;
@@ -1482,12 +1486,15 @@ body {
     align-items: center;
     justify-content: center;
 
-    width: 76px;
+    width: 100px;
     height: 100vh;
     padding: 0;
 
     color: #2563eb;
     font: inherit;
+    font-size: 14px;
+    font-weight: 700;
+    writing-mode: vertical-rl;
 
     cursor: pointer;
 
@@ -1497,46 +1504,44 @@ body {
     opacity: 0;
     visibility: hidden;
     pointer-events: none;
+
+    transition:
+        background 0.2s ease,
+        opacity 0.2s ease,
+        visibility 0.2s ease;
 }
 
 /*
- * Стрелка-кнопка внутри большой кликабельной области.
+ * Скрываем стрелку.
  */
 .back-to-top span:first-child {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-
-    width: 48px;
-    height: 48px;
-
-    color: #fff;
-    font-size: 28px;
-    font-weight: 400;
-    line-height: 1;
-
-    background: #2563eb;
-    border-radius: 50%;
-    box-shadow:
-        0 4px 12px rgb(37 99 235 / 28%),
-        0 8px 24px rgb(0 0 0 / 16%);
-
-    opacity: 0;
-    transform: translateX(-12px) scale(0.85);
-
-    transition:
-        opacity 0.2s ease,
-        transform 0.2s ease,
-        background 0.2s ease,
-        box-shadow 0.2s ease;
-}
-
-.back-to-top span:last-child {
     display: none;
 }
 
 /*
- * Область становится активной после прокрутки.
+ * Надпись «Наверх» видна после появления области.
+ */
+.back-to-top span:last-child {
+    display: block;
+
+    color: #6b7280;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    line-height: 1;
+    writing-mode: horizontal-tb;
+    white-space: nowrap;
+
+    opacity: 1;
+    transform: scale(1);
+
+    transition:
+        color 0.2s ease,
+        transform 0.2s ease;
+}
+
+/*
+ * Область появляется после прокрутки.
  */
 .back-to-top.is-visible {
     opacity: 1;
@@ -1545,54 +1550,39 @@ body {
 }
 
 /*
- * Стрелка появляется при наведении
- * на любую часть левой области.
+ * При наведении подсвечивается вся область.
  */
-.back-to-top.is-visible:hover
-span:first-child {
-    opacity: 1;
-    transform: translateX(0) scale(1);
-}
-
 .back-to-top.is-visible:hover {
     background: linear-gradient(
         90deg,
-        rgb(37 99 235 / 7%),
+        rgb(37 99 235 / 14%),
+        rgb(37 99 235 / 4%),
         transparent
     );
 }
 
 /*
- * Небольшой эффект при наведении
- * непосредственно на стрелку.
+ * Надпись выделяется вместе с областью.
  */
-.back-to-top.is-visible:hover
-span:first-child {
-    background: #1d4ed8;
-    box-shadow:
-        0 6px 16px rgb(37 99 235 / 38%),
-        0 10px 28px rgb(0 0 0 / 20%);
+.back-to-top.is-visible:hover span:last-child {
+    color: #2563eb;
+    transform: scale(1.08);
 }
 
-.back-to-top:active
-span:first-child {
-    transform: translateX(0) scale(0.94);
-}
-
+/*
+ * Фокус с клавиатуры.
+ */
 .back-to-top:focus-visible {
     outline: 3px solid rgb(37 99 235 / 35%);
     outline-offset: -5px;
 }
 
-.back-to-top:focus-visible
-span:first-child {
-    opacity: 1;
-    transform: translateX(0) scale(1);
+.back-to-top:focus-visible span:last-child {
+    color: #2563eb;
 }
 
 /*
  * На мобильных кнопка полностью отключена.
- * Текущая мобильная версия не изменяется.
  */
 @media (max-width: 900px) {
     .back-to-top {
@@ -1601,10 +1591,12 @@ span:first-child {
 }
 
 /*
- * Отключение анимаций.
+ * Отключение анимации при системной настройке
+ * уменьшения движения.
  */
 @media (prefers-reduced-motion: reduce) {
-    .back-to-top span:first-child {
+    .back-to-top,
+    .back-to-top span:last-child {
         transition: none;
     }
 }
