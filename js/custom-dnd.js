@@ -123,7 +123,7 @@ function handleDragStart(
         return;
     }
 
-    currentDragState = {
+currentDragState = {
         gameId,
         card,
         sourceTier,
@@ -132,8 +132,9 @@ function handleDragStart(
                 gameId
             ),
         placement: null,
-        lastDropZone: null
+        dropZone: null
     };
+
 
     card.classList.add(
         'is-dragging'
@@ -197,6 +198,7 @@ function handleDragOver(
         dropZone
     );
 }
+
 
 
 /*
@@ -346,8 +348,8 @@ function handleDrop(
     }
 
     /*
-     * Если курсор был отпущен в свободной части контейнера,
-     * добавляем игру в конец выбранного тира.
+     * Если placeholder не успел появиться,
+     * добавляем карточку в конец целевого тира.
      */
     const placement =
         currentDragState.placement || {
@@ -431,75 +433,48 @@ function updateDropPlaceholder(
         );
 
     /*
-     * Если курсор находится над свободным местом контейнера,
-     * карточка должна попасть в конец этого тира.
+     * Курсор находится над свободной областью
+     * контейнера или над placeholder.
+     *
+     * Важно: существующий placeholder не удаляем.
      */
     if (
         !targetCard ||
         targetCard === currentDragState.card
     ) {
-        const visibleCards =
-            getDropZoneCards(
-                dropZone
-            );
+        const layout =
+            currentLayoutGetter?.();
 
-        const lastCard =
-            visibleCards[
-                visibleCards.length - 1
-            ];
+        const targetIds =
+            Array.isArray(
+                layout?.[targetTier]
+            )
+                ? layout[targetTier]
+                : [];
+
+        const placeholder =
+            getDropPlaceholder();
+
+        /*
+         * Проверяем фактическую позицию.
+         * Если placeholder уже последний элемент,
+         * DOM не изменяем.
+         */
+        const isAlreadyAtEnd =
+            placeholder.parentElement === dropZone &&
+            placeholder.nextElementSibling === null;
 
         if (
-            lastCard
+            !isAlreadyAtEnd
         ) {
-            const lastCardBounds =
-                lastCard.getBoundingClientRect();
-
-            const placeholder =
-                getDropPlaceholder();
-
-            const isAlreadyAfterLastCard =
-                placeholder.parentElement === dropZone &&
-                placeholder.previousElementSibling === lastCard;
-
-            if (
-                !isAlreadyAfterLastCard
-            ) {
-                dropZone.appendChild(
-                    placeholder
-                );
-            }
-        } else {
-            /*
-             * Пустой тир: placeholder можно показать
-             * в начале контейнера.
-             */
-            const placeholder =
-                getDropPlaceholder();
-
-            const isAlreadyFirstChild =
-                placeholder.parentElement === dropZone &&
-                placeholder === dropZone.firstElementChild;
-
-            if (
-                !isAlreadyFirstChild
-            ) {
-                dropZone.prepend(
-                    placeholder
-                );
-            }
+            dropZone.appendChild(
+                placeholder
+            );
         }
 
         currentDragState.placement = {
             tier: targetTier,
-            index:
-                Array.isArray(
-                    currentLayoutGetter?.()?.[
-                        targetTier
-                    ]
-                )
-                    ? currentLayoutGetter()
-                        [targetTier].length
-                    : 0
+            index: targetIds.length
         };
 
         return;
@@ -552,6 +527,10 @@ function updateDropPlaceholder(
             )
             : targetCard;
 
+    /*
+     * Placeholder уже находится в нужной позиции —
+     * повторно DOM не изменяем.
+     */
     const isAlreadyInPosition =
         placeholder.parentElement === dropZone &&
         placeholder.nextElementSibling === referenceCard;
