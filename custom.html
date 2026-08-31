@@ -32,6 +32,34 @@
 
     <main class="container custom-container">
 
+        <!-- Переключатель режимов -->
+        <section
+            class="custom-mode-switcher"
+            aria-label="Режим страницы"
+        >
+            <button
+                class="custom-mode-button is-active"
+                id="custom-edit-mode-button"
+                type="button"
+                data-custom-mode="edit"
+                aria-pressed="true"
+            >
+                Редактирование
+            </button>
+
+            <button
+                class="custom-mode-button"
+                id="custom-view-mode-button"
+                type="button"
+                data-custom-mode="view"
+                aria-pressed="false"
+            >
+                Просмотр
+            </button>
+        </section>
+
+
+        <!-- Заголовок и статус текущего режима -->
         <section class="custom-toolbar">
 
             <div class="custom-toolbar-title">
@@ -45,7 +73,11 @@
             </div>
 
 
-            <div class="custom-toolbar-actions">
+            <!-- Кнопки режима редактирования -->
+            <div
+                class="custom-toolbar-actions custom-edit-actions"
+                id="custom-edit-actions"
+            >
                 <button
                     class="custom-button custom-button-primary"
                     id="save-custom-tierlist"
@@ -56,6 +88,22 @@
 
                 <button
                     class="custom-button"
+                    id="reset-custom-tierlist"
+                    type="button"
+                >
+                    Сбросить
+                </button>
+            </div>
+
+
+            <!-- Кнопки режима просмотра -->
+            <div
+                class="custom-toolbar-actions custom-view-actions"
+                id="custom-view-actions"
+                hidden
+            >
+                <button
+                    class="custom-button custom-button-primary"
                     id="share-custom-tierlist"
                     type="button"
                 >
@@ -64,23 +112,18 @@
 
                 <button
                     class="custom-button"
-                    id="reset-custom-tierlist"
+                    id="save-shared-tierlist"
                     type="button"
+                    hidden
                 >
-                    Сбросить
+                    Сохранить как свою версию
                 </button>
-
-                <a
-                    class="custom-button custom-button-link"
-                    href="index.html"
-                >
-                    Вернуться к общему тир-листу
-                </a>
             </div>
 
         </section>
 
 
+        <!-- Уведомление о просмотре чужой версии -->
         <section
             class="custom-shared-notice"
             id="custom-shared-notice"
@@ -89,19 +132,14 @@
             <p>
                 Вы просматриваете пользовательскую версию тир-листа.
             </p>
-
-            <button
-                class="custom-button"
-                id="save-shared-tierlist"
-                type="button"
-            >
-                Сохранить как свою версию
-            </button>
         </section>
 
 
-        <section class="custom-controls">
-
+        <!-- Фильтры редактора -->
+        <section
+            class="custom-controls"
+            id="custom-edit-controls"
+        >
             <div class="control-group custom-search-group">
                 <label for="custom-search">
                     Поиск игры
@@ -127,7 +165,6 @@
                     </option>
                 </select>
             </div>
-
         </section>
 
 
@@ -140,26 +177,117 @@
         </p>
 
 
-        <section class="custom-tier-list">
+        <!--
+         * Содержимое режима редактирования.
+         *
+         * В режиме просмотра этот блок будет скрываться.
+         -->
+        <section
+            class="custom-editor-only"
+            id="custom-editor-content"
+        >
 
-            <div
-                class="custom-tier-row custom-unranked-row"
-                data-tier="UNRANKED"
+            <!-- Корзина -->
+            <section
+                class="custom-trash-zone"
+                id="custom-trash-zone"
+                aria-labelledby="custom-trash-title"
             >
-                <div class="custom-tier-label custom-unranked-label">
-                    <span>?</span>
-                    <small>Не распределены</small>
+                <div class="custom-trash-header">
+                    <div>
+                        <h2 id="custom-trash-title">
+                            🗑 Корзина
+                        </h2>
+
+                        <p>
+                            Перетащите сюда игры, которые хотите убрать
+                            из основного тир-листа.
+                        </p>
+                    </div>
+
+                    <span
+                        class="custom-trash-count"
+                        id="custom-trash-count"
+                    >
+                        0
+                    </span>
                 </div>
 
                 <div
-                    class="custom-games-container"
+                    class="custom-trash-drop-area"
+                    id="custom-trash-drop-area"
+                    data-trash-container
+                >
+                    <span>
+                        Перетащите игру сюда
+                    </span>
+                </div>
+            </section>
+
+
+            <!-- Удалённые игры -->
+            <details
+                class="custom-removed-games"
+                id="custom-removed-games"
+            >
+                <summary class="custom-removed-games-summary">
+                    <span>Удалённые игры</span>
+
+                    <span
+                        class="custom-removed-games-count"
+                        id="custom-removed-games-count"
+                    >
+                        0
+                    </span>
+                </summary>
+
+                <div
+                    class="custom-removed-games-container"
+                    id="custom-removed-games-container"
+                    data-removed-container
+                >
+                    <!-- Удалённые игры добавляются через custom-main.js -->
+                </div>
+            </details>
+
+
+            <!-- Нераспределённые игры -->
+            <section
+                class="custom-unranked-zone"
+                id="custom-unranked-zone"
+                aria-labelledby="custom-unranked-title"
+            >
+                <div class="custom-section-heading">
+                    <h2 id="custom-unranked-title">
+                        Не распределены
+                    </h2>
+
+                    <p>
+                        Перетащите игры в нужные уровни тир-листа.
+                    </p>
+                </div>
+
+                <div
+                    class="custom-games-container custom-unranked-container"
                     id="custom-tier-UNRANKED"
                     data-tier-container="UNRANKED"
                 >
                     <!-- Игры добавляются через custom-main.js -->
                 </div>
-            </div>
+            </section>
 
+        </section>
+
+
+        <!--
+         * Основной тир-лист.
+         *
+         * В режиме просмотра отображаются только уровни S–F.
+         -->
+        <section
+            class="custom-tier-list"
+            id="custom-tier-list"
+        >
 
             <div
                 class="custom-tier-row"
@@ -287,6 +415,16 @@
             </div>
 
         </section>
+
+
+        <nav class="custom-page-navigation">
+            <a
+                class="custom-button custom-button-link"
+                href="index.html"
+            >
+                Вернуться к общему тир-листу
+            </a>
+        </nav>
 
     </main>
 
