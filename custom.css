@@ -287,6 +287,279 @@
     text-align: center;
 }
 
+/*
+ * =========================================================
+ * Корзина
+ * =========================================================
+ */
+
+.custom-trash-zone,
+.custom-unranked-zone {
+    margin-bottom: 16px;
+    padding: 14px;
+
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-panel);
+}
+
+.custom-trash-zone {
+    border-color: #f0b4b4;
+    background: #fffafa;
+}
+
+.custom-trash-header,
+.custom-section-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+
+    margin-bottom: 12px;
+}
+
+.custom-trash-header h2,
+.custom-section-heading h2 {
+    margin: 0 0 4px;
+
+    color: var(--color-dark);
+    font-size: 18px;
+    line-height: 1.25;
+}
+
+.custom-trash-header p,
+.custom-section-heading p {
+    margin: 0;
+
+    color: var(--color-text-muted);
+    font-size: 13px;
+    line-height: 1.4;
+}
+
+.custom-trash-count,
+.custom-removed-games-count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    min-width: 28px;
+    min-height: 28px;
+    padding: 4px 8px;
+
+    color: #991b1b;
+    font-size: 13px;
+    font-weight: 700;
+
+    background: #fee2e2;
+    border-radius: var(--radius-pill);
+}
+
+.custom-trash-drop-area {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    min-height: 74px;
+    padding: 16px;
+
+    color: #991b1b;
+    font-size: 14px;
+    font-weight: 700;
+    text-align: center;
+
+    background: #fff1f2;
+    border: 2px dashed #ef9a9a;
+    border-radius: var(--radius-md);
+
+    transition:
+        color 0.2s ease,
+        background 0.2s ease,
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.custom-trash-drop-area:hover,
+.custom-trash-drop-area.is-drop-target {
+    color: #7f1d1d;
+    background: #ffe4e6;
+    border-color: #dc2626;
+    box-shadow: 0 0 0 3px rgb(220 38 38 / 15%);
+}
+
+
+/*
+ * =========================================================
+ * Раскрываемый список удалённых игр
+ * =========================================================
+ */
+
+.custom-removed-games {
+    margin-bottom: 16px;
+
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-panel);
+}
+
+.custom-removed-games-summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+
+    min-height: 48px;
+    padding: 10px 14px;
+
+    color: var(--color-dark);
+    font-size: 15px;
+    font-weight: 700;
+
+    cursor: pointer;
+    user-select: none;
+    list-style: none;
+}
+
+.custom-removed-games-summary::-webkit-details-marker {
+    display: none;
+}
+
+.custom-removed-games-summary::before {
+    content: '▶';
+
+    margin-right: auto;
+
+    color: var(--color-primary);
+    font-size: 11px;
+
+    transition: transform 0.2s ease;
+}
+
+.custom-removed-games[open]
+.custom-removed-games-summary::before {
+    transform: rotate(90deg);
+}
+
+.custom-removed-games-summary:hover {
+    color: var(--color-primary);
+}
+
+.custom-removed-games-summary:focus-visible {
+    outline: 3px solid var(--color-primary-focus);
+    outline-offset: -3px;
+    border-radius: var(--radius-lg);
+}
+
+.custom-removed-games-container {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: 8px;
+
+    min-height: 70px;
+    padding: 12px;
+
+    border-top: 1px solid var(--color-border);
+}
+
+.custom-removed-games-container:empty::before {
+    content: 'Корзина пуста';
+
+    width: 100%;
+    padding: 12px;
+
+    color: var(--color-text-muted);
+    font-size: 13px;
+    text-align: center;
+}
+/*
+ * =========================================================
+ * Компактные карточки редактора
+ * =========================================================
+ *
+ * В режиме редактирования карточки меньше,
+ * чтобы на экране помещалось больше игр.
+ */
+
+body.custom-mode-edit .custom-games-container .game-card {
+    flex: 0 0 142px;
+
+    width: 142px;
+}
+
+body.custom-mode-edit .custom-drop-placeholder {
+    flex-basis: 142px;
+
+    width: 142px;
+    min-height: 142px;
+}
+
+body.custom-mode-edit .custom-tier-row {
+    min-height: 116px;
+}
+
+body.custom-mode-edit .custom-games-container {
+    min-height: 114px;
+    gap: 6px;
+    padding: 8px;
+}
+
+body.custom-mode-edit .custom-tier-label {
+    flex-basis: 64px;
+
+    font-size: 26px;
+}
+
+body.custom-mode-edit .custom-tier-label small {
+    max-width: 58px;
+    font-size: 8px;
+}
+
+
+/*
+ * В режиме просмотра используются
+ * более крупные карточки.
+ */
+
+body.custom-mode-view .custom-games-container .game-card {
+    flex: 0 0 190px;
+
+    width: 190px;
+}
+
+body.custom-mode-view .custom-tier-row {
+    min-height: 150px;
+}
+
+body.custom-mode-view .custom-games-container {
+    min-height: 148px;
+    gap: 8px;
+    padding: 12px;
+}
+/*
+ * =========================================================
+ * Видимость элементов в режимах
+ * =========================================================
+ */
+
+body.custom-mode-view #custom-editor-content,
+body.custom-mode-view #custom-edit-controls,
+body.custom-mode-view #custom-edit-actions {
+    display: none;
+}
+
+body.custom-mode-edit #custom-view-actions {
+    display: none;
+}
+
+body.custom-mode-view #custom-view-actions {
+    display: flex;
+}
+
+body.custom-mode-view .custom-empty-message {
+    display: none;
+}
 
 /*
  * =========================================================
@@ -567,6 +840,7 @@
         width: 145px;
         min-height: 145px;
     }
+    
 }
 
 @media (max-width: 400px) {
@@ -618,7 +892,11 @@
 @media (prefers-reduced-motion: reduce) {
     .custom-button,
     .custom-tier-row,
-    .custom-games-container .game-card {
+    .custom-games-container .game-card,
+    .custom-mode-button,
+    .custom-trash-drop-area,
+    .custom-removed-games-summary {
         transition: none;
     }
 }
+
