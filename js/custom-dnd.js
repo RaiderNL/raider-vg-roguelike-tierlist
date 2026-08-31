@@ -1279,6 +1279,15 @@ function removeDropPlaceholder() {
     ) {
         return;
     }
+        if (
+        placeholderAnimation
+    ) {
+        placeholderAnimation.cancel();
+
+        placeholderAnimation =
+            null;
+    }
+
 
     placeholder.classList.remove(
         'is-visible'
