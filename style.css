@@ -1396,3 +1396,71 @@ body {
         transition: none;
     }
 }
+/*
+ * Финальное переопределение меток в мобильном режиме цен.
+ * Блок находится в конце файла, поэтому перекрывает
+ * предыдущие правила карточек и тегов.
+ */
+@media (max-width: 600px) {
+    body.price-mode-active .game-card {
+        isolation: isolate;
+    }
+
+    body.price-mode-active .game-card .game-cover {
+        position: relative;
+        z-index: 1;
+    }
+
+    body.price-mode-active .game-card .game-tags {
+        position: absolute !important;
+        top: 5px !important;
+        right: 5px !important;
+        bottom: auto !important;
+        left: auto !important;
+        z-index: 20 !important;
+
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: flex-end !important;
+        justify-content: flex-start !important;
+        gap: 3px !important;
+
+        width: max-content !important;
+        max-width: calc(100% - 10px) !important;
+        max-height: calc(100% - 10px) !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        overflow: hidden !important;
+
+        visibility: visible !important;
+        opacity: 1 !important;
+        pointer-events: none !important;
+    }
+
+    body.price-mode-active .game-card .game-tag {
+        position: relative !important;
+        z-index: 21 !important;
+
+        display: block !important;
+        flex: 0 0 auto !important;
+
+        max-width: 100% !important;
+        padding: 2px 5px !important;
+
+        color: #fff !important;
+        font-size: 9px !important;
+        line-height: 1.2 !important;
+        text-align: right !important;
+        text-shadow: 0 1px 2px rgb(0 0 0 / 70%) !important;
+        overflow-wrap: anywhere !important;
+
+        visibility: visible !important;
+        opacity: 1 !important;
+
+        background: rgb(32 35 42 / 90%) !important;
+        border: 1px solid rgb(255 255 255 / 22%) !important;
+        border-radius: 3px !important;
+        box-shadow: 0 1px 3px rgb(0 0 0 / 35%) !important;
+    }
+}
+
