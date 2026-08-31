@@ -296,10 +296,7 @@ function handleDrop(
          * custom-main.js после изменения layout
          * снова отрисует карточки.
          */
-        window.dispatchEvent(
-            new CustomEvent(
-                'custom-layout-change'
-            )
+
         );
     }
 }
