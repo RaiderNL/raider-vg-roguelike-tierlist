@@ -455,22 +455,6 @@
  */
 
 
-body.custom-mode-edit.custom-drag-active
-.custom-trash-drop-area {
-    max-height: 100px;
-    min-height: 68px;
-    padding-top: 14px;
-    padding-bottom: 14px;
-
-    opacity: 1;
-    visibility: visible;
-    pointer-events: auto;
-
-    border-top-width: 2px;
-    border-bottom-width: 2px;
-
-    transform: translateY(0) scaleY(1);
-}
 
 body.custom-mode-view .custom-trash-drop-area {
     display: none;
@@ -1145,14 +1129,19 @@ body.custom-mode-view .custom-empty-message {
  * Боковые зоны могут появляться только во время
  * активного drag-and-drop.
  */
-body.custom-drag-active
+body.custom-page.custom-mode-edit.custom-drag-active
 .custom-side-trash-zone.is-edge-visible {
+
     opacity: 1;
     visibility: visible;
     pointer-events: auto;
     transform: translateX(0);
 
     transition-delay: 0s;
+}
+body.custom-page.custom-mode-edit.custom-drag-active
+.custom-side-trash-zone {
+    display: flex;
 }
 
 /*
