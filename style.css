@@ -1304,7 +1304,6 @@ iframe {
 
         font-size: 23px;
     }
-}
     .main-page .site-header {
         padding: 16px;
     }
@@ -1340,6 +1339,8 @@ iframe {
         font-size: 24px;
     }
 
+}
+    
 #tier-S .game-card,
 #tier-A .game-card {
     grid-template-rows:
