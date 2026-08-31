@@ -52,16 +52,28 @@
             </div>
 
             <div class="video-filter-controls">
-                <div class="control-group filter-group">
+                    <div class="control-group filter-group">
+                    
+                        <select id="video-filter">
+                            <option value="">
+                                Все ролики
+                            </option>
+                        </select>
+                    </div>
+                    
+                    <button
+                        class="favorites-filter-button"
+                        id="favorites-filter"
+                        type="button"
+                        aria-label="Показывать только избранные игры"
+                        aria-pressed="false"
+                        title="Показывать только избранные игры"
+                    >
+                        <span aria-hidden="true">☆</span>
+                    </button>
+                    
+                    <label class="price-mode-toggle">
 
-                    <select id="video-filter">
-                        <option value="">
-                            Все ролики
-                        </option>
-                    </select>
-                </div>
-
-                <label class="price-mode-toggle">
                     <input
                         id="price-mode-toggle"
                         type="checkbox"
