@@ -14,7 +14,9 @@ import {
     getSearchValue,
     getSelectedTag,
     getSelectedVideo,
-    gameMatchesFilters
+    gameMatchesFilters,
+    setFiltersFromUrl,
+    updateUrlFromFilters
 } from './filters.js';
 
 import {
@@ -46,26 +48,31 @@ const SEARCH_RENDER_DELAY =
 const BACK_TO_TOP_VISIBLE_CLASS =
     'is-visible';
 
+const SHARE_BUTTON_DEFAULT_TEXT =
+    'Скопировать ссылку';
+
+const SHARE_BUTTON_SUCCESS_TEXT =
+    'Ссылка скопирована';
+
+const SHARE_BUTTON_ERROR_TEXT =
+    'Не удалось скопировать';
+
 let searchRenderTimer =
+    null;
+
+let shareButtonResetTimer =
     null;
 
 const tierContainers =
     {};
 
 
-/*
- * Запуск приложения после загрузки HTML.
- */
 document.addEventListener(
     'DOMContentLoaded',
     init
 );
 
 
-/*
- * Закрытие popup после возвращения
- * на страницу из другой вкладки.
- */
 document.addEventListener(
     'visibilitychange',
     () => {
@@ -79,33 +86,31 @@ document.addEventListener(
 );
 
 
-/*
- * Закрытие popup при восстановлении страницы.
- */
 window.addEventListener(
     'pageshow',
     closeAllPreviews
 );
 
 
-/*
- * Пересчёт позиции popup
- * после изменения размера окна.
- */
 window.addEventListener(
     'resize',
     updateVisiblePreviewPositions
 );
 
 
-/*
- * Пересчёт позиции popup
- * при прокрутке страницы.
- */
 window.addEventListener(
     'scroll',
     updateVisiblePreviewPositions,
     true
+);
+
+
+window.addEventListener(
+    'popstate',
+    () => {
+        setFiltersFromUrl();
+        renderGames();
+    }
 );
 
 
@@ -128,6 +133,16 @@ function init() {
     const priceModeToggle =
         document.querySelector(
             '#price-mode-toggle'
+        );
+
+    const resetFiltersButton =
+        document.querySelector(
+            '#reset-filters'
+        );
+
+    const shareFiltersButton =
+        document.querySelector(
+            '#share-filters'
         );
 
     const backToTopButton =
@@ -183,6 +198,32 @@ function init() {
     }
 
 
+    if (
+        resetFiltersButton
+    ) {
+        resetFiltersButton.addEventListener(
+            'click',
+            resetFilters
+        );
+    }
+
+
+    if (
+        shareFiltersButton
+    ) {
+        shareFiltersButton.addEventListener(
+            'click',
+            () => {
+                shareCurrentFilters(
+                    shareFiltersButton
+                );
+            }
+        );
+    }
+
+
+    setupMobileTierNavigation();
+
     setupBackToTop(
         backToTopButton
     );
@@ -211,6 +252,8 @@ async function loadApplicationData() {
 
         fillTagFilter();
         fillVideoFilter();
+
+        setFiltersFromUrl();
         renderGames();
     } catch (
         error
@@ -247,14 +290,11 @@ function scheduleSearchRender() {
 
 
 function renderGames() {
-    /*
-     * Перед перерисовкой закрываем popup,
-     * чтобы старые карточки не оставались
-     * активными.
-     */
     closeAllPreviews();
 
     clearTierContainers();
+
+    updateUrlFromFilters();
 
 
     const searchValue =
@@ -308,10 +348,10 @@ function renderGames() {
                 createGameCard(
                     game,
                     {
-                        videoFilterActive: selectedVideo !== ''
+                        videoFilterActive:
+                            selectedVideo !== ''
                     }
                 )
-
             );
         }
     );
@@ -358,6 +398,232 @@ function updateVideoFilterState(
     layout.classList.toggle(
         VIDEO_FILTER_ACTIVE_CLASS,
         selectedVideo !== ''
+    );
+}
+
+
+function resetFilters() {
+    const searchInput =
+        document.querySelector(
+            '#search'
+        );
+
+    const tagFilter =
+        document.querySelector(
+            '#tag-filter'
+        );
+
+    const videoFilter =
+        document.querySelector(
+            '#video-filter'
+        );
+
+    if (
+        searchInput
+    ) {
+        searchInput.value =
+            '';
+    }
+
+    if (
+        tagFilter
+    ) {
+        tagFilter.value =
+            '';
+    }
+
+    if (
+        videoFilter
+    ) {
+        videoFilter.value =
+            '';
+    }
+
+    renderGames();
+
+    const url =
+        new URL(
+            window.location.href
+        );
+
+    url.search = '';
+
+    window.history.replaceState(
+        {},
+        '',
+        url
+    );
+}
+
+
+async function shareCurrentFilters(
+    button
+) {
+    const url =
+        window.location.href;
+
+    try {
+        await copyText(
+            url
+        );
+
+        showShareButtonMessage(
+            button,
+            SHARE_BUTTON_SUCCESS_TEXT
+        );
+    } catch (
+        error
+    ) {
+        console.warn(
+            'Не удалось скопировать ссылку:',
+            error
+        );
+
+        showShareButtonMessage(
+            button,
+            SHARE_BUTTON_ERROR_TEXT
+        );
+    }
+}
+
+
+async function copyText(
+    text
+) {
+    if (
+        navigator.clipboard &&
+        window.isSecureContext
+    ) {
+        await navigator.clipboard.writeText(
+            text
+        );
+
+        return;
+    }
+
+    const textarea =
+        document.createElement(
+            'textarea'
+        );
+
+    textarea.value =
+        text;
+
+    textarea.style.position =
+        'fixed';
+
+    textarea.style.opacity =
+        '0';
+
+    document.body.appendChild(
+        textarea
+    );
+
+    textarea.focus();
+    textarea.select();
+
+    const copied =
+        document.execCommand(
+            'copy'
+        );
+
+    textarea.remove();
+
+    if (
+        !copied
+    ) {
+        throw new Error(
+            'Копирование не поддерживается'
+        );
+    }
+}
+
+
+function showShareButtonMessage(
+    button,
+    message
+) {
+    if (
+        !button
+    ) {
+        return;
+    }
+
+    button.textContent =
+        message;
+
+    if (
+        shareButtonResetTimer
+    ) {
+        clearTimeout(
+            shareButtonResetTimer
+        );
+    }
+
+    shareButtonResetTimer =
+        setTimeout(
+            () => {
+                button.textContent =
+                    SHARE_BUTTON_DEFAULT_TEXT;
+
+                shareButtonResetTimer =
+                    null;
+            },
+            1800
+        );
+}
+
+
+function setupMobileTierNavigation() {
+    const navigation =
+        document.querySelector(
+            '.mobile-tier-navigation'
+        );
+
+    if (
+        !navigation
+    ) {
+        return;
+    }
+
+    navigation.addEventListener(
+        'click',
+        event => {
+            const button =
+                event.target.closest(
+                    '[data-tier-target]'
+                );
+
+            if (
+                !button
+            ) {
+                return;
+            }
+
+            const tier =
+                button.dataset.tierTarget;
+
+            const container =
+                document.querySelector(
+                    `#tier-${tier}`
+                );
+
+            const tierRow =
+                container?.closest(
+                    '.tier-row'
+                );
+
+            if (
+                !tierRow
+            ) {
+                return;
+            }
+
+            tierRow.scrollIntoView({
+                behavior: 'smooth',
+                block: 'start'
+            });
+        }
     );
 }
 
