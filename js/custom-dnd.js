@@ -143,7 +143,7 @@ function handleDragStart(
         return;
     }
 
-    currentDragState = {
+        currentDragState = {
         gameId,
         card,
         sourceTier,
@@ -152,7 +152,10 @@ function handleDragStart(
                 gameId
             ),
         dropZone: null,
-        placement: null
+        placement: null,
+        placeholderKey: null
+    };
+
     };
     lastPointerSample =
     null;
@@ -610,50 +613,14 @@ function updateDropPlaceholder(
         );
 
     if (
-        !targetCard
+        !targetTier
     ) {
-        const cardsInDropZone =
-            getDropZoneCards(
-                dropZone
-            );
-    
-        if (
-            cardsInDropZone.length !== 0
-        ) {
-            return;
-        }
-    
-        const emptyTierKey =
-            `${targetTier}:EMPTY`;
-    
-        currentDragState.placement = {
-            tier: targetTier,
-            index: 0
-        };
-    
-        if (
-            currentDragState.placeholderKey ===
-            emptyTierKey &&
-            placeholder.parentElement === dropZone
-        ) {
-            return;
-        }
-    
-        currentDragState.placeholderKey =
-            emptyTierKey;
-    
-        placePlaceholderBefore(
-            placeholder,
-            dropZone,
-            null
-        );
-    
         return;
     }
 
-
     /*
-     * В корзине placeholder не используется.
+     * Боковая корзина и другие зоны корзины
+     * не используют placeholder.
      */
     if (
         targetTier === 'REMOVED'
@@ -663,6 +630,9 @@ function updateDropPlaceholder(
         currentDragState.placement =
             null;
 
+        currentDragState.placeholderKey =
+            null;
+
         return;
     }
 
@@ -670,8 +640,9 @@ function updateDropPlaceholder(
         getDropPlaceholder();
 
     /*
-     * Пока курсор находится над placeholder,
-     * не переставляем его повторно.
+     * Если placeholder уже находится под курсором,
+     * не пытаемся вычислить новую позицию относительно
+     * самого себя.
      */
     if (
         placeholder.parentElement === dropZone &&
@@ -690,8 +661,8 @@ function updateDropPlaceholder(
         );
 
     /*
-     * Если курсор находится над исходной
-     * карточкой, сохраняем текущую позицию.
+     * При наведении на саму перетаскиваемую
+     * карточку ничего не меняем.
      */
     if (
         targetCard === currentDragState.card
@@ -700,23 +671,59 @@ function updateDropPlaceholder(
     }
 
     /*
-     * Если курсор не над карточкой,
-     * вставляем placeholder в конец.
-     */
-        /*
-     * Если курсор находится в свободной области,
-     * ничего не меняем.
+     * Если карточка под курсором отсутствует,
+     * проверяем, пустой ли тир.
      *
-     * Placeholder остаётся на последней
-     * подтверждённой позиции и не перескакивает
-     * в конец списка.
+     * В непустом тире placeholder остаётся
+     * на последней подтверждённой позиции.
      */
     if (
         !targetCard
     ) {
+        const cardsInDropZone =
+            getDropZoneCards(
+                dropZone
+            );
+
+        /*
+         * Пустой тир должен получить
+         * placeholder с индексом 0.
+         */
+        if (
+            cardsInDropZone.length === 0
+        ) {
+            const emptyTierKey =
+                `${targetTier}:EMPTY`;
+
+            currentDragState.placement = {
+                tier: targetTier,
+                index: 0
+            };
+
+            /*
+             * Не перемещаем placeholder повторно,
+             * если он уже находится в этом пустом тире.
+             */
+            if (
+                currentDragState.placeholderKey ===
+                emptyTierKey &&
+                placeholder.parentElement === dropZone
+            ) {
+                return;
+            }
+
+            currentDragState.placeholderKey =
+                emptyTierKey;
+
+            placePlaceholderBefore(
+                placeholder,
+                dropZone,
+                null
+            );
+        }
+
         return;
     }
-
 
     const targetGameId =
         String(
@@ -763,17 +770,45 @@ function updateDropPlaceholder(
                 : 0
         );
 
-    placePlaceholderBefore(
-        placeholder,
-        dropZone,
-        referenceCard
-    );
+    const placeholderKey =
+        [
+            targetTier,
+            insertionIndex,
+            referenceCard?.dataset.gameId || 'END'
+        ].join(':');
+
+    /*
+     * Позиция не изменилась — не запускаем
+     * новую анимацию и не трогаем DOM.
+     */
+    if (
+        currentDragState.placeholderKey ===
+        placeholderKey &&
+        placeholder.parentElement === dropZone
+    ) {
+        currentDragState.placement = {
+            tier: targetTier,
+            index: insertionIndex
+        };
+
+        return;
+    }
+
+    currentDragState.placeholderKey =
+        placeholderKey;
 
     currentDragState.placement = {
         tier: targetTier,
         index: insertionIndex
     };
+
+    placePlaceholderBefore(
+        placeholder,
+        dropZone,
+        referenceCard
+    );
 }
+
 
 
 /*
