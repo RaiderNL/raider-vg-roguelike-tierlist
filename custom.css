@@ -774,6 +774,60 @@ body.custom-drag-active
 .custom-games-container .game-card:hover {
     transform: translateY(-3px);
 }
+/*
+ * =========================================================
+ * Кнопка информации в кастомном тир-листе
+ * =========================================================
+ */
+
+.custom-games-container .game-info-button {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    z-index: 4;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 32px;
+    height: 32px;
+    padding: 0;
+
+    color: #fff;
+    font-size: 22px;
+    font-weight: 700;
+    line-height: 1;
+
+    cursor: pointer;
+
+    background: rgb(32 35 42 / 82%);
+    border: 1px solid rgb(255 255 255 / 28%);
+    border-radius: 50%;
+    box-shadow: 0 2px 6px rgb(0 0 0 / 28%);
+
+    transition:
+        color 0.2s ease,
+        background 0.2s ease,
+        border-color 0.2s ease,
+        transform 0.2s ease;
+}
+
+.custom-games-container .game-info-button:hover {
+    color: #fff;
+    background: var(--color-primary);
+    border-color: var(--color-primary);
+    transform: scale(1.1);
+}
+
+.custom-games-container .game-info-button:active {
+    transform: scale(0.94);
+}
+
+.custom-games-container .game-info-button:focus-visible {
+    outline: 3px solid var(--color-primary-focus);
+    outline-offset: 2px;
+}
 
 /*
  * Не сдвигаем карточку во время переноса.
@@ -967,11 +1021,6 @@ body.custom-mode-edit
 /*
  * Popup не должен открываться в редакторе.
  */
-body.custom-mode-edit
-.custom-games-container
-.game-preview-popup {
-    display: none !important;
-}
 
 /*
  * Popup также принудительно скрыт на время drag-and-drop.
@@ -1335,6 +1384,18 @@ body.custom-page.custom-mode-edit.custom-drag-active
         gap: 6px;
         padding: 8px;
     }
+    @media (max-width: 600px) {
+    .custom-games-container .game-info-button {
+        top: 5px;
+        right: 5px;
+
+        width: 30px;
+        height: 30px;
+
+        font-size: 21px;
+    }
+}
+
 
     body.custom-mode-edit
     .custom-games-container
