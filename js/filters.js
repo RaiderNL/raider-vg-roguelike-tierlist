@@ -266,6 +266,148 @@ export function gameMatchesFilters(
 }
 
 
+export function setFiltersFromUrl() {
+    const url =
+        new URL(
+            window.location.href
+        );
+
+    const searchInput =
+        document.querySelector(
+            '#search'
+        );
+
+    const tagFilter =
+        document.querySelector(
+            '#tag-filter'
+        );
+
+    const videoFilter =
+        document.querySelector(
+            '#video-filter'
+        );
+
+    if (
+        searchInput
+    ) {
+        searchInput.value =
+            url.searchParams.get(
+                'search'
+            ) || '';
+    }
+
+    if (
+        tagFilter
+    ) {
+        const tagValue =
+            url.searchParams.get(
+                'tag'
+            ) || '';
+
+        tagFilter.value =
+            optionExists(
+                tagFilter,
+                tagValue
+            )
+                ? tagValue
+                : '';
+    }
+
+    if (
+        videoFilter
+    ) {
+        const videoValue =
+            url.searchParams.get(
+                'video'
+            ) || '';
+
+        videoFilter.value =
+            optionExists(
+                videoFilter,
+                videoValue
+            )
+                ? videoValue
+                : '';
+    }
+}
+
+
+export function updateUrlFromFilters() {
+    const url =
+        new URL(
+            window.location.href
+        );
+
+    const searchValue =
+        getSearchValue();
+
+    const selectedTag =
+        getSelectedTag();
+
+    const selectedVideo =
+        getSelectedVideo();
+
+    updateUrlParameter(
+        url,
+        'search',
+        searchValue
+    );
+
+    updateUrlParameter(
+        url,
+        'tag',
+        selectedTag
+    );
+
+    updateUrlParameter(
+        url,
+        'video',
+        selectedVideo
+    );
+
+    window.history.replaceState(
+        {},
+        '',
+        url
+    );
+}
+
+
+function updateUrlParameter(
+    url,
+    parameter,
+    value
+) {
+    if (
+        value
+    ) {
+        url.searchParams.set(
+            parameter,
+            value
+        );
+
+        return;
+    }
+
+    url.searchParams.delete(
+        parameter
+    );
+}
+
+
+function optionExists(
+    select,
+    value
+) {
+    return [
+        ...select.options
+    ].some(
+        option =>
+            option.value === value
+    );
+}
+
+
 function createOption(
     value,
     text
