@@ -1823,45 +1823,6 @@ iframe {
 
         font-size: 8px;
     }
-    /*
-     * Компактная цена на маленьких карточках D–F.
-     * Не даём блоку скидки переноситься на новую строку.
-     */
-    body.price-mode-active #tier-D .game-price,
-    body.price-mode-active #tier-E .game-price,
-    body.price-mode-active #tier-F .game-price {
-        display: flex;
-        flex-wrap: nowrap;
-        align-items: center;
-        gap: 2px;
-
-        width: max-content;
-        max-width: calc(100% - 10px);
-        min-height: 18px;
-        padding: 2px 4px;
-
-        font-size: 8px;
-        line-height: 1;
-    }
-
-    body.price-mode-active #tier-D .game-price-old,
-    body.price-mode-active #tier-E .game-price-old,
-    body.price-mode-active #tier-F .game-price-old {
-        display: none;
-    }
-
-    body.price-mode-active #tier-D .game-price-discount,
-    body.price-mode-active #tier-E .game-price-discount,
-    body.price-mode-active #tier-F .game-price-discount {
-        flex: 0 0 auto;
-
-        max-width: none;
-        padding: 2px 3px;
-
-        font-size: 7px;
-        line-height: 1;
-        white-space: nowrap;
-    }
 
 
     /*
@@ -2056,3 +2017,63 @@ iframe {
         animation: none;
     }
 }
+/*
+ * =========================================================
+ * Компактные цены на маленьких карточках D–F
+ * =========================================================
+ *
+ * Правила применяются на всех разрешениях,
+ * поскольку карточки D–F уменьшены и на десктопе.
+ */
+
+body.price-mode-active #tier-D .game-price,
+body.price-mode-active #tier-E .game-price,
+body.price-mode-active #tier-F .game-price {
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    gap: 3px;
+
+    width: max-content;
+    max-width: calc(100% - 10px);
+    min-height: 20px;
+    padding: 3px 5px;
+
+    font-size: 10px;
+    line-height: 1;
+}
+
+/*
+ * Старая цена занимает лишнее место
+ * и провоцирует перенос скидки.
+ */
+body.price-mode-active #tier-D .game-price-old,
+body.price-mode-active #tier-E .game-price-old,
+body.price-mode-active #tier-F .game-price-old {
+    display: none !important;
+    visibility: hidden !important;
+
+    width: 0 !important;
+    max-width: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+}
+
+/*
+ * Скидка всегда остаётся одной строкой.
+ */
+body.price-mode-active #tier-D .game-price-discount,
+body.price-mode-active #tier-E .game-price-discount,
+body.price-mode-active #tier-F .game-price-discount {
+    display: inline-block;
+    flex: 0 0 auto;
+
+    max-width: none;
+    padding: 2px 4px;
+
+    font-size: 8px;
+    line-height: 1;
+    white-space: nowrap;
+}
+
