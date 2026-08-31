@@ -789,8 +789,9 @@ body.custom-drag-active
 .custom-games-container .game-info-button {
     position: absolute;
     top: 6px;
-    left: 6px;
-    right: auto;
+    right: 6px;
+    left: auto;
+
     z-index: 4;
 
     display: inline-flex;
