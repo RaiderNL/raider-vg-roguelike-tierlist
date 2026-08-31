@@ -780,13 +780,18 @@ body.custom-drag-active
  * =========================================================
  */
 
+/*
+ * =========================================================
+ * Кнопка информации в кастомном тир-листе
+ * =========================================================
+ */
+
 .custom-games-container .game-info-button {
     position: absolute;
     top: 6px;
     left: 6px;
     right: auto;
     z-index: 4;
-
 
     display: inline-flex;
     align-items: center;
@@ -808,12 +813,32 @@ body.custom-drag-active
     border-radius: 50%;
     box-shadow: 0 2px 6px rgb(0 0 0 / 28%);
 
+    opacity: 0;
+    visibility: hidden;
+
     transition:
         color 0.2s ease,
         background 0.2s ease,
         border-color 0.2s ease,
+        opacity 0.2s ease,
+        visibility 0.2s ease,
         transform 0.2s ease;
 }
+
+
+/*
+ * Информационная кнопка появляется:
+ * при наведении на карточку,
+ * при фокусе,
+ * при открытом popup.
+ */
+.custom-games-container .game-card:hover .game-info-button,
+.custom-games-container .game-card:focus-within .game-info-button,
+.custom-games-container .game-card:not(.preview-closed) .game-info-button {
+    opacity: 1;
+    visibility: visible;
+}
+
 
 .custom-games-container .game-info-button:hover {
     color: #fff;
@@ -830,6 +855,7 @@ body.custom-drag-active
     outline: 3px solid var(--color-primary-focus);
     outline-offset: 2px;
 }
+
 
 /*
  * Не сдвигаем карточку во время переноса.
