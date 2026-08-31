@@ -1,3 +1,6 @@
+/*
+ * Базовые настройки.
+ */
 *,
 *::before,
 *::after {
@@ -19,14 +22,18 @@ body {
 }
 
 body {
-    min-width: 320px;
+    min-width: 0;
     margin: 0;
 
-    font-family: Arial, sans-serif;
     color: #222;
+    font-family: Arial, sans-serif;
+
     background: #f3f4f6;
 }
 
+/*
+ * Шапка сайта.
+ */
 .site-header {
     width: 100%;
     max-width: 100%;
@@ -50,6 +57,9 @@ body {
     color: #d7d9df;
 }
 
+/*
+ * Основной контейнер.
+ */
 .container {
     width: min(1300px, calc(100% - 32px));
     max-width: 100%;
@@ -247,6 +257,7 @@ body {
  */
 .tier-list-layout {
     display: block;
+
     min-width: 0;
     max-width: 100%;
 }
@@ -277,6 +288,7 @@ body {
     z-index: 0;
 
     display: flex;
+
     min-width: 0;
     min-height: 150px;
     overflow: visible;
@@ -400,7 +412,7 @@ body {
 }
 
 /*
- * Карточки.
+ * Карточки игр.
  */
 .game-card {
     position: relative;
@@ -426,8 +438,8 @@ body {
 .game-card:focus-within {
     z-index: 2;
 
-    transform: translateY(-3px);
     box-shadow: 0 5px 12px rgb(0 0 0 / 20%);
+    transform: translateY(-3px);
 }
 
 .game-card-preview-active {
@@ -581,7 +593,6 @@ body {
 
 .game-price-discount {
     display: inline-block;
-
     padding: 3px 5px;
 
     color: #17220e;
@@ -643,14 +654,13 @@ body {
 }
 
 /*
- * Popup на десктопе.
+ * Popup предпросмотра на десктопе.
  */
 .game-preview-popup {
     position: absolute;
-    z-index: 100002;
-
     top: 0;
     left: 0;
+    z-index: 100002;
 
     display: flex;
     flex-direction: column;
@@ -912,6 +922,7 @@ body {
     top: 16px;
 
     display: none;
+
     width: 320px;
     max-width: 100%;
     padding: 12px;
@@ -951,8 +962,8 @@ body {
 }
 
 .selected-video-link:hover {
-    transform: translateY(-2px);
     box-shadow: 0 5px 14px rgb(0 0 0 / 22%);
+    transform: translateY(-2px);
 }
 
 .selected-video-image {
@@ -1029,11 +1040,13 @@ body {
 }
 
 /*
- * Кнопка возврата наверх.
+ * Кнопка «Наверх».
  *
- * На широких экранах это левая кликабельная область.
- * До 1349px используется только компактная стрелка,
- * чтобы кнопка никогда не перекрывала тир-лист.
+ * Видимость управляется только классом .is-visible,
+ * который добавляет JavaScript после прокрутки.
+ *
+ * На широких экранах кнопка является вертикальной
+ * кликабельной областью слева.
  */
 .back-to-top {
     position: fixed;
@@ -1147,10 +1160,13 @@ body {
 }
 
 /*
- * Средние и пограничные разрешения.
+ * Узкие экраны.
  *
- * Левая область полностью заменяется кнопкой
- * уже до 1350px.
+ * На ширине до 1349px используется компактная
+ * круглая кнопка со стрелкой.
+ *
+ * Состояние видимости по-прежнему контролируется
+ * только классом .is-visible.
  */
 @media (max-width: 1349px) {
     .back-to-top {
@@ -1219,8 +1235,7 @@ body {
 }
 
 /*
- * На мобильных разрешениях кнопка также остаётся доступной:
- * используется маленькая белая стрелка снизу экрана.
+ * Планшеты и мобильные устройства.
  */
 @media (max-width: 900px) {
     .tier-list-layout,
@@ -1234,18 +1249,12 @@ body {
         width: 100%;
         margin-top: 16px;
     }
-
-    .back-to-top {
-        display: flex;
-    }
 }
 
+/*
+ * Мобильные экраны.
+ */
 @media (max-width: 600px) {
-    html,
-    body {
-        overflow-x: clip;
-    }
-
     img,
     video,
     iframe {
@@ -1473,8 +1482,7 @@ body {
     }
 
     /*
-     * Закрытый popup внутри карточки не влияет
-     * на ширину мобильной страницы.
+     * Popup внутри карточки на мобильных скрывается.
      */
     .game-card .game-preview-popup {
         display: none !important;
@@ -1585,6 +1593,9 @@ body {
     }
 }
 
+/*
+ * Очень узкие экраны.
+ */
 @media (max-width: 400px) {
     .tier-label {
         flex-basis: 45px;
@@ -1611,8 +1622,25 @@ body {
     #tier-F {
         gap: 6px;
     }
+
+    .back-to-top {
+        right: max(8px, env(safe-area-inset-right));
+        bottom: max(8px, env(safe-area-inset-bottom));
+
+        width: 38px;
+        max-width: 38px;
+        height: 38px;
+        max-height: 38px;
+    }
+
+    .back-to-top span:first-child {
+        font-size: 20px;
+    }
 }
 
+/*
+ * Отключение анимаций по настройке пользователя.
+ */
 @media (prefers-reduced-motion: reduce) {
     .back-to-top,
     .back-to-top::before,
@@ -1624,79 +1652,9 @@ body {
     .price-switch-thumb,
     .game-card,
     .selected-video-link,
-    .game-preview-close {
+    .game-preview-close,
+    .preview-link {
         transition: none;
         animation: none;
     }
 }
-/*
- * Исправление кнопки «Наверх» на очень узких экранах.
- *
- * Кнопка должна находиться поверх тир-листа
- * и оставаться внутри видимой области viewport.
- */
-@media (max-width: 900px) {
-    body {
-        min-width: 0;
-    }
-
-    .back-to-top {
-        position: fixed !important;
-        top: auto !important;
-        right: 12px !important;
-        bottom: 12px !important;
-        left: auto !important;
-        z-index: 100004 !important;
-
-        display: flex !important;
-
-        width: 42px !important;
-        min-width: 42px !important;
-        max-width: 42px !important;
-        height: 42px !important;
-        min-height: 42px !important;
-        max-height: 42px !important;
-
-        flex: 0 0 42px !important;
-        align-items: center !important;
-        justify-content: center !important;
-
-        overflow: visible !important;
-        visibility: visible;
-    }
-
-    .back-to-top span:first-child {
-        display: block !important;
-
-        width: 100%;
-        color: #fff;
-        font-size: 22px;
-        line-height: 1;
-        text-align: center;
-    }
-
-    .back-to-top span:last-child {
-        display: none !important;
-    }
-}
-
-@media (max-width: 400px) {
-    .back-to-top {
-        right: 8px !important;
-        bottom: 8px !important;
-
-        width: 38px !important;
-        min-width: 38px !important;
-        max-width: 38px !important;
-        height: 38px !important;
-        min-height: 38px !important;
-        max-height: 38px !important;
-
-        flex-basis: 38px !important;
-    }
-
-    .back-to-top span:first-child {
-        font-size: 20px;
-    }
-}
-
