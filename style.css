@@ -1065,10 +1065,6 @@ iframe {
     outline-offset: 2px;
 }
 
-.tier-list-layout.video-filter-active
-.game-preview-popup {
-    display: none !important;
-}
 
 .game-card:not(.preview-closed)
 .game-preview-popup {
