@@ -20,28 +20,26 @@ export const REMOVED_TIER_NAME =
 
 
 /*
- * Создаёт пустую структуру
- * пользовательского тир-листа.
+ * Создаёт структуру со всеми тирами.
  */
 export function createEmptyLayout() {
     const layout = {};
 
-    CUSTOM_TIER_NAMES.forEach(
+    [
+        ...CUSTOM_TIER_NAMES,
+        REMOVED_TIER_NAME
+    ].forEach(
         tier => {
             layout[tier] = [];
         }
     );
-
-    layout[REMOVED_TIER_NAME] =
-        [];
 
     return layout;
 }
 
 
 /*
- * Создаёт начальную структуру:
- * все игры помещаются в «Не распределены».
+ * Помещает все доступные игры в UNRANKED.
  */
 export function createInitialLayout(
     games
@@ -71,20 +69,19 @@ export function createInitialLayout(
 
 
 /*
- * Возвращает ID игры из колонки ID.
+ * Берёт стабильный ID из колонки ID Google Sheets.
  */
 export function getGameId(
     game
 ) {
     return String(
-        game?.['ID'] || ''
+        game?.ID || ''
     ).trim();
 }
 
 
 /*
- * Загружает собственную версию
- * из localStorage.
+ * Читает локально сохранённый тир-лист.
  */
 export function loadLocalLayout() {
     try {
@@ -99,15 +96,15 @@ export function loadLocalLayout() {
             return null;
         }
 
-        const parsedLayout =
+        const layout =
             JSON.parse(
                 storedValue
             );
 
         return isLayoutObject(
-            parsedLayout
+            layout
         )
-            ? parsedLayout
+            ? layout
             : null;
     } catch (
         error
@@ -123,8 +120,7 @@ export function loadLocalLayout() {
 
 
 /*
- * Сохраняет собственную версию
- * в localStorage.
+ * Сохраняет локальную версию.
  */
 export function saveLocalLayout(
     layout
@@ -142,7 +138,7 @@ export function saveLocalLayout(
         error
     ) {
         console.warn(
-            'Не удалось сохранить собственный тир-лист:',
+            'Не удалось сохранить тир-лист:',
             error
         );
 
@@ -152,7 +148,7 @@ export function saveLocalLayout(
 
 
 /*
- * Удаляет сохранённую собственную версию.
+ * Удаляет только пользовательскую локальную раскладку.
  */
 export function removeLocalLayout() {
     localStorage.removeItem(
@@ -162,8 +158,7 @@ export function removeLocalLayout() {
 
 
 /*
- * Читает пользовательскую версию
- * из параметра URL.
+ * Читает раскладку из параметра ?layout=.
  */
 export function loadSharedLayout() {
     const url =
@@ -183,20 +178,20 @@ export function loadSharedLayout() {
     }
 
     try {
-        const json =
+        const decodedJson =
             decodeLayout(
                 encodedLayout
             );
 
-        const parsedLayout =
+        const layout =
             JSON.parse(
-                json
+                decodedJson
             );
 
         return isLayoutObject(
-            parsedLayout
+            layout
         )
-            ? parsedLayout
+            ? layout
             : null;
     } catch (
         error
@@ -212,11 +207,7 @@ export function loadSharedLayout() {
 
 
 /*
- * Возвращает структуру,
- * с которой нужно открыть страницу.
- *
- * Общая версия из URL имеет приоритет
- * над локально сохранённой версией.
+ * Общая ссылка имеет приоритет над localStorage.
  */
 export function getStartLayout(
     games
@@ -264,14 +255,7 @@ export function getStartLayout(
 
 
 /*
- * Приводит структуру к безопасному виду.
- *
- * В структуру попадают только ID игр,
- * которые существуют в Google Sheets.
- *
- * Повторяющиеся ID удаляются.
- * Игры, отсутствующие в сохранённой структуре,
- * помещаются в UNRANKED.
+ * Убирает дубликаты, неизвестные ID и добавляет новые игры.
  */
 export function normalizeLayout(
     layout,
@@ -284,10 +268,7 @@ export function normalizeLayout(
         new Set(
             games
                 .map(
-                    game =>
-                        getGameId(
-                            game
-                        )
+                    getGameId
                 )
                 .filter(
                     Boolean
@@ -297,21 +278,19 @@ export function normalizeLayout(
     const usedIds =
         new Set();
 
-    const layoutTiers = [
+    [
         ...CUSTOM_TIER_NAMES,
         REMOVED_TIER_NAME
-    ];
-
-    layoutTiers.forEach(
+    ].forEach(
         tier => {
-            const tierGames =
+            const gameIds =
                 Array.isArray(
                     layout?.[tier]
                 )
                     ? layout[tier]
                     : [];
 
-            tierGames.forEach(
+            gameIds.forEach(
                 value => {
                     const gameId =
                         String(
@@ -342,11 +321,6 @@ export function normalizeLayout(
         }
     );
 
-    /*
-     * Новые игры и игры из старой версии
-     * без отдельной зоны REMOVED попадают
-     * в «Не распределены».
-     */
     games.forEach(
         game => {
             const gameId =
@@ -363,10 +337,6 @@ export function normalizeLayout(
                 normalizedLayout.UNRANKED.push(
                     gameId
                 );
-
-                usedIds.add(
-                    gameId
-                );
             }
         }
     );
@@ -376,50 +346,34 @@ export function normalizeLayout(
 
 
 /*
- * Кодирует структуру тир-листа
- * в строку для URL.
+ * Кодирует JSON для URL безопасно для Unicode.
  */
 export function encodeLayout(
     layout
 ) {
-    const json =
-        JSON.stringify(
-            layout
-        );
-
-    const utf8Json =
-        encodeURIComponent(
-            json
-        );
-
     return btoa(
-        utf8Json
+        encodeURIComponent(
+            JSON.stringify(
+                layout
+            )
+        )
     );
 }
 
 
-/*
- * Декодирует структуру тир-листа
- * из строки URL.
- */
 function decodeLayout(
     encodedLayout
 ) {
-    const utf8Json =
+    return decodeURIComponent(
         atob(
             encodedLayout
-        );
-
-    return decodeURIComponent(
-        utf8Json
+        )
     );
 }
 
 
 /*
- * Создаёт URL пользовательского тир-листа.
- *
- * Исходный URL не изменяется.
+ * Формирует новую ссылку, не меняя открытую страницу.
  */
 export function createShareUrl(
     layout
@@ -442,16 +396,15 @@ export function createShareUrl(
 }
 
 
-/*
- * Проверяет структуру тир-листа.
- */
 function isLayoutObject(
     layout
 ) {
     if (
         !layout ||
         typeof layout !== 'object' ||
-        Array.isArray(layout)
+        Array.isArray(
+            layout
+        )
     ) {
         return false;
     }
