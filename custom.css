@@ -783,8 +783,10 @@ body.custom-drag-active
 .custom-games-container .game-info-button {
     position: absolute;
     top: 6px;
-    right: 6px;
+    left: 6px;
+    right: auto;
     z-index: 4;
+
 
     display: inline-flex;
     align-items: center;
