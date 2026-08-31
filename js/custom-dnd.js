@@ -7,6 +7,7 @@ let dragAndDropIsInitialized = false;
 let customCardsObserver = null;
 
 let layoutAnimationFrame = null;
+let placeholderAnimation = null;
 
 
 /*
@@ -756,10 +757,101 @@ function animateDropZoneChange(
         ) ||
         dropZone;
 
+    const placeholder =
+        document.querySelector(
+            '#custom-drop-placeholder'
+        );
+
+    const previousRect =
+        placeholder?.isConnected
+            ? placeholder.getBoundingClientRect()
+            : null;
+
     animateCustomLayoutChange(
         root,
         change
     );
+
+    requestAnimationFrame(
+        () => {
+            animatePlaceholderMove(
+                placeholder,
+                previousRect
+            );
+        }
+    );
+}
+
+function animatePlaceholderMove(
+    placeholder,
+    previousRect
+) {
+    if (
+        !placeholder ||
+        !placeholder.isConnected ||
+        !previousRect ||
+        isReducedMotion()
+    ) {
+        return;
+    }
+
+    const currentRect =
+        placeholder.getBoundingClientRect();
+
+    const deltaX =
+        previousRect.left -
+        currentRect.left;
+
+    const deltaY =
+        previousRect.top -
+        currentRect.top;
+
+    if (
+        Math.abs(deltaX) < 1 &&
+        Math.abs(deltaY) < 1
+    ) {
+        return;
+    }
+
+    if (
+        placeholderAnimation
+    ) {
+        placeholderAnimation.cancel();
+    }
+
+    placeholderAnimation =
+        placeholder.animate(
+            [
+                {
+                    opacity: 0.7,
+                    transform:
+                        `translate(${deltaX}px, ${deltaY}px) scale(0.82)`
+                },
+                {
+                    opacity: 1,
+                    transform:
+                        'translate(0, 0) scale(1)'
+                }
+            ],
+            {
+                duration: 280,
+                easing:
+                    'cubic-bezier(0.22, 1, 0.36, 1)',
+                fill: 'both'
+            }
+        );
+
+    placeholderAnimation.onfinish =
+        () => {
+            placeholder.style.transform =
+                '';
+
+            placeholder.style.opacity =
+                '';
+
+            placeholderAnimation =
+                null;
+        };
 }
 
 
