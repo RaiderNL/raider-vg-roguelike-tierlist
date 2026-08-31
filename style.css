@@ -1103,6 +1103,56 @@ body {
 
         font-size: 9px;
     }
+    /*
+     * В режиме цен плашка участвует в компоновке карточки,
+     * поэтому не накладывается на название.
+     */
+    body.price-mode-active .game-card {
+        overflow: hidden;
+    }
+
+    body.price-mode-active .game-cover {
+        flex-basis: 52%;
+
+        height: 52%;
+    }
+
+    body.price-mode-active .game-title {
+        margin: 5px 6px 3px;
+
+        font-size: 12px;
+
+        -webkit-line-clamp: 1;
+    }
+
+    /*
+     * На маленьких карточках теги вместе с ценой
+     * перегружают область, поэтому в режиме цен скрываются.
+     */
+    body.price-mode-active .game-tags {
+        display: none;
+    }
+
+    body.price-mode-active .game-price {
+        position: static;
+
+        flex: 0 0 auto;
+        min-height: 20px;
+        margin: auto 4px 4px;
+        padding: 3px 4px;
+
+        font-size: 11px;
+    }
+
+    body.price-mode-active .game-price-old {
+        font-size: 10px;
+    }
+
+    body.price-mode-active .game-price-discount {
+        padding: 2px 4px;
+
+        font-size: 9px;
+    }
 
     #tier-S .game-card,
     #tier-A .game-card {
