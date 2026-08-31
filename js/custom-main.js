@@ -328,6 +328,9 @@ function updateInterface() {
     const isEditMode =
         currentMode === 'edit';
 
+    const isViewMode =
+        currentMode === 'view';
+
     document.body.classList.toggle(
         'custom-mode-edit',
         isEditMode
@@ -335,7 +338,7 @@ function updateInterface() {
 
     document.body.classList.toggle(
         'custom-mode-view',
-        !isEditMode
+        isViewMode
     );
 
     updateModeButton(
@@ -345,50 +348,56 @@ function updateInterface() {
 
     updateModeButton(
         '#custom-view-mode-button',
-        !isEditMode
+        isViewMode
     );
 
     /*
- * Фильтры доступны и при редактировании,
- * и при просмотре.
- */
+     * Панель фильтров видна в обоих режимах.
+     */
     setHidden(
         '#custom-edit-controls',
         false
     );
 
-
+    /*
+     * Кнопки редактирования видны
+     * только в режиме редактирования.
+     */
     setHidden(
         '#custom-edit-actions',
         !isEditMode
     );
 
+    /*
+     * Кнопки просмотра видны
+     * только в режиме просмотра.
+     */
     setHidden(
         '#custom-view-actions',
-        isEditMode
+        !isViewMode
     );
 
+    /*
+     * Уведомление показывается только
+     * при открытии чужой ссылки.
+     */
     setHidden(
         '#custom-shared-notice',
         !isSharedLayout
     );
 
-    setHidden(
-        '#save-shared-tierlist',
-        !isSharedLayout
-    );
-
     /*
-     * Кнопка копирования доступна
-     * в обоих режимах.
+     * «Сохранить как свой» нужно показывать
+     * только для чужого тир-листа.
      */
     setHidden(
-        '#share-custom-tierlist-view',
-        false
+        '#save-shared-tierlist',
+        !isViewMode || !isSharedLayout
     );
 
     updateModeTexts();
 }
+
 
 
 function updateModeButton(
