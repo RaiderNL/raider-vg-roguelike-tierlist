@@ -105,10 +105,21 @@ function handleDragStart(
         return;
     }
 
+    const layout =
+        currentLayoutGetter?.();
+    
+    const sourceTier =
+        findGameTier(
+            layout,
+            gameId
+        );
+    
     currentDragState = {
         gameId,
-        card
+        card,
+        sourceTier
     };
+
 
     card.classList.add(
         'is-dragging'
@@ -260,6 +271,18 @@ function handleDrop(
 
         return;
     }
+    /*
+ * Если игру отпустили в той же группе,
+ * оставляем её на исходной позиции.
+ */
+if (
+    targetTier === currentDragState.sourceTier
+) {
+    clearDropZoneState();
+
+    return;
+}
+
 
     const updatedLayout =
         moveGameToTier(
@@ -283,6 +306,34 @@ function handleDragEnd() {
     clearDropZoneState();
 }
 
+/*
+ * Находит тир, в котором игра была до начала переноса.
+ */
+function findGameTier(
+    layout,
+    gameId
+) {
+    if (
+        !layout
+    ) {
+        return null;
+    }
+
+    return Object.keys(
+        layout
+    ).find(
+        tier =>
+            Array.isArray(
+                layout[tier]
+            ) &&
+            layout[tier].some(
+                value =>
+                    String(
+                        value
+                    ) === gameId
+            )
+    ) || null;
+}
 
 /*
  * Перемещает игру, удаляя её из всех остальных зон.
