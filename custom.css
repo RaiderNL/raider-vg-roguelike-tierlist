@@ -890,7 +890,6 @@ body.custom-drag-active
         inset 0 0 0 1px rgb(255 255 255 / 70%),
         0 4px 14px rgb(37 99 235 / 12%);
 
-    transform: scale(0.82);
     transform-origin: center;
     
     transition:
