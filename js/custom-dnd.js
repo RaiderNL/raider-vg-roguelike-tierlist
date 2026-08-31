@@ -8,10 +8,7 @@ let dragAndDropIsInitialized = false;
 
 /*
  * Подключает drag-and-drop к пользовательскому тир-листу.
- *
- * Обработчики добавляются только один раз,
- * поэтому повторная отрисовка страницы
- * не создаёт дубликаты событий.
+ * Обработчики документа добавляются один раз.
  */
 export function setupCustomDragAndDrop({
     getLayout,
@@ -73,7 +70,7 @@ export function setupCustomDragAndDrop({
 
 
 /*
- * Начало перемещения карточки.
+ * Начало перетаскивания карточки.
  */
 function handleDragStart(
     event
@@ -128,7 +125,7 @@ function handleDragStart(
 
 
 /*
- * Разрешаем сброс только в режиме редактирования.
+ * Разрешает сброс над допустимой зоной.
  */
 function handleDragOver(
     event
@@ -158,7 +155,7 @@ function handleDragOver(
 
 
 /*
- * Подсветка зоны при входе карточки.
+ * Подсвечивает целевую область.
  */
 function handleDragEnter(
     event
@@ -187,8 +184,7 @@ function handleDragEnter(
 
 
 /*
- * Убираем подсветку,
- * когда карточка покидает зону.
+ * Убирает подсветку при выходе из области.
  */
 function handleDragLeave(
     event
@@ -204,11 +200,6 @@ function handleDragLeave(
         return;
     }
 
-    /*
-     * Если курсор перешёл
-     * во вложенный элемент той же зоны,
-     * подсветку не убираем.
-     */
     if (
         dropZone.contains(
             event.relatedTarget
@@ -224,7 +215,7 @@ function handleDragLeave(
 
 
 /*
- * Обрабатываем сброс карточки.
+ * Перемещает игру в целевой тир или корзину.
  */
 function handleDrop(
     event
@@ -254,21 +245,11 @@ function handleDrop(
             dropZone
         );
 
-    if (
-        !targetTier
-    ) {
-        clearDropZoneState();
-
-        return;
-    }
-
-    const gameId =
-        currentDragState.gameId;
-
     const layout =
         currentLayoutGetter?.();
 
     if (
+        !targetTier ||
         !layout
     ) {
         clearDropZoneState();
@@ -279,31 +260,20 @@ function handleDrop(
     const updatedLayout =
         moveGameToTier(
             layout,
-            gameId,
+            currentDragState.gameId,
             targetTier
         );
 
     clearDropZoneState();
 
-    if (
+    currentLayoutChangeHandler?.(
         updatedLayout
-    ) {
-        currentLayoutChangeHandler?.(
-            updatedLayout
-        );
-
-        /*
-         * custom-main.js после изменения layout
-         * снова отрисует карточки.
-         */
-
-        );
-    }
+    );
 }
 
 
 /*
- * Завершение перемещения.
+ * Завершение перетаскивания.
  */
 function handleDragEnd() {
     clearDropZoneState();
@@ -311,7 +281,7 @@ function handleDragEnd() {
 
 
 /*
- * Перемещает игру в указанную зону.
+ * Перемещает игру, удаляя её из всех остальных зон.
  */
 function moveGameToTier(
     layout,
@@ -323,16 +293,9 @@ function moveGameToTier(
             layout
         );
 
-    const allTiers =
-        Object.keys(
-            updatedLayout
-        );
-
-    /*
-     * Сначала удаляем игру
-     * из всех возможных уровней.
-     */
-    allTiers.forEach(
+    Object.keys(
+        updatedLayout
+    ).forEach(
         tier => {
             updatedLayout[tier] =
                 updatedLayout[tier].filter(
@@ -353,10 +316,6 @@ function moveGameToTier(
             [];
     }
 
-    /*
-     * Если игра уже находилась в этой зоне,
-     * повторно добавляем её в конец.
-     */
     updatedLayout[targetTier].push(
         gameId
     );
@@ -366,8 +325,7 @@ function moveGameToTier(
 
 
 /*
- * Определяет drop-зону по элементу,
- * над которым находится курсор.
+ * Определяет допустимую drop-зону.
  */
 function getDropZone(
     element
@@ -378,25 +336,15 @@ function getDropZone(
         return null;
     }
 
-    const trashZone =
-        element.closest(
-            '[data-trash-container]'
-        );
-
-    if (
-        trashZone
-    ) {
-        return trashZone;
-    }
-
     return element.closest(
-        '[data-tier-container]'
+        '[data-trash-container], [data-tier-container]'
     );
 }
 
 
 /*
- * Возвращает целевой уровень.
+ * Корзина использует REMOVED,
+ * остальные зоны берут значение data-tier-container.
  */
 function getTargetTier(
     dropZone
@@ -410,19 +358,16 @@ function getTargetTier(
     }
 
     const tier =
-        dropZone.dataset.tierContainer;
+        String(
+            dropZone.dataset.tierContainer || ''
+        ).trim();
 
-    return tier
-        ? String(
-            tier
-        ).trim()
-        : null;
+    return tier || null;
 }
 
 
 /*
- * Копирует layout,
- * не изменяя исходный объект.
+ * Создаёт независимую копию структуры.
  */
 function cloneLayout(
     layout
@@ -452,8 +397,7 @@ function cloneLayout(
 
 
 /*
- * Добавляет или снимает
- * визуальное состояние drop-зоны.
+ * Очищает временные состояния drag-and-drop.
  */
 function clearDropZoneState() {
     document
@@ -486,7 +430,7 @@ function clearDropZoneState() {
 
 
 /*
- * Обновляет draggable после отрисовки.
+ * После повторной отрисовки обновляет draggable.
  */
 function updateDraggableCards() {
     const editable =
@@ -505,9 +449,6 @@ function updateDraggableCards() {
 }
 
 
-/*
- * Проверяет активный режим страницы.
- */
 function isEditMode() {
     return document.body.classList.contains(
         'custom-mode-edit'
