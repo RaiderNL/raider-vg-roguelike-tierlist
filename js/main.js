@@ -23,8 +23,11 @@ import {
     isFavoritesFilterActive,
     getActiveFavoriteIds,
     getGameId,
-    setFavoritesFilter
+    setFavoritesFilter,
+    addFavoritesToUrl,
+    hasSharedFavorites
 } from './favorites.js';
+
 
 
 import {
@@ -579,17 +582,38 @@ async function shareCurrentFilters(
     button
 ) {
     /*
-     * Перед копированием принудительно
-     * синхронизируем URL с текущими фильтрами.
+     * Перед копированием синхронизируем
+     * обычные фильтры с URL.
      */
     updateUrlFromFilters();
 
     const url =
-        window.location.href;
+        new URL(
+            window.location.href
+        );
+
+    /*
+     * Если активен локальный фильтр избранного,
+     * добавляем локальный список в ссылку.
+     *
+     * Если открыта чужая ссылка, её список
+     * сохраняется без перезаписи.
+     */
+    if (
+        isFavoritesFilterActive() &&
+        !hasSharedFavorites()
+    ) {
+        addFavoritesToUrl(
+            url
+        );
+    }
+
+    const shareUrl =
+        url.href;
 
     try {
         await copyText(
-            url
+            shareUrl
         );
 
         showShareButtonMessage(
