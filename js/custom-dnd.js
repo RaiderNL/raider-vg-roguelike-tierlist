@@ -156,7 +156,6 @@ function handleDragStart(
         placeholderKey: null
     };
 
-    };
     lastPointerSample =
     null;
 
