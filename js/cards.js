@@ -68,10 +68,20 @@ export function createGameCard(
         cover ||
         steamImage;
 
+
+    /*
+     * Медиа-блок содержит обложку и цену.
+     *
+     * Цена добавляется позже в steam-price.js,
+     * но уже будет найдена внутри этого блока.
+     */
+    const media =
+        createGameMedia();
+
     if (
         imageUrl
     ) {
-        card.appendChild(
+        media.appendChild(
             createGameCover(
                 imageUrl,
                 cover,
@@ -80,6 +90,11 @@ export function createGameCard(
             )
         );
     }
+
+    card.appendChild(
+        media
+    );
+
 
     card.appendChild(
         createGameTitle(
@@ -96,6 +111,7 @@ export function createGameCard(
             )
         );
     }
+
 
     /*
      * Описание, Steam-ссылка или видео
@@ -118,6 +134,7 @@ export function createGameCard(
         );
     }
 
+
     setupCardHover(
         card,
         name,
@@ -125,12 +142,29 @@ export function createGameCard(
     );
 
 
+    /*
+     * Регистрация происходит после создания всей карточки.
+     * steam-price.js найдёт .game-media и добавит цену внутрь него.
+     */
     registerPriceCard(
         card,
         game
     );
 
     return card;
+}
+
+
+function createGameMedia() {
+    const media =
+        document.createElement(
+            'div'
+        );
+
+    media.className =
+        'game-media';
+
+    return media;
 }
 
 
