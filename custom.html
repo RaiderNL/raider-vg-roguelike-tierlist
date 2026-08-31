@@ -5,450 +5,536 @@
 
     <meta
         name="viewport"
-        content="width=device-width, initial-scale=1.0"
+        content="width=device-width, initial-scale=1"
     >
+
+    <meta
+        name="description"
+        content="Создание и публикация собственного тир-листа игр"
+    >
+
+    <title>
+        Собственный тир-лист
+    </title>
 
     <link
-        rel="icon"
-        type="image/x-icon"
-        href="Ico-min.ico"
+        rel="stylesheet"
+        href="./style.css"
     >
-
-    <title>Мой Roguelike Tierlist</title>
-
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="custom.css">
 </head>
-<body>
 
-    <header class="site-header custom-site-header">
-        <h1>Мой Roguelike Tierlist</h1>
+<body class="custom-page">
 
-        <p id="custom-page-description">
-            Соберите собственную версию тир-листа
-        </p>
+    <!-- =====================================================
+         Шапка страницы
+         ===================================================== -->
+
+    <header class="site-header">
+        <div class="site-header-inner">
+
+            <a
+                class="site-logo"
+                href="./index.html"
+            >
+                Roguelike Tier List
+            </a>
+
+            <nav
+                class="site-navigation"
+                aria-label="Основная навигация"
+            >
+                <a
+                    href="./index.html"
+                >
+                    Общий тир-лист
+                </a>
+
+                <a
+                    class="is-active"
+                    href="./custom.html"
+                    aria-current="page"
+                >
+                    Свой тир-лист
+                </a>
+            </nav>
+
+        </div>
     </header>
 
 
-    <main class="container custom-container">
+    <!-- =====================================================
+         Основное содержимое
+         ===================================================== -->
 
-        <!-- Переключатель режимов -->
-        <section
-            class="custom-mode-switcher"
-            aria-label="Режим страницы"
-        >
-            <button
-                class="custom-mode-button is-active"
-                id="custom-edit-mode-button"
-                type="button"
-                data-custom-mode="edit"
-                aria-pressed="true"
-            >
-                Редактирование
-            </button>
+    <main class="custom-main">
 
-            <button
-                class="custom-mode-button"
-                id="custom-view-mode-button"
-                type="button"
-                data-custom-mode="view"
-                aria-pressed="false"
-            >
-                Просмотр
-            </button>
-        </section>
+        <section class="custom-page-header">
 
+            <div class="custom-page-heading">
+                <p class="custom-page-kicker">
+                    Персональный список
+                </p>
 
-        <!-- Заголовок и статус текущего режима -->
-        <section class="custom-toolbar">
-
-            <div class="custom-toolbar-title">
-                <h2 id="custom-mode-title">
+                <h1
+                    id="custom-mode-title"
+                    class="custom-page-title"
+                >
                     Создание собственного тир-листа
-                </h2>
+                </h1>
 
-                <p id="custom-mode-status">
+                <p
+                    id="custom-page-description"
+                    class="custom-page-description"
+                >
+                    Соберите собственную версию тир-листа
+                </p>
+
+                <p
+                    id="custom-mode-status"
+                    class="custom-mode-status"
+                    aria-live="polite"
+                >
                     Перетащите игры в нужные уровни
+                </p>
+
+                <p
+                    id="custom-shared-notice"
+                    class="custom-shared-notice"
+                    hidden
+                >
+                    Вы открыли тир-лист по ссылке. Его можно
+                    сохранить как собственную версию.
                 </p>
             </div>
 
 
-            <!-- Кнопки режима редактирования -->
+            <!-- Переключатель режима -->
+
             <div
-                class="custom-toolbar-actions custom-edit-actions"
-                id="custom-edit-actions"
+                class="custom-mode-switcher"
+                role="group"
+                aria-label="Режим отображения"
             >
                 <button
-                    class="custom-button custom-button-primary"
-                    id="save-custom-tierlist"
+                    id="custom-edit-mode-button"
+                    class="custom-mode-button is-active"
                     type="button"
+                    data-custom-mode="edit"
+                    aria-pressed="true"
                 >
-                    Сохранить
+                    Редактирование
                 </button>
 
                 <button
-                    class="custom-button"
-                    id="reset-custom-tierlist"
+                    id="custom-view-mode-button"
+                    class="custom-mode-button"
                     type="button"
+                    data-custom-mode="view"
+                    aria-pressed="false"
                 >
-                    Сбросить
-                </button>
-            </div>
-
-
-            <!-- Кнопки режима просмотра -->
-            <div
-                class="custom-toolbar-actions custom-view-actions"
-                id="custom-view-actions"
-                hidden
-            >
-                <button
-                    class="custom-button custom-button-primary"
-                    id="share-custom-tierlist"
-                    type="button"
-                >
-                    Поделиться
-                </button>
-
-                <button
-                    class="custom-button"
-                    id="save-shared-tierlist"
-                    type="button"
-                    hidden
-                >
-                    Сохранить как свою версию
+                    Просмотр
                 </button>
             </div>
 
         </section>
 
 
-        <!-- Уведомление о просмотре чужой версии -->
-        <section
-            class="custom-shared-notice"
-            id="custom-shared-notice"
-            hidden
-        >
-            <p>
-                Вы просматриваете пользовательскую версию тир-листа.
-            </p>
-        </section>
+        <!-- =================================================
+             Панель фильтров
+             ================================================= -->
 
-
-        <!-- Фильтры редактора -->
         <section
-            class="custom-controls"
             id="custom-edit-controls"
+            class="custom-edit-controls"
         >
-            <div class="control-group custom-search-group">
-                <label for="custom-search">
+            <div class="custom-filter-group">
+
+                <label
+                    for="custom-search"
+                    class="custom-filter-label"
+                >
                     Поиск игры
                 </label>
 
                 <input
-                    type="search"
                     id="custom-search"
-                    placeholder="🔍 Название игры..."
-                    aria-label="Поиск игры"
+                    class="custom-search-input"
+                    type="search"
+                    placeholder="Введите название игры"
+                    autocomplete="off"
                 >
+
             </div>
 
+            <div class="custom-filter-group">
 
-            <div class="control-group custom-tag-group">
-                <label for="custom-tag-filter">
+                <label
+                    for="custom-tag-filter"
+                    class="custom-filter-label"
+                >
                     Жанр
                 </label>
 
-                <select id="custom-tag-filter">
+                <select
+                    id="custom-tag-filter"
+                    class="custom-tag-select"
+                >
                     <option value="">
                         Все жанры
                     </option>
                 </select>
+
             </div>
         </section>
 
 
-        <p
-            class="custom-empty-message"
-            id="custom-empty-message"
+        <!-- =================================================
+             Действия
+             ================================================= -->
+
+        <section
+            id="custom-edit-actions"
+            class="custom-actions"
+        >
+            <button
+                id="save-custom-tierlist"
+                class="custom-action-button custom-action-button-primary"
+                type="button"
+            >
+                Сохранить
+            </button>
+
+            <button
+                id="share-custom-tierlist"
+                class="custom-action-button"
+                type="button"
+            >
+                Скопировать ссылку
+            </button>
+
+            <button
+                id="reset-custom-tierlist"
+                class="custom-action-button custom-action-button-danger"
+                type="button"
+            >
+                Сбросить
+            </button>
+        </section>
+
+        <section
+            id="custom-view-actions"
+            class="custom-actions"
             hidden
         >
-            По выбранным параметрам игры не найдены.
-        </p>
+            <button
+                id="save-shared-tierlist"
+                class="custom-action-button custom-action-button-primary"
+                type="button"
+                hidden
+            >
+                Сохранить как свой
+            </button>
+
+            <button
+                id="share-custom-tierlist-view"
+                class="custom-action-button"
+                type="button"
+                hidden
+            >
+                Скопировать ссылку
+            </button>
+        </section>
 
 
-        <!--
-         * Содержимое режима редактирования.
-         *
-         * В режиме просмотра этот блок будет скрываться.
-         -->
+        <!-- =================================================
+             Редактор тир-листа
+             ================================================= -->
+
         <section
-            class="custom-editor-only"
             id="custom-editor-content"
+            class="custom-editor-content"
         >
 
-            <!-- Корзина -->
+            <!-- =============================================
+                 Нераспределённые игры
+                 ============================================= -->
+
             <section
-                class="custom-trash-zone"
-                id="custom-trash-zone"
-                aria-labelledby="custom-trash-title"
-            >
-                <div class="custom-trash-header">
-                    <div>
-                        <h2 id="custom-trash-title">
-                            🗑 Корзина
-                        </h2>
-
-                        <p>
-                            Перетащите сюда игры, которые хотите убрать
-                            из основного тир-листа.
-                        </p>
-                    </div>
-
-                    <span
-                        class="custom-trash-count"
-                        id="custom-trash-count"
-                    >
-                        0
-                    </span>
-                </div>
-
-                <div
-                    class="custom-trash-drop-area"
-                    id="custom-trash-drop-area"
-                    data-trash-container
-                >
-                    <span>
-                        Перетащите игру сюда
-                    </span>
-                </div>
-            </section>
-
-
-            <!-- Удалённые игры -->
-            <details
-                class="custom-removed-games"
-                id="custom-removed-games"
-            >
-                <summary class="custom-removed-games-summary">
-                    <span>Удалённые игры</span>
-
-                    <span
-                        class="custom-removed-games-count"
-                        id="custom-removed-games-count"
-                    >
-                        0
-                    </span>
-                </summary>
-
-                <div
-                    class="custom-removed-games-container"
-                    id="custom-removed-games-container"
-                    data-removed-container
-                    data-tier-container="REMOVED"
-                >
-                    <!-- Удалённые игры добавляются через custom-main.js -->
-                </div>
-
-            </details>
-
-
-            <!-- Нераспределённые игры -->
-            <section
-                class="custom-unranked-zone"
-                id="custom-unranked-zone"
+                class="custom-unranked-section"
                 aria-labelledby="custom-unranked-title"
             >
                 <div class="custom-section-heading">
-                    <h2 id="custom-unranked-title">
-                        Не распределены
+                    <h2
+                        id="custom-unranked-title"
+                        class="custom-section-title"
+                    >
+                        Нераспределённые игры
                     </h2>
 
-                    <p>
-                        Перетащите игры в нужные уровни тир-листа.
-                    </p>
+                    <span
+                        class="custom-section-count"
+                        id="custom-unranked-count"
+                    >
+                        0
+                    </span>
                 </div>
 
                 <div
-                    class="custom-games-container custom-unranked-container"
                     id="custom-tier-UNRANKED"
+                    class="custom-games-container custom-unranked-container"
                     data-tier-container="UNRANKED"
+                    aria-label="Нераспределённые игры"
                 >
                     <!-- Игры добавляются через custom-main.js -->
                 </div>
             </section>
 
+
+            <!-- =============================================
+                 Корзина
+
+                 Находится между UNRANKED и уровнями S–F.
+                 ============================================= -->
+
+            <section
+                class="custom-trash-section"
+                aria-labelledby="custom-trash-title"
+            >
+                <div
+                    id="custom-trash-drop-area"
+                    class="custom-trash-drop-area"
+                    data-trash-container
+                    aria-label="Корзина"
+                >
+                    <span
+                        class="custom-trash-icon"
+                        aria-hidden="true"
+                    >
+                        🗑
+                    </span>
+
+                    <span
+                        id="custom-trash-title"
+                        class="custom-trash-title"
+                    >
+                        Перетащите игру сюда, чтобы скрыть её
+                    </span>
+
+                    <span
+                        id="custom-trash-count"
+                        class="custom-trash-count"
+                        aria-label="Количество скрытых игр"
+                    >
+                        0
+                    </span>
+                </div>
+
+
+                <!-- Список скрытых игр -->
+
+                <div
+                    id="custom-removed-games"
+                    class="custom-removed-games"
+                >
+                    <button
+                        id="custom-removed-games-toggle"
+                        class="custom-removed-games-toggle"
+                        type="button"
+                        aria-expanded="false"
+                        aria-controls="custom-removed-games-container"
+                    >
+                        Скрытые игры отсутствуют
+                    </button>
+
+                    <span
+                        id="custom-removed-games-count"
+                        class="custom-removed-games-count"
+                        hidden
+                    >
+                        0
+                    </span>
+
+                    <div
+                        id="custom-removed-games-container"
+                        class="custom-removed-games-container"
+                        data-removed-container
+                        data-tier-container="REMOVED"
+                        aria-label="Скрытые игры"
+                        hidden
+                    >
+                        <!-- Скрытые игры добавляются через custom-main.js -->
+                    </div>
+                </div>
+            </section>
+
+
+            <!-- =============================================
+                 Уровни тир-листа
+                 ============================================= -->
+
+            <section
+                class="custom-tier-list"
+                aria-label="Уровни тир-листа"
+            >
+
+                <section
+                    class="custom-tier-row custom-tier-row-s"
+                    data-tier-row="S"
+                >
+                    <div class="custom-tier-label custom-tier-label-s">
+                        S
+                    </div>
+
+                    <div
+                        id="custom-tier-S"
+                        class="custom-games-container custom-tier-games"
+                        data-tier-container="S"
+                        aria-label="Тир S"
+                    ></div>
+                </section>
+
+
+                <section
+                    class="custom-tier-row custom-tier-row-a"
+                    data-tier-row="A"
+                >
+                    <div class="custom-tier-label custom-tier-label-a">
+                        A
+                    </div>
+
+                    <div
+                        id="custom-tier-A"
+                        class="custom-games-container custom-tier-games"
+                        data-tier-container="A"
+                        aria-label="Тир A"
+                    ></div>
+                </section>
+
+
+                <section
+                    class="custom-tier-row custom-tier-row-b"
+                    data-tier-row="B"
+                >
+                    <div class="custom-tier-label custom-tier-label-b">
+                        B
+                    </div>
+
+                    <div
+                        id="custom-tier-B"
+                        class="custom-games-container custom-tier-games"
+                        data-tier-container="B"
+                        aria-label="Тир B"
+                    ></div>
+                </section>
+
+
+                <section
+                    class="custom-tier-row custom-tier-row-c"
+                    data-tier-row="C"
+                >
+                    <div class="custom-tier-label custom-tier-label-c">
+                        C
+                    </div>
+
+                    <div
+                        id="custom-tier-C"
+                        class="custom-games-container custom-tier-games"
+                        data-tier-container="C"
+                        aria-label="Тир C"
+                    ></div>
+                </section>
+
+
+                <section
+                    class="custom-tier-row custom-tier-row-d"
+                    data-tier-row="D"
+                >
+                    <div class="custom-tier-label custom-tier-label-d">
+                        D
+                    </div>
+
+                    <div
+                        id="custom-tier-D"
+                        class="custom-games-container custom-tier-games"
+                        data-tier-container="D"
+                        aria-label="Тир D"
+                    ></div>
+                </section>
+
+
+                <section
+                    class="custom-tier-row custom-tier-row-e"
+                    data-tier-row="E"
+                >
+                    <div class="custom-tier-label custom-tier-label-e">
+                        E
+                    </div>
+
+                    <div
+                        id="custom-tier-E"
+                        class="custom-games-container custom-tier-games"
+                        data-tier-container="E"
+                        aria-label="Тир E"
+                    ></div>
+                </section>
+
+
+                <section
+                    class="custom-tier-row custom-tier-row-f"
+                    data-tier-row="F"
+                >
+                    <div class="custom-tier-label custom-tier-label-f">
+                        F
+                    </div>
+
+                    <div
+                        id="custom-tier-F"
+                        class="custom-games-container custom-tier-games"
+                        data-tier-container="F"
+                        aria-label="Тир F"
+                    ></div>
+                </section>
+
+            </section>
+
+
+            <!-- Сообщение для пустого результата фильтрации -->
+
+            <p
+                id="custom-empty-message"
+                class="custom-empty-message"
+                hidden
+            >
+                Игры не найдены.
+            </p>
+
         </section>
-
-
-        <!--
-         * Основной тир-лист.
-         *
-         * В режиме просмотра отображаются только уровни S–F.
-         -->
-        <section
-            class="custom-tier-list"
-            id="custom-tier-list"
-        >
-
-            <div
-                class="custom-tier-row"
-                data-tier="S"
-            >
-                <div class="custom-tier-label tier-s">
-                    S
-                </div>
-
-                <div
-                    class="custom-games-container"
-                    id="custom-tier-S"
-                    data-tier-container="S"
-                >
-                    <!-- Игры добавляются через custom-main.js -->
-                </div>
-            </div>
-
-
-            <div
-                class="custom-tier-row"
-                data-tier="A"
-            >
-                <div class="custom-tier-label tier-a">
-                    A
-                </div>
-
-                <div
-                    class="custom-games-container"
-                    id="custom-tier-A"
-                    data-tier-container="A"
-                >
-                    <!-- Игры добавляются через custom-main.js -->
-                </div>
-            </div>
-
-
-            <div
-                class="custom-tier-row"
-                data-tier="B"
-            >
-                <div class="custom-tier-label tier-b">
-                    B
-                </div>
-
-                <div
-                    class="custom-games-container"
-                    id="custom-tier-B"
-                    data-tier-container="B"
-                >
-                    <!-- Игры добавляются через custom-main.js -->
-                </div>
-            </div>
-
-
-            <div
-                class="custom-tier-row"
-                data-tier="C"
-            >
-                <div class="custom-tier-label tier-c">
-                    C
-                </div>
-
-                <div
-                    class="custom-games-container"
-                    id="custom-tier-C"
-                    data-tier-container="C"
-                >
-                    <!-- Игры добавляются через custom-main.js -->
-                </div>
-            </div>
-
-
-            <div
-                class="custom-tier-row"
-                data-tier="D"
-            >
-                <div class="custom-tier-label tier-d">
-                    D
-                </div>
-
-                <div
-                    class="custom-games-container"
-                    id="custom-tier-D"
-                    data-tier-container="D"
-                >
-                    <!-- Игры добавляются через custom-main.js -->
-                </div>
-            </div>
-
-
-            <div
-                class="custom-tier-row"
-                data-tier="E"
-            >
-                <div class="custom-tier-label tier-e">
-                    E
-                </div>
-
-                <div
-                    class="custom-games-container"
-                    id="custom-tier-E"
-                    data-tier-container="E"
-                >
-                    <!-- Игры добавляются через custom-main.js -->
-                </div>
-            </div>
-
-
-            <div
-                class="custom-tier-row"
-                data-tier="F"
-            >
-                <div class="custom-tier-label tier-f">
-                    F
-                </div>
-
-                <div
-                    class="custom-games-container"
-                    id="custom-tier-F"
-                    data-tier-container="F"
-                >
-                    <!-- Игры добавляются через custom-main.js -->
-                </div>
-            </div>
-
-        </section>
-
-
-        <nav class="custom-page-navigation">
-            <a
-                class="custom-button custom-button-link"
-                href="index.html"
-            >
-                Вернуться к общему тир-листу
-            </a>
-        </nav>
 
     </main>
 
 
+    <!-- =====================================================
+         Подвал
+         ===================================================== -->
+
     <footer class="site-footer">
         <p>
-            Все обзоры доступны на
-            <a
-                class="channel-link"
-                href="https://www.youtube.com/@raider_videogame"
-                target="_blank"
-                rel="noopener noreferrer"
-            >
-                моём YouTube-канале
-            </a>
+            Roguelike Tier List
         </p>
     </footer>
 
 
+    <!-- =====================================================
+         Скрипт страницы
+
+         Путь указывается относительно custom.html.
+         Если custom.html находится в другой папке,
+         скорректируй путь к custom-main.js.
+         ===================================================== -->
+
     <script
         type="module"
-        src="js/custom-main.js"
+        src="./js/custom-main.js"
     ></script>
 
 </body>
