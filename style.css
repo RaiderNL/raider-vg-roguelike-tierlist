@@ -245,20 +245,26 @@ iframe {
 .filter-actions {
     display: flex;
     flex: 0 0 auto;
-    align-items: flex-end;
-    gap: 10px;
+    align-items: center;
+    gap: 8px;
 
     max-width: 100%;
 }
 
+
 .filter-action-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 38px;
+    min-width: 38px;
     min-height: var(--control-height);
-    padding: 8px 12px;
+    padding: 6px;
 
     color: var(--color-dark);
-    font-size: 14px;
-    font-weight: 700;
-    white-space: nowrap;
+    font-size: 22px;
+    line-height: 1;
 
     cursor: pointer;
 
@@ -272,6 +278,23 @@ iframe {
         border-color 0.2s ease,
         transform 0.2s ease;
 }
+
+.filter-action-button:hover {
+    color: var(--color-primary-dark);
+    background: #eef4ff;
+    border-color: var(--color-primary);
+    transform: translateY(-1px);
+}
+
+.filter-action-button:active {
+    transform: translateY(0);
+}
+
+.filter-action-button:focus-visible {
+    outline: 3px solid var(--color-primary-focus);
+    outline-offset: 2px;
+}
+
 
 .filter-action-button:hover {
     color: var(--color-primary-dark);
@@ -1701,16 +1724,17 @@ iframe {
 }
 
 @media (max-width: 600px) {
-        .filter-actions {
-        width: 100%;
-        align-items: stretch;
-        flex-direction: column;
+    .filter-actions {
+        width: auto;
+        align-items: center;
+        flex-direction: row;
         gap: 8px;
     }
-
+    
     .filter-action-button {
-        width: 100%;
+        width: 38px;
     }
+
 
     .mobile-tier-navigation {
         display: flex;
