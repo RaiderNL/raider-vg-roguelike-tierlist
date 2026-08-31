@@ -7,6 +7,12 @@ let dragAndDropIsInitialized = false;
 let customCardsObserver = null;
 
 let layoutAnimationFrame = null;
+const SIDE_TRASH_ZONE_SELECTOR =
+    '.custom-side-trash-zone';
+
+const SIDE_TRASH_EDGE_GAP =
+    4;
+
 let pendingPlaceholderUpdateTimer = null;
 let lastPointerSample = null;
 
@@ -190,6 +196,52 @@ function handleDragOver(
         return;
     }
 
+    event.preventDefault();
+
+    if (
+        event.dataTransfer
+    ) {
+        event.dataTransfer.dropEffect =
+            'move';
+    }
+
+    /*
+     * Сначала проверяем выход курсора
+     * за левую или правую границу основного
+     * содержимого.
+     */
+    const sideTrashZone =
+        updateSideTrashZones(
+            event
+        );
+
+    if (
+        sideTrashZone
+    ) {
+        currentDragState.dropZone =
+            sideTrashZone;
+
+        currentDragState.placement =
+            null;
+
+        currentDragState.placeholderKey =
+            null;
+
+        removeDropPlaceholder();
+
+        setActiveDropZone(
+            sideTrashZone
+        );
+
+        return;
+    }
+
+    /*
+     * Если курсор вернулся в основную область,
+     * боковые зоны скрываются.
+     */
+    hideSideTrashZones();
+
     const dropZone =
         getDropZone(
             event.target
@@ -201,15 +253,6 @@ function handleDragOver(
         return;
     }
 
-    event.preventDefault();
-
-    if (
-        event.dataTransfer
-    ) {
-        event.dataTransfer.dropEffect =
-            'move';
-    }
-
     currentDragState.dropZone =
         dropZone;
 
@@ -217,60 +260,93 @@ function handleDragOver(
         dropZone
     );
 
-    const pointerSpeed =
-        updatePointerSpeed(
-            event
-        );
-
-    const placeholder =
-        document.querySelector(
-            '#custom-drop-placeholder'
-        );
-
-    /*
-     * Первое появление placeholder выполняем сразу.
-     */
-    if (
-        !placeholder ||
-        !placeholder.isConnected
-    ) {
-        cancelPendingPlaceholderUpdate();
-
-        updateDropPlaceholder(
-            event,
-            dropZone
-        );
-
-        return;
-    }
-
-    /*
-     * При быстром движении не переставляем
-     * рамку на каждую промежуточную позицию.
-     */
-    if (
-        pointerSpeed >
-        PLACEHOLDER_SPEED_LIMIT
-    ) {
-        schedulePlaceholderUpdate(
-            event,
-            dropZone
-        );
-
-        return;
-    }
-
-    /*
-     * Движение замедлилось — применяем
-     * последнюю позицию сразу.
-     */
-    cancelPendingPlaceholderUpdate();
-
     updateDropPlaceholder(
         event,
         dropZone
     );
 }
+
+function updateSideTrashZones(
+    event
+) {
+    const editorContent =
+        document.querySelector(
+            '#custom-editor-content'
+        );
+
+    const leftZone =
+        document.querySelector(
+            '#custom-trash-zone-left'
+        );
+
+    const rightZone =
+        document.querySelector(
+            '#custom-trash-zone-right'
+        );
+
+    if (
+        !editorContent ||
+        !leftZone ||
+        !rightZone
+    ) {
+        return null;
+    }
+
+    const editorRect =
+        editorContent.getBoundingClientRect();
+
+    const isOutsideLeft =
+        event.clientX <
+        editorRect.left -
+        SIDE_TRASH_EDGE_GAP;
+
+    const isOutsideRight =
+        event.clientX >
+        editorRect.right +
+        SIDE_TRASH_EDGE_GAP;
+
+    leftZone.classList.toggle(
+        'is-edge-visible',
+        isOutsideLeft
+    );
+
+    rightZone.classList.toggle(
+        'is-edge-visible',
+        isOutsideRight
+    );
+
+    if (
+        isOutsideLeft
+    ) {
+        return leftZone;
+    }
+
+    if (
+        isOutsideRight
+    ) {
+        return rightZone;
+    }
+
+    return null;
+}
+function hideSideTrashZones() {
+    document
+        .querySelectorAll(
+            SIDE_TRASH_ZONE_SELECTOR
+        )
+        .forEach(
+            zone => {
+                zone.classList.remove(
+                    'is-edge-visible'
+                );
+
+                zone.classList.remove(
+                    'is-drop-target'
+                );
+            }
+        );
+}
+
 
 function updatePointerSpeed(
     event
@@ -388,6 +464,31 @@ function handleDragEnter(
         return;
     }
 
+    const sideTrashZone =
+        updateSideTrashZones(
+            event
+        );
+
+    if (
+        sideTrashZone
+    ) {
+        currentDragState.dropZone =
+            sideTrashZone;
+
+        currentDragState.placement =
+            null;
+
+        removeDropPlaceholder();
+
+        setActiveDropZone(
+            sideTrashZone
+        );
+
+        return;
+    }
+
+    hideSideTrashZones();
+
     const dropZone =
         getDropZone(
             event.target
@@ -408,9 +509,41 @@ function handleDragEnter(
 }
 
 
+
 function handleDragLeave(
     event
 ) {
+    const sideTrashZone =
+        event.target instanceof Element
+            ? event.target.closest(
+                SIDE_TRASH_ZONE_SELECTOR
+            )
+            : null;
+
+    if (
+        sideTrashZone
+    ) {
+        /*
+         * Не скрываем зоны при переходе
+         * между самой зоной и её дочерними
+         * элементами.
+         */
+        if (
+            event.relatedTarget instanceof Node &&
+            sideTrashZone.contains(
+                event.relatedTarget
+            )
+        ) {
+            return;
+        }
+
+        sideTrashZone.classList.remove(
+            'is-drop-target'
+        );
+
+        return;
+    }
+
     const dropZone =
         getDropZone(
             event.target
@@ -422,10 +555,6 @@ function handleDragLeave(
         return;
     }
 
-    /*
-     * Не снимаем подсветку при переходе
-     * с контейнера на его дочерний элемент.
-     */
     if (
         event.relatedTarget instanceof Node &&
         dropZone.contains(
@@ -1747,12 +1876,17 @@ function cloneLayout(
  */
 
 function clearDragState() {
+    hideSideTrashZones();
+
     cancelPendingPlaceholderUpdate();
 
     lastPointerSample =
         null;
 
     removeDropPlaceholder();
+
+    // остальной код без изменений
+
 
     document
         .querySelectorAll(
