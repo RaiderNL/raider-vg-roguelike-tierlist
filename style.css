@@ -1171,28 +1171,59 @@ body {
      * Оно всегда находится в центре экрана и прокручивается
      * внутри, если содержимое выше доступной высоты.
      */
+    /*
+     * На мобильных popup всегда является отдельным
+     * окном по центру экрана.
+     */
     .game-preview-popup.game-preview-popup-mobile-modal {
-        position: fixed;
+        position: fixed !important;
         top: 50% !important;
+        right: auto !important;
+        bottom: auto !important;
         left: 50% !important;
-        z-index: 100003;
+        z-index: 100003 !important;
 
-        width: min(440px, calc(100vw - 28px));
-        max-height: calc(100dvh - 28px);
+        display: flex !important;
+
+        width: calc(100vw - 24px) !important;
+        max-width: 440px;
+        max-height: calc(100dvh - 24px);
+
         padding: 46px 12px 12px;
         overflow-x: hidden;
         overflow-y: auto;
 
-        transform: translate(-50%, -50%);
+        visibility: visible !important;
+        opacity: 1 !important;
+        pointer-events: auto !important;
+
+        transform: translate(-50%, -50%) !important;
 
         overscroll-behavior: contain;
         -webkit-overflow-scrolling: touch;
     }
 
+    /*
+     * Не даём transform карточки создавать
+     * отдельную систему координат для fixed popup.
+     */
+    .game-card:has(
+        .game-preview-popup-mobile-modal
+    ),
+    .game-card:has(
+        .game-preview-popup-mobile-modal
+    ):hover,
+    .game-card:has(
+        .game-preview-popup-mobile-modal
+    ):focus-within {
+        transform: none !important;
+    }
+
     .game-preview-popup.game-preview-popup-mobile-modal.game-preview-popup-with-description.game-preview-popup-with-actions {
         flex-direction: column;
 
-        width: min(440px, calc(100vw - 28px));
+        width: calc(100vw - 24px) !important;
+        max-width: 440px;
     }
 
     .game-preview-popup.game-preview-popup-mobile-modal::after {
@@ -1200,7 +1231,7 @@ body {
     }
 
     /*
-     * Крестик виден только у открытого мобильного окна.
+     * Кнопка закрытия видна только в мобильном popup.
      */
     .game-preview-popup-mobile-modal
     .game-preview-close {
@@ -1210,29 +1241,35 @@ body {
     }
 
     /*
-     * Убираем квадратное ограничение цитаты на мобильном.
+     * Цитата не ограничивается квадратом,
+     * а занимает столько места, сколько нужно тексту.
      */
-    .game-preview-popup-mobile-modal .preview-description,
-    .game-preview-popup.game-preview-popup-with-description
+    .game-preview-popup-mobile-modal
     .preview-description {
         flex: 0 0 auto;
 
         min-height: 0;
-        padding: 28px 24px 30px;
+        padding: 28px 22px 32px;
 
         font-size: 14px;
         line-height: 1.45;
+        overflow-wrap: anywhere;
+
         aspect-ratio: auto;
     }
 
-    .game-preview-popup-mobile-modal .preview-actions {
+    .game-preview-popup-mobile-modal
+    .preview-actions {
         flex: 0 0 auto;
     }
 
-    .game-preview-popup-mobile-modal .preview-image {
+    .game-preview-popup-mobile-modal
+    .preview-image {
+        width: 100%;
         height: auto;
         aspect-ratio: 16 / 9;
     }
+
 
     .preview-image {
         height: 117px;
