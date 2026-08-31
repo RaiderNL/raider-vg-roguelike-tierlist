@@ -1107,52 +1107,75 @@ body {
      * В режиме цен плашка участвует в компоновке карточки,
      * поэтому не накладывается на название.
      */
+    /*
+     * В режиме цен карточка использует отдельные строки
+     * для обложки, названия и плашки цены.
+     */
     body.price-mode-active .game-card {
+        display: grid;
+        grid-template-rows: minmax(0, 1fr) auto auto;
+
         overflow: hidden;
     }
 
     body.price-mode-active .game-cover {
-        flex-basis: 52%;
+        grid-row: 1;
 
-        height: 52%;
+        width: 100%;
+        height: 100%;
+        min-height: 0;
     }
 
     body.price-mode-active .game-title {
-        margin: 5px 6px 3px;
+        grid-row: 2;
+
+        margin: 4px 5px 3px;
 
         font-size: 12px;
+        line-height: 1.15;
 
         -webkit-line-clamp: 1;
     }
 
     /*
-     * На маленьких карточках теги вместе с ценой
-     * перегружают область, поэтому в режиме цен скрываются.
+     * Теги скрываются только в режиме отображения цен:
+     * на узкой карточке они конкурируют с ценой за высоту.
      */
     body.price-mode-active .game-tags {
         display: none;
     }
 
     body.price-mode-active .game-price {
-        position: static;
+        position: static !important;
+        grid-row: 3;
 
+        display: flex;
         flex: 0 0 auto;
-        min-height: 20px;
-        margin: auto 4px 4px;
-        padding: 3px 4px;
+        align-items: center;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 2px;
 
-        font-size: 11px;
+        min-height: 20px;
+        max-height: 36px;
+        margin: 0 4px 4px;
+        padding: 3px 4px;
+        overflow: hidden;
+
+        font-size: 10px;
+        line-height: 1.1;
     }
 
     body.price-mode-active .game-price-old {
-        font-size: 10px;
+        font-size: 9px;
     }
 
     body.price-mode-active .game-price-discount {
-        padding: 2px 4px;
+        padding: 2px 3px;
 
-        font-size: 9px;
+        font-size: 8px;
     }
+
 
     #tier-S .game-card,
     #tier-A .game-card {
