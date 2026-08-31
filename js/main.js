@@ -48,14 +48,15 @@ const SEARCH_RENDER_DELAY =
 const BACK_TO_TOP_VISIBLE_CLASS =
     'is-visible';
 
-const SHARE_BUTTON_DEFAULT_TEXT =
-    'Скопировать ссылку';
+const SHARE_BUTTON_DEFAULT_LABEL =
+    'Скопировать ссылку на подборку';
 
-const SHARE_BUTTON_SUCCESS_TEXT =
+const SHARE_BUTTON_SUCCESS_LABEL =
     'Ссылка скопирована';
 
-const SHARE_BUTTON_ERROR_TEXT =
+const SHARE_BUTTON_ERROR_LABEL =
     'Не удалось скопировать';
+
 
 let searchRenderTimer =
     null;
@@ -456,35 +457,50 @@ function resetFilters() {
 }
 
 
-async function shareCurrentFilters(
-    button
+function showShareButtonMessage(
+    button,
+    message
 ) {
-    const url =
-        window.location.href;
-
-    try {
-        await copyText(
-            url
-        );
-
-        showShareButtonMessage(
-            button,
-            SHARE_BUTTON_SUCCESS_TEXT
-        );
-    } catch (
-        error
+    if (
+        !button
     ) {
-        console.warn(
-            'Не удалось скопировать ссылку:',
-            error
-        );
+        return;
+    }
 
-        showShareButtonMessage(
-            button,
-            SHARE_BUTTON_ERROR_TEXT
+    button.title =
+        message;
+
+    button.setAttribute(
+        'aria-label',
+        message
+    );
+
+    if (
+        shareButtonResetTimer
+    ) {
+        clearTimeout(
+            shareButtonResetTimer
         );
     }
+
+    shareButtonResetTimer =
+        setTimeout(
+            () => {
+                button.title =
+                    SHARE_BUTTON_DEFAULT_LABEL;
+
+                button.setAttribute(
+                    'aria-label',
+                    SHARE_BUTTON_DEFAULT_LABEL
+                );
+
+                shareButtonResetTimer =
+                    null;
+            },
+            1800
+        );
 }
+
 
 
 async function copyText(
