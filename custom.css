@@ -823,6 +823,19 @@ body.custom-mode-edit
 .game-preview-popup {
     display: none !important;
 }
+/*
+ * Placeholder постоянно меняет элемент под курсором.
+ * Во время переноса popup не должен реагировать на hover.
+ */
+body.custom-drag-active
+.game-preview-popup {
+    display: none !important;
+}
+
+body.custom-drag-active
+.game-card {
+    pointer-events: none;
+}
 
 body.custom-mode-edit
 .custom-games-container
