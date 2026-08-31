@@ -5,6 +5,7 @@ let currentLayoutChangeHandler = null;
 let flipAnimationFrame = null;
 
 let dragAndDropIsInitialized = false;
+let customCardsObserver = null;
 
 
 /*
@@ -69,6 +70,8 @@ export function setupCustomDragAndDrop({
         true;
 
     updateDraggableCards();
+    setupCardsObserver();
+
 }
 
 
@@ -1231,6 +1234,33 @@ function clearDragState() {
  * Состояние draggable
  * =========================================================
  */
+function setupCardsObserver() {
+    if (
+        customCardsObserver ||
+        !document.body
+    ) {
+        return;
+    }
+
+    customCardsObserver =
+        new MutationObserver(
+            () => {
+                if (
+                    !currentDragState
+                ) {
+                    updateDraggableCards();
+                }
+            }
+        );
+
+    customCardsObserver.observe(
+        document.body,
+        {
+            childList: true,
+            subtree: true
+        }
+    );
+}
 
 function updateDraggableCards() {
     const editable =
@@ -1238,15 +1268,29 @@ function updateDraggableCards() {
 
     document
         .querySelectorAll(
-            '[data-game-id]'
+            [
+                '.custom-games-container [data-game-id]',
+                '.custom-unranked-container [data-game-id]',
+                '.custom-removed-games-container [data-game-id]'
+            ].join(',')
         )
         .forEach(
             card => {
                 card.draggable =
                     editable;
+
+                card.setAttribute(
+                    'draggable',
+                    editable
+                        ? 'true'
+                        : 'false'
+                );
             }
         );
 }
+
+
+
 
 
 function isEditMode() {
