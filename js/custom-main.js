@@ -269,8 +269,9 @@ function updateInterface() {
         editorContent
     ) {
         editorContent.hidden =
-            !isEditMode;
+            false;
     }
+
 
     if (
         sharedNotice
