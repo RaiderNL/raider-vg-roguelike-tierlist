@@ -519,31 +519,20 @@ function updateDropPlaceholder(
      * Если курсор не над карточкой,
      * вставляем placeholder в конец.
      */
+        /*
+     * Если курсор находится в свободной области,
+     * ничего не меняем.
+     *
+     * Placeholder остаётся на последней
+     * подтверждённой позиции и не перескакивает
+     * в конец списка.
+     */
     if (
         !targetCard
     ) {
-        placePlaceholderAtEnd(
-            placeholder,
-            dropZone
-        );
-
-        const layout =
-            currentLayoutGetter?.();
-
-        const targetIds =
-            Array.isArray(
-                layout?.[targetTier]
-            )
-                ? layout[targetTier]
-                : [];
-
-        currentDragState.placement = {
-            tier: targetTier,
-            index: targetIds.length
-        };
-
         return;
     }
+
 
     const targetGameId =
         String(
@@ -717,36 +706,6 @@ function getNextGameCard(
  * =========================================================
  */
 
-function placePlaceholderAtEnd(
-    placeholder,
-    dropZone
-) {
-    const lastElement =
-        dropZone.lastElementChild;
-
-    /*
-     * Placeholder уже находится последним.
-     */
-    if (
-        placeholder.parentElement === dropZone &&
-        lastElement === placeholder
-    ) {
-        return;
-    }
-
-    animateDropZoneChange(
-        dropZone,
-        () => {
-            dropZone.appendChild(
-                placeholder
-            );
-
-            showPlaceholder(
-                placeholder
-            );
-        }
-    );
-}
 
 
 function placePlaceholderBefore(
@@ -755,15 +714,33 @@ function placePlaceholderBefore(
     referenceCard
 ) {
     /*
-     * Если карточки справа нет,
-     * ставим placeholder в конец.
+     * Если referenceCard отсутствует,
+     * значит placeholder должен находиться
+     * после последней карточки.
      */
     if (
         !referenceCard
     ) {
-        placePlaceholderAtEnd(
-            placeholder,
-            dropZone
+        const lastElement =
+            dropZone.lastElementChild;
+
+        if (
+            lastElement === placeholder
+        ) {
+            return;
+        }
+
+        animateDropZoneChange(
+            dropZone,
+            () => {
+                dropZone.appendChild(
+                    placeholder
+                );
+
+                showPlaceholder(
+                    placeholder
+                );
+            }
         );
 
         return;
@@ -794,7 +771,6 @@ function placePlaceholderBefore(
         }
     );
 }
-
 
 function showPlaceholder(
     placeholder
