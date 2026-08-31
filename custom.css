@@ -434,6 +434,20 @@
  * Корзина
  * =========================================================
  */
+/*
+ * Корзина нужна только как цель во время drag-and-drop.
+ */
+body.custom-mode-edit .custom-trash-section {
+    display: none;
+}
+
+body.custom-mode-edit.custom-drag-active
+.custom-trash-section {
+    display: block;
+}
+body.custom-mode-view .custom-trash-section {
+    display: none;
+}
 
 .custom-trash-section {
     margin: 0 0 16px;
@@ -572,6 +586,9 @@
     background: #f8fafc;
     border-top: 1px solid var(--color-border);
     border-radius: 0 0 var(--radius-md) var(--radius-md);
+}
+.custom-removed-games-container[hidden] {
+    display: none;
 }
 
 .custom-removed-games-container:empty::before {
@@ -768,6 +785,48 @@ body.custom-mode-edit .custom-games-container .game-card {
     flex-basis: 142px;
 
     width: 142px;
+}
+/*
+ * Компактные карточки редактора используют
+ * однострочное название, чтобы не занимать место.
+ */
+body.custom-mode-edit
+.custom-games-container
+.game-title {
+    display: block;
+
+    width: calc(100% - 12px);
+    margin: 4px auto 3px;
+    overflow: hidden;
+
+    font-size: 11px;
+    line-height: 1.2;
+    text-align: center;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+
+    -webkit-line-clamp: unset;
+}
+/*
+ * Во время редактирования карточка используется для drag-and-drop.
+ * Popup предпросмотра не должен открываться и перекрывать drop-зоны.
+ */
+body.custom-mode-edit
+.custom-games-container
+.game-preview-popup {
+    display: none !important;
+}
+
+body.custom-mode-edit
+.custom-games-container
+.game-card {
+    cursor: grab;
+}
+
+body.custom-mode-edit
+.custom-games-container
+.game-card:active {
+    cursor: grabbing;
 }
 
 body.custom-mode-edit .custom-drop-placeholder {
