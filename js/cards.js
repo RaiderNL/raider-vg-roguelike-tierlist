@@ -19,8 +19,12 @@ import {
 
 
 export function createGameCard(
-    game
+    game,
+    {
+        videoFilterActive = false
+    } = {}
 ) {
+
     const card =
         document.createElement(
             'article'
@@ -51,8 +55,10 @@ export function createGameCard(
         );
 
     const description =
+        game['Comment'] ||
         game['Description'] ||
         '';
+
 
     const gameTags =
         getGameTags(
@@ -127,10 +133,14 @@ export function createGameCard(
                 name,
                 cover,
                 steamLink,
-                video,
+                video:
+                    videoFilterActive
+                        ? ''
+                        : video,
                 steamImage,
                 description
             })
+
         );
     }
 
