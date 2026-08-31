@@ -175,6 +175,23 @@ function handleDragOver(
     dropZone.classList.add(
         'is-drop-target'
     );
+    const targetContainer = getDropContainer(event);
+
+    if (!targetContainer) {
+        return;
+    }
+    
+    const beforeElement = getInsertBeforeElement(event, targetContainer);
+    
+    if (
+        placeholder.parentElement === targetContainer &&
+        placeholder.nextElementSibling === beforeElement
+    ) {
+        return;
+    }
+    
+    targetContainer.insertBefore(placeholder, beforeElement);
+
 
     updateDropPlaceholder(
         event,
