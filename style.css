@@ -1479,6 +1479,13 @@ body {
  * Левая кликабельная область возврата наверх
  * для десктопной версии.
  */
+/*
+ * Кнопка возврата наверх.
+ *
+ * На больших экранах используется левая область.
+ * На небольших разрешениях она заменяется компактной
+ * кнопкой со стрелкой, чтобы не перекрывать тир-лист.
+ */
 .back-to-top {
     position: fixed;
     top: 0;
@@ -1490,12 +1497,12 @@ body {
     align-items: center;
     justify-content: center;
 
-    width: clamp(110px, 6vw, 150px);
+    width: clamp(120px, 6vw, 160px);
     height: 100vh;
     padding: 0;
     overflow: hidden;
 
-    color: #2563eb;
+    color: #6b7280;
     font: inherit;
     font-size: 14px;
     font-weight: 700;
@@ -1510,12 +1517,12 @@ body {
     pointer-events: none;
 
     transition:
-        opacity 0.25s ease,
-        visibility 0.25s ease;
+        opacity 0.3s ease,
+        visibility 0.3s ease;
 }
 
 /*
- * Плавный слой подсветки всей области.
+ * Плавный слой подсветки левой области.
  */
 .back-to-top::before {
     content: '';
@@ -1526,27 +1533,35 @@ body {
 
     background: linear-gradient(
         90deg,
-        rgb(37 99 235 / 18%),
-        rgb(37 99 235 / 8%),
-        rgb(37 99 235 / 2%),
+        rgb(37 99 235 / 15%),
+        rgb(37 99 235 / 7%),
         transparent
     );
 
     opacity: 0;
 
     transition:
-        opacity 0.4s ease;
+        opacity 0.45s ease;
 }
 
 /*
- * Стрелка скрыта — используется текст «Наверх».
+ * Область активна после прокрутки.
+ */
+.back-to-top.is-visible {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+}
+
+/*
+ * В десктопной версии стрелка скрыта.
  */
 .back-to-top span:first-child {
     display: none;
 }
 
 /*
- * Надпись видна после прокрутки.
+ * Надпись «Наверх».
  */
 .back-to-top span:last-child {
     position: relative;
@@ -1561,9 +1576,6 @@ body {
     line-height: 1;
     white-space: nowrap;
 
-    opacity: 1;
-    transform: scale(1);
-
     transition:
         color 0.35s ease,
         transform 0.35s ease,
@@ -1571,44 +1583,22 @@ body {
 }
 
 /*
- * Область появляется после прокрутки.
- */
-.back-to-top.is-visible {
-    opacity: 1;
-    visibility: visible;
-    pointer-events: auto;
-}
-
-/*
- * Плавная подсветка всей левой области.
+ * Подсветка всей области и текста.
  */
 .back-to-top.is-visible:hover::before {
     opacity: 1;
 }
 
-/*
- * Выделение надписи при наведении.
- */
 .back-to-top.is-visible:hover span:last-child {
     color: #2563eb;
     text-shadow: 0 2px 8px rgb(37 99 235 / 20%);
     transform: scale(1.08);
 }
 
-/*
- * Небольшое затемнение при нажатии.
- */
-.back-to-top.is-visible:active::before {
-    opacity: 0.7;
-}
-
 .back-to-top.is-visible:active span:last-child {
     transform: scale(1.02);
 }
 
-/*
- * Фокус с клавиатуры.
- */
 .back-to-top:focus-visible {
     outline: 3px solid rgb(37 99 235 / 35%);
     outline-offset: -5px;
@@ -1623,7 +1613,108 @@ body {
 }
 
 /*
- * На мобильных кнопка полностью отключена.
+ * Средние десктопные разрешения.
+ *
+ * Боковая область становится уже, а надпись
+ * разворачивается вертикально.
+ *
+ * На этих разрешениях левое поле всё ещё достаточно
+ * для узкой области и она не заходит на тир-лист.
+ */
+@media (min-width: 1200px) and (max-width: 1539px) {
+    .back-to-top {
+        width: 54px;
+    }
+
+    .back-to-top span:last-child {
+        writing-mode: vertical-rl;
+        transform: rotate(180deg);
+    }
+
+    .back-to-top.is-visible:hover span:last-child {
+        transform: rotate(180deg) scale(1.08);
+    }
+
+    .back-to-top.is-visible:active span:last-child {
+        transform: rotate(180deg) scale(1.02);
+    }
+}
+
+/*
+ * Небольшие десктопные разрешения.
+ *
+ * Свободного места слева уже недостаточно, поэтому
+ * боковая область полностью заменяется маленькой
+ * плавающей кнопкой со стрелкой.
+ */
+@media (min-width: 901px) and (max-width: 1199px) {
+    .back-to-top {
+        top: auto;
+        right: 18px;
+        bottom: 18px;
+        left: auto;
+
+        width: 42px;
+        height: 42px;
+
+        color: #fff;
+
+        background: #20232a;
+        border: 1px solid rgb(255 255 255 / 18%);
+        border-radius: 50%;
+        box-shadow: 0 4px 12px rgb(0 0 0 / 22%);
+
+        transform: translateY(10px) scale(0.9);
+
+        transition:
+            opacity 0.25s ease,
+            visibility 0.25s ease,
+            transform 0.25s ease,
+            background 0.25s ease,
+            box-shadow 0.25s ease;
+    }
+
+    .back-to-top::before {
+        display: none;
+    }
+
+    .back-to-top span:first-child {
+        display: block;
+
+        color: #fff;
+        font-size: 22px;
+        font-weight: 400;
+        line-height: 1;
+
+        transform: translateY(-1px);
+    }
+
+    .back-to-top span:last-child {
+        display: none;
+    }
+
+    .back-to-top.is-visible {
+        transform: translateY(0) scale(1);
+    }
+
+    .back-to-top.is-visible:hover {
+        background: #303641;
+        box-shadow: 0 6px 16px rgb(0 0 0 / 30%);
+        transform: translateY(-2px) scale(1.06);
+    }
+
+    .back-to-top.is-visible:active {
+        transform: translateY(0) scale(0.96);
+    }
+
+    .back-to-top:focus-visible {
+        outline-offset: 3px;
+    }
+}
+
+/*
+ * На мобильных кнопка отключена.
+ * Мобильная версия приложения не изменяется.
  */
 @media (max-width: 900px) {
     .back-to-top {
@@ -1632,8 +1723,7 @@ body {
 }
 
 /*
- * Отключение анимации при системной настройке
- * уменьшения движения.
+ * Уменьшение движения.
  */
 @media (prefers-reduced-motion: reduce) {
     .back-to-top,
