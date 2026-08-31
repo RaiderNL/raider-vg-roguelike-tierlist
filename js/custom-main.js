@@ -27,7 +27,6 @@ let currentLayout = null;
 let isSharedLayout = false;
 let currentMode = 'edit';
 
-let dragAndDropInitialized = false;
 
 
 const tierContainers = {};
@@ -44,6 +43,8 @@ async function init() {
 
     setupModeSwitcher();
     setupControls();
+    setupRemovedGamesToggle();
+
 
     try {
         games =
@@ -433,6 +434,49 @@ function setupControls() {
     );
 }
 
+function setupRemovedGamesToggle() {
+    const toggleButton =
+        document.querySelector(
+            '#custom-removed-games-toggle'
+        );
+
+    const removedContainer =
+        document.querySelector(
+            '#custom-removed-games-container'
+        );
+
+    if (
+        !toggleButton ||
+        !removedContainer
+    ) {
+        return;
+    }
+
+    toggleButton.addEventListener(
+        'click',
+        () => {
+            const isExpanded =
+                toggleButton.getAttribute(
+                    'aria-expanded'
+                ) === 'true';
+
+            toggleButton.setAttribute(
+                'aria-expanded',
+                String(
+                    !isExpanded
+                )
+            );
+
+            removedContainer.hidden =
+                isExpanded;
+
+            toggleButton.textContent =
+                isExpanded
+                    ? 'Показать скрытые игры'
+                    : 'Скрыть скрытые игры';
+        }
+    );
+}
 
 /*
  * Заполняем фильтр жанров.
@@ -618,8 +662,6 @@ function renderCustomTierList() {
 
         });
 
-        dragAndDropInitialized =
-            true;
     }
 }
 
@@ -677,6 +719,27 @@ function updateRemovedCounters() {
                 removedCount
             );
     }
+    const removedGamesToggle =
+    document.querySelector(
+        '#custom-removed-games-toggle'
+    );
+
+    if (
+        removedGamesToggle
+    ) {
+        const isExpanded =
+            removedGamesToggle.getAttribute(
+                'aria-expanded'
+            ) === 'true';
+    
+        removedGamesToggle.textContent =
+            removedCount > 0
+                ? isExpanded
+                    ? 'Скрыть скрытые игры'
+                    : `Показать скрытые игры (${removedCount})`
+                : 'Скрытые игры отсутствуют';
+    }
+
 }
 
 
