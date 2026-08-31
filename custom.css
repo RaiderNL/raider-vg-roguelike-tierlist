@@ -1064,15 +1064,38 @@ body.custom-mode-edit
     border-radius: var(--radius-round);
     box-shadow: 0 2px 6px rgb(0 0 0 / 28%);
 
-    opacity: 1;
-    visibility: visible;
+opacity: 0;
+visibility: hidden;
+pointer-events: none;
+
 
     transform: none;
 
-    transition:
-        background 0.2s ease,
-        border-color 0.2s ease,
-        transform 0.2s ease;
+transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    opacity 0.2s ease,
+    visibility 0.2s ease,
+    transform 0.2s ease;
+
+}
+/*
+ * Информация появляется одновременно
+ * со звёздочкой при наведении на карточку.
+ */
+
+body.custom-mode-edit
+.custom-games-container
+.game-card:hover
+.game-info-button,
+
+body.custom-mode-edit
+.custom-games-container
+.game-card:focus-within
+.game-info-button {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
 }
 
 body.custom-mode-edit
