@@ -1068,6 +1068,96 @@ body {
         width: min(285px, calc(100vw - 16px));
         padding: 10px;
     }
+        .game-preview-popup.game-preview-popup-mobile-modal {
+        position: fixed;
+        top: 50% !important;
+        left: 50% !important;
+        z-index: 100003;
+
+        width: min(440px, calc(100vw - 28px));
+        max-height: calc(100dvh - 28px);
+        padding: 46px 12px 12px;
+        overflow-x: hidden;
+        overflow-y: auto;
+
+        transform: translate(-50%, -50%);
+
+        overscroll-behavior: contain;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .game-preview-popup.game-preview-popup-mobile-modal.game-preview-popup-with-description.game-preview-popup-with-actions {
+        flex-direction: column;
+
+        width: min(440px, calc(100vw - 28px));
+    }
+
+    .game-preview-popup.game-preview-popup-mobile-modal::after {
+        display: none;
+    }
+
+    .game-preview-popup-mobile-modal .preview-description {
+        flex: 0 0 auto;
+
+        min-height: 0;
+        padding: 28px 24px 30px;
+
+        font-size: 14px;
+        line-height: 1.45;
+        aspect-ratio: auto;
+    }
+
+    .game-preview-popup-mobile-modal .preview-actions {
+        flex: 0 0 auto;
+    }
+
+    .game-preview-popup-mobile-modal .preview-image {
+        height: auto;
+        aspect-ratio: 16 / 9;
+    }
+
+    .game-preview-close {
+        display: inline-flex;
+    }
+    .game-preview-close {
+        position: absolute;
+        top: 9px;
+        right: 9px;
+        z-index: 2;
+    
+        display: none;
+        align-items: center;
+        justify-content: center;
+    
+        width: 28px;
+        height: 28px;
+        padding: 0;
+    
+        color: #fff;
+        font-size: 26px;
+        line-height: 1;
+    
+        cursor: pointer;
+    
+        background: rgb(255 255 255 / 12%);
+        border: 1px solid rgb(255 255 255 / 22%);
+        border-radius: 50%;
+    
+        transition:
+            background 0.2s ease,
+            transform 0.2s ease;
+    }
+    
+    .game-preview-close:hover {
+        background: rgb(255 255 255 / 24%);
+        transform: scale(1.08);
+    }
+    
+    .game-preview-close:focus-visible {
+        outline: 3px solid rgb(232 199 102 / 75%);
+        outline-offset: 2px;
+    }
+
 
     /*
      * На узком экране содержимое popup
