@@ -8,6 +8,8 @@ let customCardsObserver = null;
 
 let layoutAnimationFrame = null;
 let placeholderAnimation = null;
+let placeholderAnimationFrame = null;
+
 
 
 /*
@@ -762,24 +764,84 @@ function animateDropZoneChange(
             '#custom-drop-placeholder'
         );
 
+    /*
+     * Если предыдущая анимация ещё идёт,
+     * фиксируем её текущее визуальное положение.
+     */
     const previousRect =
-        placeholder?.isConnected
-            ? placeholder.getBoundingClientRect()
-            : null;
+        capturePlaceholderRect(
+            placeholder
+        );
 
     animateCustomLayoutChange(
         root,
         change
     );
 
-    requestAnimationFrame(
-        () => {
-            animatePlaceholderMove(
-                placeholder,
-                previousRect
-            );
+    if (
+        placeholderAnimationFrame
+    ) {
+        cancelAnimationFrame(
+            placeholderAnimationFrame
+        );
+    }
+
+    placeholderAnimationFrame =
+        requestAnimationFrame(
+            () => {
+                placeholderAnimationFrame =
+                    null;
+
+                animatePlaceholderMove(
+                    placeholder,
+                    previousRect
+                );
+            }
+        );
+}
+
+function capturePlaceholderRect(
+    placeholder
+) {
+    if (
+        !placeholder ||
+        !placeholder.isConnected
+    ) {
+        return null;
+    }
+
+    const rect =
+        placeholder.getBoundingClientRect();
+
+    /*
+     * Перед новым измерением убираем старую
+     * transform-анимацию, иначе новая позиция
+     * будет рассчитана относительно промежуточного
+     * положения placeholder.
+     */
+    if (
+        placeholderAnimation
+    ) {
+        try {
+            placeholderAnimation.commitStyles();
+        } catch (
+            error
+        ) {
+            /*
+             * commitStyles может отсутствовать
+             * в некоторых старых браузерах.
+             */
         }
-    );
+
+        placeholderAnimation.cancel();
+        placeholderAnimation =
+            null;
+
+        placeholder.style.transform =
+            '';
+    }
+
+    return rect;
 }
 
 function animatePlaceholderMove(
@@ -806,9 +868,13 @@ function animatePlaceholderMove(
         previousRect.top -
         currentRect.top;
 
+    /*
+     * Если положение практически не изменилось,
+     * новую анимацию не запускаем.
+     */
     if (
-        Math.abs(deltaX) < 1 &&
-        Math.abs(deltaY) < 1
+        Math.abs(deltaX) < 2 &&
+        Math.abs(deltaY) < 2
     ) {
         return;
     }
@@ -817,13 +883,15 @@ function animatePlaceholderMove(
         placeholderAnimation
     ) {
         placeholderAnimation.cancel();
+        placeholderAnimation =
+            null;
     }
 
     placeholderAnimation =
         placeholder.animate(
             [
                 {
-                    opacity: 0.7,
+                    opacity: 0.72,
                     transform:
                         `translate(${deltaX}px, ${deltaY}px) scale(0.82)`
                 },
@@ -834,23 +902,44 @@ function animatePlaceholderMove(
                 }
             ],
             {
-                duration: 280,
+                duration: 220,
                 easing:
                     'cubic-bezier(0.22, 1, 0.36, 1)',
                 fill: 'both'
             }
         );
 
-    placeholderAnimation.onfinish =
+    const animation =
+        placeholderAnimation;
+
+    animation.onfinish =
         () => {
+            if (
+                placeholderAnimation !== animation
+            ) {
+                return;
+            }
+
             placeholder.style.transform =
                 '';
 
             placeholder.style.opacity =
                 '';
 
+            animation.cancel();
+
             placeholderAnimation =
                 null;
+        };
+
+    animation.oncancel =
+        () => {
+            if (
+                placeholderAnimation === animation
+            ) {
+                placeholderAnimation =
+                    null;
+            }
         };
 }
 
