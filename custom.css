@@ -1097,12 +1097,19 @@ body.custom-mode-view .custom-empty-message {
 
     .custom-drop-placeholder,
     body.custom-mode-edit
-    .custom-games-container
-    .custom-drop-placeholder {
-        flex-basis: calc(50% - 3px);
-        width: calc(50% - 3px);
-        min-height: 100px;
-    }
+.custom-games-container
+.custom-drop-placeholder {
+    flex: 0 0 142px;
+
+    width: 142px;
+    min-height: 180px;
+
+    pointer-events: none;
+
+    background: rgb(37 99 235 / 8%);
+    border-radius: var(--radius-sm);
+}
+
 }
 
 
