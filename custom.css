@@ -766,6 +766,7 @@ body.custom-drag-active
     flex: 0 0 142px;
 
     width: 142px;
+    height: 142px;
     min-height: 142px;
     box-sizing: border-box;
 
@@ -776,19 +777,6 @@ body.custom-drag-active
     border-radius: var(--radius-sm);
 }
 
-
-
-body.custom-mode-edit
-.custom-games-container
-.custom-drop-placeholder {
-    flex: 0 0 142px;
-
-    width: 142px;
-    min-height: 180px;
-
-    background: rgb(37 99 235 / 8%);
-    border-radius: var(--radius-sm);
-}
 
 
 /*
