@@ -1655,18 +1655,57 @@ async function downloadCustomScreenshot() {
     if (
         button
     ) {
-        button.disabled =
-            true;
-
+        button.disabled = true;
         button.textContent =
             'Создание скриншота…';
     }
 
-    /*
-     * Popup не должен попасть
-     * в изображение.
-     */
     closeAllPreviews();
+
+    /*
+     * Дожидаемся загрузки обложек.
+     */
+    const images =
+        Array.from(
+            tierList.querySelectorAll(
+                'img'
+            )
+        );
+
+    await Promise.all(
+        images.map(
+            image => {
+                if (
+                    image.complete
+                ) {
+                    return image.decode?.()
+                        .catch(
+                            () => {}
+                        );
+                }
+
+                return new Promise(
+                    resolve => {
+                        image.addEventListener(
+                            'load',
+                            resolve,
+                            {
+                                once: true
+                            }
+                        );
+
+                        image.addEventListener(
+                            'error',
+                            resolve,
+                            {
+                                once: true
+                            }
+                        );
+                    }
+                );
+            }
+        )
+    );
 
     try {
         const canvas =
@@ -1676,17 +1715,15 @@ async function downloadCustomScreenshot() {
                     backgroundColor:
                         '#f3f4f6',
 
-                    scale:
-                        Math.min(
-                            2,
-                            window.devicePixelRatio ||
-                            1
-                        ),
+                    scale: 2,
 
                     useCORS:
                         true,
 
                     allowTaint:
+                        false,
+
+                    foreignObjectRendering:
                         false,
 
                     logging:
@@ -1699,15 +1736,179 @@ async function downloadCustomScreenshot() {
                         0,
 
                     scrollY:
-                        -window.scrollY,
+                        0,
 
-                    windowWidth:
-                        document.documentElement
-                            .scrollWidth,
+                    onclone:
+                        clonedDocument => {
+                            const clonedTierList =
+                                clonedDocument.querySelector(
+                                    '.custom-tier-list'
+                                );
 
-                    windowHeight:
-                        document.documentElement
-                            .scrollHeight
+                            if (
+                                !clonedTierList
+                            ) {
+                                return;
+                            }
+
+                            /*
+                             * Специальный режим рендера
+                             * только для клона.
+                             */
+                            clonedTierList.classList.add(
+                                'custom-screenshot-render'
+                            );
+
+                            const style =
+                                clonedDocument.createElement(
+                                    'style'
+                                );
+
+                            style.textContent = `
+                                /*
+                                 * Отключаем все эффекты,
+                                 * которые могут менять геометрию.
+                                 */
+                                *,
+                                *::before,
+                                *::after {
+                                    animation: none !important;
+                                    transition: none !important;
+                                }
+
+                                /*
+                                 * Убираем смещения карточек
+                                 * от hover/active-состояний.
+                                 */
+                                .custom-screenshot-render
+                                .game-card,
+                                .custom-screenshot-render
+                                .game-card:hover,
+                                .custom-screenshot-render
+                                .game-card:focus,
+                                .custom-screenshot-render
+                                .game-card:focus-within {
+                                    transform: none !important;
+                                    translate: none !important;
+                                    rotate: none !important;
+                                    scale: none !important;
+
+                                    opacity: 1 !important;
+                                    filter: none !important;
+                                }
+
+                                /*
+                                 * Убираем тени, из-за которых
+                                 * появляются светлые ореолы
+                                 * между карточками.
+                                 */
+                                .custom-screenshot-render
+                                .game-card {
+                                    box-shadow: none !important;
+                                }
+
+                                .custom-screenshot-render
+                                .custom-tier-row {
+                                    box-shadow: none !important;
+                                    overflow: hidden !important;
+                                }
+
+                                /*
+                                 * У контейнеров не должно быть
+                                 * выхода содержимого наружу.
+                                 */
+                                .custom-screenshot-render
+                                .custom-games-container {
+                                    overflow: hidden !important;
+                                }
+
+                                /*
+                                 * Убираем drag-состояния
+                                 * и placeholder.
+                                 */
+                                .custom-screenshot-render
+                                .is-dragging,
+                                .custom-screenshot-render
+                                .custom-drop-placeholder {
+                                    display: none !important;
+                                }
+
+                                /*
+                                 * Убираем интерактивные элементы
+                                 * со скриншота.
+                                 */
+                                .custom-screenshot-render
+                                .favorite-button,
+                                .custom-screenshot-render
+                                .game-info-button,
+                                .custom-screenshot-render
+                                .game-preview-popup {
+                                    display: none !important;
+                                }
+
+                                /*
+                                 * Фиксируем геометрию flex-элементов.
+                                 */
+                                .custom-screenshot-render
+                                .custom-games-container
+                                .game-card {
+                                    flex-shrink: 0 !important;
+                                }
+
+                                /*
+                                 * Не даём изображениям
+                                 * влиять на размеры карточек.
+                                 */
+                                .custom-screenshot-render
+                                .game-cover {
+                                    transform: none !important;
+                                    display: block !important;
+                                }
+
+                                /*
+                                 * Сохраняем цвета тир-листа
+                                 * без белых промежутков.
+                                 */
+                                .custom-screenshot-render
+                                .custom-tier-row-s {
+                                    background: #fffcf1 !important;
+                                }
+
+                                .custom-screenshot-render
+                                .custom-tier-row-a {
+                                    background: #fff9f5 !important;
+                                }
+
+                                .custom-screenshot-render
+                                .custom-tier-row-b {
+                                    background: #fffdf5 !important;
+                                }
+
+                                .custom-screenshot-render
+                                .custom-tier-row-c {
+                                    background: #f8fcf5 !important;
+                                }
+
+                                .custom-screenshot-render
+                                .custom-tier-row-d {
+                                    background: #f5fbfd !important;
+                                }
+
+                                .custom-screenshot-render
+                                .custom-tier-row-e {
+                                    background: #faf9fd !important;
+                                }
+
+                                .custom-screenshot-render
+                                .custom-tier-row-f {
+                                    background: #f7f9fc !important;
+                                }
+                            `;
+
+                            clonedDocument.head.appendChild(
+                                style
+                            );
+                        }
                 }
             );
 
@@ -1733,7 +1934,7 @@ async function downloadCustomScreenshot() {
         error
     ) {
         console.error(
-            'Не удалось создать скриншот:',
+            'Ошибка создания скриншота:',
             error
         );
 
@@ -1744,9 +1945,7 @@ async function downloadCustomScreenshot() {
         if (
             button
         ) {
-            button.disabled =
-                false;
-
+            button.disabled = false;
             button.textContent =
                 'Скачать скриншот';
         }
