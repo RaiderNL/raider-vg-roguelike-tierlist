@@ -38,7 +38,7 @@ body {
 }
 
 /*
- * Панель управления.
+ * Панель фильтров.
  */
 .controls {
     display: flex;
@@ -86,23 +86,15 @@ body {
     box-shadow: 0 0 0 3px rgb(37 99 235 / 15%);
 }
 
-.search-group {
-    flex: 0 0 180px;
-    width: 180px;
-    min-width: 180px;
-}
-
-.search-group input {
-    width: 180px;
-}
-
-
+.search-group,
 .filter-group {
     flex: 0 0 180px;
+
     width: 180px;
     min-width: 180px;
 }
 
+.search-group input,
 .filter-group select {
     width: 180px;
 }
@@ -128,7 +120,7 @@ body {
     min-height: 38px;
     padding: 7px 12px;
 
-    color: #374151 !important;
+    color: #374151;
     font-size: 14px;
     font-weight: 700;
     line-height: 1;
@@ -137,11 +129,7 @@ body {
     cursor: pointer;
     user-select: none;
 
-    background: linear-gradient(
-        135deg,
-        #fffdf5 0%,
-        #f8f1d8 100%
-    ) !important;
+    background: #fffdf5;
     border: 1px solid #e8c766;
     border-radius: 10px;
     box-shadow:
@@ -157,13 +145,9 @@ body {
 }
 
 .price-mode-toggle:hover {
-    color: #1f2937 !important;
+    color: #1f2937;
 
-    background: linear-gradient(
-        135deg,
-        #fffef8 0%,
-        #f6ebc3 100%
-    ) !important;
+    background: #fff9df;
     border-color: #c99f25;
     box-shadow:
         0 4px 10px rgb(0 0 0 / 15%),
@@ -181,7 +165,6 @@ body {
 
     width: 1px;
     height: 1px;
-
     margin: 0;
 
     opacity: 0;
@@ -232,11 +215,11 @@ body {
 }
 
 .price-mode-label {
-    color: inherit !important;
+    color: inherit;
 }
 
 /*
- * Компоновка тир-листа и панели выбранного видео.
+ * Компоновка тир-листа и панели видео.
  */
 .tier-list-layout {
     display: block;
@@ -275,13 +258,6 @@ body {
 }
 
 /*
- * Открытый popup должен быть выше остальных тиров.
- */
-.tier-row-active,
-.tier-row:has(.game-card:not(.preview-closed)) {
-    z-index: 100000;
-}
-/*
  * Едва заметный оттенок фона для каждого тира.
  */
 .tier-row:has(.tier-s) {
@@ -310,6 +286,14 @@ body {
 
 .tier-row:has(.tier-f) {
     background: #f7f9fc;
+}
+
+/*
+ * Открытый popup должен быть выше остальных тиров.
+ */
+.tier-row-active,
+.tier-row:has(.game-card:not(.preview-closed)) {
+    z-index: 100000;
 }
 
 .tier-label {
@@ -392,7 +376,7 @@ body {
 }
 
 /*
- * Карточка игры.
+ * Карточки игр.
  */
 .game-card {
     position: relative;
@@ -496,6 +480,9 @@ body {
     border-radius: 4px;
 }
 
+/*
+ * Плашки цен.
+ */
 .game-price {
     position: absolute;
     right: 5px;
@@ -511,6 +498,7 @@ body {
 
     min-height: 24px;
     padding: 4px 6px;
+    overflow: hidden;
 
     color: #fff;
     font-size: 12px;
@@ -520,6 +508,40 @@ body {
     background: rgb(32 35 42 / 94%);
     border-radius: 5px;
     box-shadow: 0 1px 4px rgb(0 0 0 / 25%);
+
+    animation: price-panel-appear 280ms ease-out both;
+}
+
+.game-price.game-price-hiding {
+    animation: price-panel-disappear 220ms ease-in both;
+}
+
+.game-price::after {
+    content: '';
+
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: -70%;
+
+    width: 45%;
+
+    pointer-events: none;
+
+    background: linear-gradient(
+        105deg,
+        transparent,
+        rgb(255 255 255 / 18%),
+        transparent
+    );
+
+    animation: price-panel-shine 650ms ease-out 120ms both;
+}
+
+.game-price.game-price-hiding::after {
+    opacity: 0;
+
+    animation: none;
 }
 
 .game-price-current {
@@ -562,8 +584,42 @@ body {
     display: none;
 }
 
+@keyframes price-panel-appear {
+    from {
+        opacity: 0;
+        transform: translateY(6px) scale(0.97);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+@keyframes price-panel-disappear {
+    from {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+
+    to {
+        opacity: 0;
+        transform: translateY(6px) scale(0.97);
+    }
+}
+
+@keyframes price-panel-shine {
+    from {
+        left: -70%;
+    }
+
+    to {
+        left: 130%;
+    }
+}
+
 /*
- * Popup карточки.
+ * Popup карточки на десктопе.
  */
 .game-preview-popup {
     position: absolute;
@@ -604,6 +660,51 @@ body {
     width: min(330px, calc(100vw - 16px));
 }
 
+/*
+ * Кнопка существует в DOM на всех экранах,
+ * но на десктопе всегда скрыта.
+ */
+.game-preview-close {
+    position: absolute;
+    top: 9px;
+    right: 9px;
+    z-index: 3;
+
+    display: none;
+
+    width: 28px;
+    height: 28px;
+    padding: 0;
+
+    color: #fff;
+    font: inherit;
+    font-size: 26px;
+    line-height: 1;
+
+    cursor: pointer;
+
+    background: rgb(255 255 255 / 12%);
+    border: 1px solid rgb(255 255 255 / 22%);
+    border-radius: 50%;
+
+    transition:
+        background 0.2s ease,
+        transform 0.2s ease;
+}
+
+.game-preview-close:hover {
+    background: rgb(255 255 255 / 24%);
+    transform: scale(1.08);
+}
+
+.game-preview-close:focus-visible {
+    outline: 3px solid rgb(232 199 102 / 75%);
+    outline-offset: 2px;
+}
+
+/*
+ * При выбранном видео popup карточек скрыт.
+ */
 .tier-list-layout.video-filter-active
 .game-preview-popup {
     display: none !important;
@@ -675,9 +776,6 @@ body {
     height: 14px;
 }
 
-/*
- * Ссылки Steam и YouTube.
- */
 .preview-actions {
     display: flex;
     flex: 1 1 0;
@@ -864,6 +962,7 @@ body {
 
     color: #fff;
     font-size: 42px;
+
     background: #30343d;
 }
 
@@ -877,9 +976,6 @@ body {
     text-align: center;
 }
 
-/*
- * Сообщение об ошибке загрузки.
- */
 .loading-error {
     width: 100%;
     padding: 20px;
@@ -933,7 +1029,7 @@ body {
 }
 
 /*
- * Мобильные устройства.
+ * Мобильная версия.
  */
 @media (max-width: 600px) {
     .site-header {
@@ -956,18 +1052,16 @@ body {
         margin-bottom: 16px;
     }
 
-    .control-group {
-        width: 100%;
-        min-width: 0;
-    }
-
+    .control-group,
     .search-group,
     .filter-group {
         flex: 0 0 auto;
+
         width: 100%;
         min-width: 0;
     }
 
+    .search-group input,
     .filter-group select {
         width: 100%;
     }
@@ -1064,11 +1158,20 @@ body {
         font-size: 9px;
     }
 
+    /*
+     * Обычный popup на мобильном до его открытия.
+     */
     .game-preview-popup {
         width: min(285px, calc(100vw - 16px));
         padding: 10px;
     }
-        .game-preview-popup.game-preview-popup-mobile-modal {
+
+    /*
+     * Окно popup при нажатии на карточку.
+     * Оно всегда находится в центре экрана и прокручивается
+     * внутри, если содержимое выше доступной высоты.
+     */
+    .game-preview-popup.game-preview-popup-mobile-modal {
         position: fixed;
         top: 50% !important;
         left: 50% !important;
@@ -1096,7 +1199,22 @@ body {
         display: none;
     }
 
-    .game-preview-popup-mobile-modal .preview-description {
+    /*
+     * Крестик виден только у открытого мобильного окна.
+     */
+    .game-preview-popup-mobile-modal
+    .game-preview-close {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    /*
+     * Убираем квадратное ограничение цитаты на мобильном.
+     */
+    .game-preview-popup-mobile-modal .preview-description,
+    .game-preview-popup.game-preview-popup-with-description
+    .preview-description {
         flex: 0 0 auto;
 
         min-height: 0;
@@ -1114,68 +1232,6 @@ body {
     .game-preview-popup-mobile-modal .preview-image {
         height: auto;
         aspect-ratio: 16 / 9;
-    }
-
-    .game-preview-close {
-        display: inline-flex;
-    }
-    .game-preview-close {
-        position: absolute;
-        top: 9px;
-        right: 9px;
-        z-index: 2;
-    
-        display: none;
-        align-items: center;
-        justify-content: center;
-    
-        width: 28px;
-        height: 28px;
-        padding: 0;
-    
-        color: #fff;
-        font-size: 26px;
-        line-height: 1;
-    
-        cursor: pointer;
-    
-        background: rgb(255 255 255 / 12%);
-        border: 1px solid rgb(255 255 255 / 22%);
-        border-radius: 50%;
-    
-        transition:
-            background 0.2s ease,
-            transform 0.2s ease;
-    }
-    
-    .game-preview-close:hover {
-        background: rgb(255 255 255 / 24%);
-        transform: scale(1.08);
-    }
-    
-    .game-preview-close:focus-visible {
-        outline: 3px solid rgb(232 199 102 / 75%);
-        outline-offset: 2px;
-    }
-
-
-    /*
-     * На узком экране содержимое popup
-     * располагается вертикально.
-     */
-    .game-preview-popup.game-preview-popup-with-description.game-preview-popup-with-actions {
-        flex-direction: column;
-
-        width: min(285px, calc(100vw - 16px));
-    }
-
-    .game-preview-popup.game-preview-popup-with-description
-    .preview-description {
-        min-height: 130px;
-        padding: 26px 22px;
-
-        font-size: 14px;
-        aspect-ratio: auto;
     }
 
     .preview-image {
@@ -1227,90 +1283,23 @@ body {
         gap: 6px;
     }
 }
-/*
- * Плавное появление плашки цены.
- */
-.game-price {
-    position: absolute;
-    overflow: hidden;
-
-    animation: price-panel-appear 280ms ease-out both;
-}
-
-.game-price.game-price-hiding {
-    animation: price-panel-disappear 220ms ease-in both;
-}
-
-.game-price.game-price-hiding::after {
-    animation: none;
-    opacity: 0;
-}
-
-
-.game-price::after {
-    content: '';
-
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: -70%;
-
-    width: 45%;
-
-    pointer-events: none;
-
-    background: linear-gradient(
-        105deg,
-        transparent,
-        rgb(255 255 255 / 18%),
-        transparent
-    );
-
-    animation: price-panel-shine 650ms ease-out 120ms both;
-}
-
-@keyframes price-panel-appear {
-    from {
-        opacity: 0;
-        transform: translateY(6px) scale(0.97);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-    }
-}
-
-@keyframes price-panel-disappear {
-    from {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-    }
-
-    to {
-        opacity: 0;
-        transform: translateY(6px) scale(0.97);
-    }
-}
-
-@keyframes price-panel-shine {
-    from {
-        left: -70%;
-    }
-
-    to {
-        left: 130%;
-    }
-}
 
 /*
- * Пользователи с отключённой анимацией
- * не получают движущиеся элементы.
+ * Отключение анимаций для системной настройки
+ * "уменьшение движения".
  */
 @media (prefers-reduced-motion: reduce) {
     .game-price,
     .game-price::after {
         animation: none;
     }
-}
 
+    .price-mode-toggle,
+    .price-switch,
+    .price-switch-thumb,
+    .game-card,
+    .selected-video-link,
+    .game-preview-close {
+        transition: none;
+    }
+}
