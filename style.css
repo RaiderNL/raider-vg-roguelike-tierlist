@@ -1,4 +1,6 @@
-* {
+*,
+*::before,
+*::after {
     box-sizing: border-box;
 }
 
@@ -6,6 +8,14 @@ html,
 body {
     width: 100%;
     max-width: 100%;
+    overflow-x: hidden;
+}
+
+@supports (overflow-x: clip) {
+    html,
+    body {
+        overflow-x: clip;
+    }
 }
 
 body {
@@ -18,6 +28,8 @@ body {
 }
 
 .site-header {
+    width: 100%;
+    max-width: 100%;
     padding: 32px 20px;
 
     color: #fff;
@@ -40,6 +52,7 @@ body {
 
 .container {
     width: min(1300px, calc(100% - 32px));
+    max-width: 100%;
     margin: 24px auto;
 }
 
@@ -52,6 +65,7 @@ body {
     align-items: flex-end;
     gap: 16px;
 
+    max-width: 100%;
     margin-bottom: 24px;
     padding: 16px;
 
@@ -66,6 +80,7 @@ body {
     gap: 6px;
 
     min-width: 180px;
+    max-width: 100%;
 }
 
 .control-group label {
@@ -110,6 +125,8 @@ body {
     flex: 0 0 auto;
     align-items: flex-end;
     gap: 12px;
+
+    max-width: 100%;
 }
 
 /*
@@ -124,6 +141,7 @@ body {
     gap: 10px;
 
     min-height: 38px;
+    max-width: 100%;
     padding: 7px 12px;
 
     color: #374151;
@@ -229,10 +247,13 @@ body {
  */
 .tier-list-layout {
     display: block;
+    min-width: 0;
+    max-width: 100%;
 }
 
 .tier-list-layout .tier-list {
     min-width: 0;
+    max-width: 100%;
 }
 
 .tier-list-layout:has(.selected-video-panel.is-visible) {
@@ -248,6 +269,7 @@ body {
     gap: 8px;
 
     min-width: 0;
+    max-width: 100%;
 }
 
 .tier-row {
@@ -255,6 +277,7 @@ body {
     z-index: 0;
 
     display: flex;
+    min-width: 0;
     min-height: 150px;
     overflow: visible;
 
@@ -354,6 +377,7 @@ body {
     gap: 8px;
 
     min-width: 0;
+    max-width: 100%;
     padding: 12px;
     overflow: visible;
 }
@@ -385,6 +409,7 @@ body {
     flex-direction: column;
 
     width: 190px;
+    max-width: 100%;
     aspect-ratio: 1 / 1;
 
     background: #fff;
@@ -632,6 +657,7 @@ body {
     gap: 12px;
 
     width: min(330px, calc(100vw - 16px));
+    max-width: calc(100vw - 16px);
     padding: 12px;
 
     visibility: hidden;
@@ -887,6 +913,7 @@ body {
 
     display: none;
     width: 320px;
+    max-width: 100%;
     padding: 12px;
 
     background: #fff;
@@ -977,6 +1004,7 @@ body {
  * Подвал.
  */
 .site-footer {
+    max-width: 100%;
     padding: 24px;
 
     color: #666;
@@ -1000,6 +1028,200 @@ body {
     border-radius: 3px;
 }
 
+/*
+ * Кнопка возврата наверх.
+ *
+ * На широких экранах это левая кликабельная область.
+ * До 1349px используется только компактная стрелка,
+ * чтобы кнопка никогда не перекрывала тир-лист.
+ */
+.back-to-top {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 1000;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: clamp(120px, 6vw, 160px);
+    max-width: 100vw;
+    height: 100vh;
+    padding: 0;
+    overflow: hidden;
+
+    color: #6b7280;
+    font: inherit;
+    font-size: 14px;
+    font-weight: 700;
+
+    cursor: pointer;
+
+    background: transparent;
+    border: 0;
+
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+
+    transition:
+        opacity 0.3s ease,
+        visibility 0.3s ease;
+}
+
+.back-to-top::before {
+    content: '';
+
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+
+    background: linear-gradient(
+        90deg,
+        rgb(37 99 235 / 15%),
+        rgb(37 99 235 / 7%),
+        transparent
+    );
+
+    opacity: 0;
+
+    transition: opacity 0.45s ease;
+}
+
+.back-to-top.is-visible {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+}
+
+.back-to-top span:first-child {
+    display: none;
+}
+
+.back-to-top span:last-child {
+    position: relative;
+    z-index: 1;
+
+    display: block;
+
+    color: #6b7280;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    line-height: 1;
+    white-space: nowrap;
+
+    transition:
+        color 0.35s ease,
+        transform 0.35s ease,
+        text-shadow 0.35s ease;
+}
+
+.back-to-top.is-visible:hover::before {
+    opacity: 1;
+}
+
+.back-to-top.is-visible:hover span:last-child {
+    color: #2563eb;
+    text-shadow: 0 2px 8px rgb(37 99 235 / 20%);
+    transform: scale(1.08);
+}
+
+.back-to-top.is-visible:active span:last-child {
+    transform: scale(1.02);
+}
+
+.back-to-top:focus-visible {
+    outline: 3px solid rgb(37 99 235 / 35%);
+    outline-offset: -5px;
+}
+
+.back-to-top:focus-visible::before {
+    opacity: 1;
+}
+
+.back-to-top:focus-visible span:last-child {
+    color: #2563eb;
+}
+
+/*
+ * Средние и пограничные разрешения.
+ *
+ * Левая область полностью заменяется кнопкой
+ * уже до 1350px.
+ */
+@media (max-width: 1349px) {
+    .back-to-top {
+        top: auto;
+        right: max(14px, env(safe-area-inset-right));
+        bottom: max(14px, env(safe-area-inset-bottom));
+        left: auto;
+
+        width: 42px;
+        max-width: 42px;
+        height: 42px;
+        max-height: 42px;
+
+        color: #fff;
+
+        background: #20232a;
+        border: 1px solid rgb(255 255 255 / 18%);
+        border-radius: 50%;
+        box-shadow: 0 4px 12px rgb(0 0 0 / 22%);
+
+        transform: translateY(10px) scale(0.9);
+
+        transition:
+            opacity 0.25s ease,
+            visibility 0.25s ease,
+            transform 0.25s ease,
+            background 0.3s ease,
+            box-shadow 0.3s ease;
+    }
+
+    .back-to-top::before {
+        display: none;
+    }
+
+    .back-to-top span:first-child {
+        display: block;
+
+        color: #fff;
+        font-size: 22px;
+        font-weight: 400;
+        line-height: 1;
+        transform: translateY(-1px);
+    }
+
+    .back-to-top span:last-child {
+        display: none;
+    }
+
+    .back-to-top.is-visible {
+        transform: translateY(0) scale(1);
+    }
+
+    .back-to-top.is-visible:hover {
+        background: #303641;
+        box-shadow: 0 6px 16px rgb(0 0 0 / 30%);
+        transform: translateY(-2px) scale(1.06);
+    }
+
+    .back-to-top.is-visible:active {
+        transform: translateY(0) scale(0.96);
+    }
+
+    .back-to-top:focus-visible {
+        outline-offset: 3px;
+    }
+}
+
+/*
+ * На мобильных разрешениях кнопка также остаётся доступной:
+ * используется маленькая белая стрелка снизу экрана.
+ */
 @media (max-width: 900px) {
     .tier-list-layout,
     .tier-list-layout:has(.selected-video-panel.is-visible) {
@@ -1011,6 +1233,10 @@ body {
 
         width: 100%;
         margin-top: 16px;
+    }
+
+    .back-to-top {
+        display: flex;
     }
 }
 
@@ -1133,7 +1359,6 @@ body {
 
     /*
      * Мобильная карточка в режиме цен.
-     * Цена, название и обложка получают отдельные строки.
      */
     body.price-mode-active .game-card {
         display: grid;
@@ -1162,51 +1387,58 @@ body {
     }
 
     /*
-     * Метки не занимают отдельную строку.
-     * Они показываются поверх обложки справа сверху.
+     * Метки поверх обложки.
      */
     body.price-mode-active .game-card .game-tags {
-        position: absolute;
-        top: 4px;
-        right: 4px;
-        left: auto;
-        z-index: 10;
+        position: absolute !important;
+        top: 5px !important;
+        right: 5px !important;
+        bottom: auto !important;
+        left: auto !important;
+        z-index: 20 !important;
 
-        display: flex;
-        flex-direction: column;
-        align-items: flex-end;
-        gap: 3px;
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: flex-end !important;
+        justify-content: flex-start !important;
+        gap: 3px !important;
 
-        width: auto;
-        max-width: calc(100% - 8px);
-        max-height: calc(100% - 8px);
-        margin: 0;
-        padding: 0;
-        overflow: hidden;
+        width: max-content !important;
+        max-width: calc(100% - 10px) !important;
+        max-height: calc(100% - 10px) !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        overflow: hidden !important;
 
-        visibility: visible;
-        opacity: 1;
-        pointer-events: none;
+        visibility: visible !important;
+        opacity: 1 !important;
+        pointer-events: none !important;
     }
 
     body.price-mode-active .game-card .game-tag {
-        display: inline-block;
-        flex: 0 0 auto;
+        position: relative !important;
+        z-index: 21 !important;
+
+        display: block !important;
+        flex: 0 0 auto !important;
 
         max-width: 100%;
-        padding: 2px 4px;
+        padding: 2px 5px !important;
 
-        color: #fff;
-        font-size: 9px;
-        line-height: 1.15;
-        text-align: right;
-        text-shadow: 0 1px 2px rgb(0 0 0 / 60%);
-        overflow-wrap: anywhere;
+        color: #fff !important;
+        font-size: 9px !important;
+        line-height: 1.2 !important;
+        text-align: right !important;
+        text-shadow: 0 1px 2px rgb(0 0 0 / 70%) !important;
+        overflow-wrap: anywhere !important;
 
-        background: rgb(32 35 42 / 86%);
-        border: 1px solid rgb(255 255 255 / 18%);
-        border-radius: 3px;
-        box-shadow: 0 1px 3px rgb(0 0 0 / 25%);
+        visibility: visible !important;
+        opacity: 1 !important;
+
+        background: rgb(32 35 42 / 90%) !important;
+        border: 1px solid rgb(255 255 255 / 22%) !important;
+        border-radius: 3px !important;
+        box-shadow: 0 1px 3px rgb(0 0 0 / 35%) !important;
     }
 
     body.price-mode-active .game-price {
@@ -1382,11 +1614,11 @@ body {
 }
 
 @media (prefers-reduced-motion: reduce) {
+    .back-to-top,
+    .back-to-top::before,
+    .back-to-top span:last-child,
     .game-price,
-    .game-price::after {
-        animation: none;
-    }
-
+    .game-price::after,
     .price-mode-toggle,
     .price-switch,
     .price-switch-thumb,
@@ -1394,380 +1626,6 @@ body {
     .selected-video-link,
     .game-preview-close {
         transition: none;
+        animation: none;
     }
-}
-/*
- * Финальное переопределение меток в мобильном режиме цен.
- * Блок находится в конце файла, поэтому перекрывает
- * предыдущие правила карточек и тегов.
- */
-@media (max-width: 600px) {
-    body.price-mode-active .game-card {
-        isolation: isolate;
-    }
-
-    body.price-mode-active .game-card .game-cover {
-        position: relative;
-        z-index: 1;
-    }
-
-    body.price-mode-active .game-card .game-tags {
-        position: absolute !important;
-        top: 5px !important;
-        right: 5px !important;
-        bottom: auto !important;
-        left: auto !important;
-        z-index: 20 !important;
-
-        display: flex !important;
-        flex-direction: column !important;
-        align-items: flex-end !important;
-        justify-content: flex-start !important;
-        gap: 3px !important;
-
-        width: max-content !important;
-        max-width: calc(100% - 10px) !important;
-        max-height: calc(100% - 10px) !important;
-        margin: 0 !important;
-        padding: 0 !important;
-        overflow: hidden !important;
-
-        visibility: visible !important;
-        opacity: 1 !important;
-        pointer-events: none !important;
-    }
-
-    body.price-mode-active .game-card .game-tag {
-        position: relative !important;
-        z-index: 21 !important;
-
-        display: block !important;
-        flex: 0 0 auto !important;
-
-        max-width: 100% !important;
-        padding: 2px 5px !important;
-
-        color: #fff !important;
-        font-size: 9px !important;
-        line-height: 1.2 !important;
-        text-align: right !important;
-        text-shadow: 0 1px 2px rgb(0 0 0 / 70%) !important;
-        overflow-wrap: anywhere !important;
-
-        visibility: visible !important;
-        opacity: 1 !important;
-
-        background: rgb(32 35 42 / 90%) !important;
-        border: 1px solid rgb(255 255 255 / 22%) !important;
-        border-radius: 3px !important;
-        box-shadow: 0 1px 3px rgb(0 0 0 / 35%) !important;
-    }
-}
-/*
- * Кнопка возврата к началу страницы.
- * По умолчанию скрыта и включается только на десктопе.
- */
-/*
- * Левая область возврата наверх
- * в стиле десктопной версии VK.
- */
-/*
- * Левая кликабельная область возврата наверх
- * для десктопной версии.
- */
-/*
- * Левая кликабельная область возврата наверх
- * для десктопной версии.
- */
-/*
- * Кнопка возврата наверх.
- *
- * На больших экранах используется левая область.
- * На небольших разрешениях она заменяется компактной
- * кнопкой со стрелкой, чтобы не перекрывать тир-лист.
- */
-.back-to-top {
-    position: fixed;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    z-index: 1000;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    width: clamp(120px, 6vw, 160px);
-    height: 100vh;
-    padding: 0;
-    overflow: hidden;
-
-    color: #6b7280;
-    font: inherit;
-    font-size: 14px;
-    font-weight: 700;
-
-    cursor: pointer;
-
-    background: transparent;
-    border: 0;
-
-    opacity: 0;
-    visibility: hidden;
-    pointer-events: none;
-
-    transition:
-        opacity 0.3s ease,
-        visibility 0.3s ease;
-}
-
-/*
- * Плавный слой подсветки левой области.
- */
-.back-to-top::before {
-    content: '';
-
-    position: absolute;
-    inset: 0;
-    z-index: -1;
-
-    background: linear-gradient(
-        90deg,
-        rgb(37 99 235 / 15%),
-        rgb(37 99 235 / 7%),
-        transparent
-    );
-
-    opacity: 0;
-
-    transition:
-        opacity 0.45s ease;
-}
-
-/*
- * Область активна после прокрутки.
- */
-.back-to-top.is-visible {
-    opacity: 1;
-    visibility: visible;
-    pointer-events: auto;
-}
-
-/*
- * В десктопной версии стрелка скрыта.
- */
-.back-to-top span:first-child {
-    display: none;
-}
-
-/*
- * Надпись «Наверх».
- */
-.back-to-top span:last-child {
-    position: relative;
-    z-index: 1;
-
-    display: block;
-
-    color: #6b7280;
-    font-size: 14px;
-    font-weight: 700;
-    letter-spacing: 0.04em;
-    line-height: 1;
-    white-space: nowrap;
-
-    transition:
-        color 0.35s ease,
-        transform 0.35s ease,
-        text-shadow 0.35s ease;
-}
-
-/*
- * Подсветка всей области и текста.
- */
-.back-to-top.is-visible:hover::before {
-    opacity: 1;
-}
-
-.back-to-top.is-visible:hover span:last-child {
-    color: #2563eb;
-    text-shadow: 0 2px 8px rgb(37 99 235 / 20%);
-    transform: scale(1.08);
-}
-
-.back-to-top.is-visible:active span:last-child {
-    transform: scale(1.02);
-}
-
-.back-to-top:focus-visible {
-    outline: 3px solid rgb(37 99 235 / 35%);
-    outline-offset: -5px;
-}
-
-.back-to-top:focus-visible::before {
-    opacity: 1;
-}
-
-.back-to-top:focus-visible span:last-child {
-    color: #2563eb;
-}
-
-/*
- * Средние десктопные разрешения.
- *
- * Боковая область становится уже, а надпись
- * разворачивается вертикально.
- *
- * На этих разрешениях левое поле всё ещё достаточно
- * для узкой области и она не заходит на тир-лист.
- */
-@media (min-width: 1200px) and (max-width: 1539px) {
-    .back-to-top {
-        width: 54px;
-    }
-
-    .back-to-top span:last-child {
-        writing-mode: vertical-rl;
-        transform: rotate(180deg);
-    }
-
-    .back-to-top.is-visible:hover span:last-child {
-        transform: rotate(180deg) scale(1.08);
-    }
-
-    .back-to-top.is-visible:active span:last-child {
-        transform: rotate(180deg) scale(1.02);
-    }
-}
-
-/*
- * Небольшие десктопные разрешения.
- *
- * Свободного места слева уже недостаточно, поэтому
- * боковая область полностью заменяется маленькой
- * плавающей кнопкой со стрелкой.
- */
-@media (min-width: 901px) and (max-width: 1199px) {
-    .back-to-top {
-        top: auto;
-        right: 18px;
-        bottom: 18px;
-        left: auto;
-
-        width: 42px;
-        height: 42px;
-
-        color: #fff;
-
-        background: #20232a;
-        border: 1px solid rgb(255 255 255 / 18%);
-        border-radius: 50%;
-        box-shadow: 0 4px 12px rgb(0 0 0 / 22%);
-
-        transform: translateY(10px) scale(0.9);
-
-        transition:
-            opacity 0.25s ease,
-            visibility 0.25s ease,
-            transform 0.25s ease,
-            background 0.25s ease,
-            box-shadow 0.25s ease;
-    }
-
-    .back-to-top::before {
-        display: none;
-    }
-
-    .back-to-top span:first-child {
-        display: block;
-
-        color: #fff;
-        font-size: 22px;
-        font-weight: 400;
-        line-height: 1;
-
-        transform: translateY(-1px);
-    }
-
-    .back-to-top span:last-child {
-        display: none;
-    }
-
-    .back-to-top.is-visible {
-        transform: translateY(0) scale(1);
-    }
-
-    .back-to-top.is-visible:hover {
-        background: #303641;
-        box-shadow: 0 6px 16px rgb(0 0 0 / 30%);
-        transform: translateY(-2px) scale(1.06);
-    }
-
-    .back-to-top.is-visible:active {
-        transform: translateY(0) scale(0.96);
-    }
-
-    .back-to-top:focus-visible {
-        outline-offset: 3px;
-    }
-}
-
-/*
- * На мобильных кнопка отключена.
- * Мобильная версия приложения не изменяется.
- */
-@media (max-width: 900px) {
-    .back-to-top {
-        display: none;
-    }
-}
-
-/*
- * Уменьшение движения.
- */
-@media (prefers-reduced-motion: reduce) {
-    .back-to-top,
-    .back-to-top::before,
-    .back-to-top span:last-child {
-        transition: none;
-    }
-}
-/*
- * Полностью запрещаем горизонтальный скролл
- * на всех разрешениях.
- */
-html,
-body {
-    width: 100%;
-    max-width: 100%;
-    overflow-x: hidden;
-}
-
-/*
- * Современные браузеры используют clip:
- * содержимое обрезается без создания горизонтального
- * scroll-контейнера.
- */
-@supports (overflow-x: clip) {
-    html,
-    body {
-        overflow-x: clip;
-    }
-}
-
-/*
- * Все элементы не должны раздувать страницу
- * за пределы viewport.
- */
-*,
-*::before,
-*::after {
-    box-sizing: border-box;
-}
-
-/*
- * Дополнительная защита для плавающей кнопки.
- */
-.back-to-top {
-    max-width: 100vw;
 }
