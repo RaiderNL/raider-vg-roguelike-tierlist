@@ -1809,3 +1809,73 @@ body.custom-page.custom-mode-edit.custom-drag-active
         animation: none !important;
     }
 }
+/*
+ * =========================================================
+ * Единый вид панели фильтров
+ * =========================================================
+ */
+
+.custom-edit-controls {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+}
+
+.custom-filter-group {
+    display: flex;
+    flex: 1 1 220px;
+    flex-direction: column;
+    gap: 0;
+
+    min-width: 180px;
+}
+
+.custom-filter-label {
+    display: none;
+}
+
+.custom-search-input,
+.custom-tag-select {
+    height: var(--control-height);
+    min-height: var(--control-height);
+}
+
+.custom-edit-controls
+.favorites-filter-button,
+.custom-edit-controls
+.price-mode-toggle,
+.custom-edit-controls
+.filter-action-button {
+    align-self: center;
+    flex: 0 0 auto;
+}
+
+.custom-edit-controls
+.favorites-filter-button {
+    width: var(--control-height);
+    min-width: var(--control-height);
+    height: var(--control-height);
+}
+
+/*
+ * =========================================================
+ * Видимость кнопок по режимам
+ * =========================================================
+ */
+
+body.custom-mode-edit #custom-edit-actions {
+    display: flex;
+}
+
+body.custom-mode-edit #custom-view-actions {
+    display: none;
+}
+
+body.custom-mode-view #custom-edit-actions {
+    display: none;
+}
+
+body.custom-mode-view #custom-view-actions {
+    display: flex;
+}
