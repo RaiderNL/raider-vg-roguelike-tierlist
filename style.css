@@ -1734,7 +1734,7 @@ body.price-mode-active #tier-F .game-price-discount {
                 env(safe-area-inset-bottom)
             );
     }
-
+    
     .mobile-tier-navigation {
         position: fixed;
         right: 0;
@@ -1743,17 +1743,13 @@ body.price-mode-active #tier-F .game-price-discount {
         z-index: 1000;
     
         display: flex;
-        align-items: center;
+        align-items: stretch;
         justify-content: stretch;
-        gap: 6px;
+        gap: 0;
     
         width: 100%;
         min-height: 58px;
-        padding: 8px 10px
-            calc(
-                8px +
-                env(safe-area-inset-bottom)
-            );
+        padding: 0 0 env(safe-area-inset-bottom);
     
         background: rgb(255 255 255 / 96%);
         border-top: 1px solid
@@ -1765,15 +1761,17 @@ body.price-mode-active #tier-F .game-price-discount {
     }
 
 
+    
     .mobile-tier-navigation-button {
         display: inline-flex;
         flex: 1 1 0;
         align-items: center;
         justify-content: center;
     
+        width: 0;
         min-width: 0;
-        min-height: 34px;
-        padding: 5px 8px;
+        min-height: 58px;
+        padding: 5px 2px;
     
         color: var(--color-dark);
         font-size: 14px;
@@ -1783,16 +1781,21 @@ body.price-mode-active #tier-F .game-price-discount {
         cursor: pointer;
     
         background: var(--color-surface);
-        border: 1px solid var(--color-border-control);
-        border-radius: var(--radius-sm);
+        border: 0;
+        border-right: 1px solid rgb(0 0 0 / 12%);
+        border-radius: 0;
     
         transition:
             color 0.2s ease,
             background 0.2s ease,
-            border-color 0.2s ease,
             transform 0.2s ease,
             filter 0.2s ease;
     }
+    
+    .mobile-tier-navigation-button:last-child {
+        border-right: 0;
+    }
+
 
 
     .mobile-tier-navigation-button:hover,
@@ -1810,14 +1813,15 @@ body.price-mode-active #tier-F .game-price-discount {
     }
 
     .mobile-tier-navigation-button.home-button {
-        min-width: 52px;
-
-        font-size: 11px;
-
+        flex-grow: 1;
+    
+        font-size: 22px;
+    
         background: var(--color-dark);
-        border-color: var(--color-dark);
+        border-color: rgb(255 255 255 / 15%);
         color: #fff;
     }
+
 
     .mobile-tier-navigation-button.tier-navigation-s {
         color: #5b4300;
