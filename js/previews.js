@@ -24,27 +24,20 @@ export function setupCardHover(
     name,
     steamLink
 ) {
-    let closeTimer =
-        null;
-
-    let layerCleanupTimer =
-        null;
+    let closeTimer = null;
+    let layerCleanupTimer = null;
 
     const popup =
         card.querySelector(
             '.game-preview-popup'
         );
 
-    if (
-        !popup
-    ) {
+    if (!popup) {
         return;
     }
 
     const closeButton =
-        createPreviewCloseButton(
-            card
-        );
+        createPreviewCloseButton();
 
     popup.appendChild(
         closeButton
@@ -69,37 +62,68 @@ export function setupCardHover(
         `Открыть меню игры ${name}`
     );
 
-    const isMobilePreview =
-        () => window.matchMedia(
+    const isMobilePreview = () => {
+        return window.matchMedia(
             MOBILE_PREVIEW_QUERY
         ).matches;
+    };
 
     const cancelClose = () => {
-        if (
-            closeTimer
-        ) {
-            clearTimeout(
-                closeTimer
-            );
-
-            closeTimer =
-                null;
+        if (closeTimer) {
+            clearTimeout(closeTimer);
+            closeTimer = null;
         }
 
-        if (
-            layerCleanupTimer
-        ) {
-            clearTimeout(
-                layerCleanupTimer
-            );
-
-            layerCleanupTimer =
-                null;
+        if (layerCleanupTimer) {
+            clearTimeout(layerCleanupTimer);
+            layerCleanupTimer = null;
         }
+    };
+
+    const restorePopupToCard = () => {
+        const placeholder =
+            popup._mobilePreviewPlaceholder;
+
+        if (
+            placeholder?.parentNode
+        ) {
+            placeholder.replaceWith(
+                popup
+            );
+        }
+
+        popup._mobilePreviewPlaceholder =
+            null;
+
+        popup.classList.remove(
+            'game-preview-popup-mobile-modal'
+        );
+
+        popup.style.removeProperty(
+            'top'
+        );
+
+        popup.style.removeProperty(
+            'right'
+        );
+
+        popup.style.removeProperty(
+            'bottom'
+        );
+
+        popup.style.removeProperty(
+            'left'
+        );
+
+        popup.style.removeProperty(
+            'transform'
+        );
     };
 
     const closePreviewImmediately = () => {
         cancelClose();
+
+        restorePopupToCard();
 
         card.classList.add(
             PREVIEW_CLOSED_CLASS
@@ -107,10 +131,6 @@ export function setupCardHover(
 
         card.classList.remove(
             PREVIEW_READY_CLASS
-        );
-
-        popup.classList.remove(
-            'game-preview-popup-mobile-modal'
         );
 
         card.classList.remove(
@@ -124,8 +144,8 @@ export function setupCardHover(
     };
 
     /*
-     * В режиме выбранного видео popup скрыт,
-     * поэтому карточка ведёт на Steam-страницу.
+     * При выборе видео popup карточек скрыт.
+     * Клик по карточке должен вести в Steam.
      */
     const openSteamPageForSelectedVideo = () => {
         const layout =
@@ -157,6 +177,38 @@ export function setupCardHover(
         return true;
     };
 
+    const movePopupToMobileModalLayer = () => {
+        closeOtherMobilePreviews(
+            popup
+        );
+
+        if (
+            popup._mobilePreviewPlaceholder
+        ) {
+            return;
+        }
+
+        const placeholder =
+            document.createComment(
+                'mobile-preview-placeholder'
+            );
+
+        popup.before(
+            placeholder
+        );
+
+        popup._mobilePreviewPlaceholder =
+            placeholder;
+
+        document.body.appendChild(
+            popup
+        );
+
+        popup.classList.add(
+            'game-preview-popup-mobile-modal'
+        );
+    };
+
     const openPreview = () => {
         cancelClose();
 
@@ -176,34 +228,11 @@ export function setupCardHover(
         const mobilePreview =
             isMobilePreview();
 
-        popup.classList.toggle(
-            'game-preview-popup-mobile-modal',
-            mobilePreview
-        );
-                if (
-            mobilePreview
-        ) {
-            popup.style.top =
-                '50%';
-
-            popup.style.left =
-                '50%';
-
-            popup.style.right =
-                'auto';
-
-            popup.style.bottom =
-                'auto';
+        if (mobilePreview) {
+            movePopupToMobileModalLayer();
         } else {
-            popup.style.removeProperty(
-                'top'
-            );
-
-            popup.style.removeProperty(
-                'left'
-            );
+            restorePopupToCard();
         }
-
 
         card.classList.remove(
             PREVIEW_CLOSED_CLASS
@@ -218,129 +247,97 @@ export function setupCardHover(
             true
         );
 
-        requestAnimationFrame(
-            () => {
-                if (
-                    card.classList.contains(
-                        PREVIEW_CLOSED_CLASS
-                    )
-                ) {
-                    return;
-                }
-
-                if (
-                    mobilePreview
-                ) {
-                    popup.scrollTop =
-                        0;
-
-                    closeButton.focus();
-
-                    return;
-                }
-
-                positionPreview(
-                    card
-                );
+        requestAnimationFrame(() => {
+            if (
+                card.classList.contains(
+                    PREVIEW_CLOSED_CLASS
+                )
+            ) {
+                return;
             }
-        );
+
+            if (mobilePreview) {
+                popup.scrollTop = 0;
+
+                closeButton.focus();
+
+                return;
+            }
+
+            positionPreview(
+                card
+            );
+        });
     };
 
     const scheduleLayerCleanup = () => {
-        if (
-            layerCleanupTimer
-        ) {
+        if (layerCleanupTimer) {
             clearTimeout(
                 layerCleanupTimer
             );
         }
 
         layerCleanupTimer =
-            setTimeout(
-                () => {
-                    if (
-                        card.classList.contains(
-                            PREVIEW_CLOSED_CLASS
-                        ) &&
-                        !card.matches(
-                            ':hover'
-                        ) &&
-                        !card.matches(
-                            ':focus-within'
-                        )
-                    ) {
-                        card.classList.remove(
-                            ACTIVE_CARD_CLASS
-                        );
+            setTimeout(() => {
+                if (
+                    card.classList.contains(
+                        PREVIEW_CLOSED_CLASS
+                    ) &&
+                    !card.matches(':hover') &&
+                    !card.matches(':focus-within')
+                ) {
+                    card.classList.remove(
+                        ACTIVE_CARD_CLASS
+                    );
 
-                        setTierRowActive(
-                            card,
-                            false
-                        );
-                    }
+                    setTierRowActive(
+                        card,
+                        false
+                    );
+                }
 
-                    layerCleanupTimer =
-                        null;
-                },
-                PREVIEW_LAYER_CLEANUP_DELAY
-            );
+                layerCleanupTimer = null;
+            }, PREVIEW_LAYER_CLEANUP_DELAY);
     };
 
     const closePreview = (
         respectFocus = true
     ) => {
-        if (
-            isMobilePreview()
-        ) {
+        if (isMobilePreview()) {
             return;
         }
 
-        if (
-            closeTimer
-        ) {
-            clearTimeout(
-                closeTimer
-            );
+        if (closeTimer) {
+            clearTimeout(closeTimer);
         }
 
         closeTimer =
-            setTimeout(
-                () => {
-                    if (
-                        card.matches(
-                            ':hover'
-                        ) ||
-                        popup.matches(
-                            ':hover'
-                        ) ||
-                        (
-                            respectFocus &&
-                            card.matches(
-                                ':focus-within'
-                            )
-                        )
-                    ) {
-                        closeTimer =
-                            null;
+            setTimeout(() => {
+                if (
+                    card.matches(':hover') ||
+                    popup.matches(':hover') ||
+                    (
+                        respectFocus &&
+                        card.matches(':focus-within')
+                    )
+                ) {
+                    closeTimer = null;
 
-                        return;
-                    }
+                    return;
+                }
 
-                    card.classList.add(
-                        PREVIEW_CLOSED_CLASS
-                    );
+                card.classList.add(
+                    PREVIEW_CLOSED_CLASS
+                );
 
-                    card.classList.remove(
-                        PREVIEW_READY_CLASS
-                    );
+                card.classList.remove(
+                    PREVIEW_READY_CLASS
+                );
 
-                    scheduleLayerCleanup();
+                scheduleLayerCleanup();
 
-                    closeTimer =
-                        null;
-                },
-                PREVIEW_CLOSE_DELAY
-            );
+                closeTimer = null;
+            }, PREVIEW_CLOSE_DELAY);
     };
 
     closeButton.addEventListener(
@@ -352,6 +349,27 @@ export function setupCardHover(
             closePreviewImmediately();
 
             card.focus();
+        }
+    );
+
+    popup.addEventListener(
+        'click',
+        event => {
+            event.stopPropagation();
+        }
+    );
+
+    popup.addEventListener(
+        'keydown',
+        event => {
+            event.stopPropagation();
+
+            if (
+                event.key === 'Escape'
+            ) {
+                closePreviewImmediately();
+                card.focus();
+            }
         }
     );
 
@@ -375,13 +393,6 @@ export function setupCardHover(
             closePreview(
                 false
             );
-        }
-    );
-
-    popup.addEventListener(
-        'click',
-        event => {
-            event.stopPropagation();
         }
     );
 
@@ -486,12 +497,32 @@ export function setupCardHover(
 
     card._closePreviewImmediately =
         closePreviewImmediately;
+
+    popup._closePreviewImmediately =
+        closePreviewImmediately;
 }
 
 
-function createPreviewCloseButton(
-    card
+function closeOtherMobilePreviews(
+    currentPopup
 ) {
+    document
+        .querySelectorAll(
+            '.game-preview-popup-mobile-modal'
+        )
+        .forEach(popup => {
+            if (
+                popup === currentPopup
+            ) {
+                return;
+            }
+
+            popup._closePreviewImmediately?.();
+        });
+}
+
+
+function createPreviewCloseButton() {
     const button =
         document.createElement(
             'button'
@@ -527,9 +558,7 @@ function setTierRowActive(
             '.tier-row'
         );
 
-    if (
-        !tierRow
-    ) {
+    if (!tierRow) {
         return;
     }
 
@@ -557,9 +586,7 @@ export function createPreviewPopup({
         'game-preview-popup';
 
     const hasDescription =
-        Boolean(
-            description
-        );
+        Boolean(description);
 
     const hasActions =
         Boolean(
@@ -577,9 +604,7 @@ export function createPreviewPopup({
         hasActions
     );
 
-    if (
-        hasActions
-    ) {
+    if (hasActions) {
         const actions =
             document.createElement(
                 'div'
@@ -588,9 +613,7 @@ export function createPreviewPopup({
         actions.className =
             'preview-actions';
 
-        if (
-            steamLink
-        ) {
+        if (steamLink) {
             actions.appendChild(
                 createSteamPreview({
                     name,
@@ -601,9 +624,7 @@ export function createPreviewPopup({
             );
         }
 
-        if (
-            video
-        ) {
+        if (video) {
             actions.appendChild(
                 createVideoPreview(
                     name,
@@ -617,9 +638,7 @@ export function createPreviewPopup({
         );
     }
 
-    if (
-        hasDescription
-    ) {
+    if (hasDescription) {
         const descriptionElement =
             document.createElement(
                 'blockquote'
@@ -635,13 +654,6 @@ export function createPreviewPopup({
             descriptionElement
         );
     }
-
-    popup.addEventListener(
-        'keydown',
-        event => {
-            event.stopPropagation();
-        }
-    );
 
     return popup;
 }
@@ -716,13 +728,8 @@ function createSteamPreview({
     label.textContent =
         'Открыть в Steam';
 
-    preview.appendChild(
-        image
-    );
-
-    preview.appendChild(
-        label
-    );
+    preview.appendChild(image);
+    preview.appendChild(label);
 
     return preview;
 }
@@ -753,13 +760,9 @@ function createVideoPreview(
         `Смотреть обзор игры ${name}`;
 
     const thumbnail =
-        getYouTubeThumbnail(
-            video
-        );
+        getYouTubeThumbnail(video);
 
-    if (
-        thumbnail
-    ) {
+    if (thumbnail) {
         const image =
             document.createElement(
                 'img'
@@ -824,27 +827,9 @@ function positionPreview(
             '.game-preview-popup'
         );
 
-    if (
-        !popup
-    ) {
+    if (!popup) {
         return;
     }
-
-    if (
-        window.matchMedia(
-            MOBILE_PREVIEW_QUERY
-        ).matches
-    ) {
-        popup.classList.add(
-            'game-preview-popup-mobile-modal'
-        );
-
-        return;
-    }
-
-    popup.classList.remove(
-        'game-preview-popup-mobile-modal'
-    );
 
     card.classList.remove(
         PREVIEW_READY_CLASS
@@ -898,8 +883,7 @@ function positionPreview(
         PREVIEW_GAP;
 
     const fitsAbove =
-        topPosition >=
-        SCREEN_PADDING;
+        topPosition >= SCREEN_PADDING;
 
     const fitsRight =
         rightPosition +
@@ -908,8 +892,7 @@ function positionPreview(
         SCREEN_PADDING;
 
     const fitsLeft =
-        leftPosition >=
-        SCREEN_PADDING;
+        leftPosition >= SCREEN_PADDING;
 
     const fitsBelow =
         bottomPosition +
@@ -920,9 +903,7 @@ function positionPreview(
     let popupLeft;
     let popupTop;
 
-    if (
-        fitsAbove
-    ) {
+    if (fitsAbove) {
         popupLeft =
             clamp(
                 centeredLeft,
@@ -934,9 +915,7 @@ function positionPreview(
 
         popupTop =
             topPosition;
-    } else if (
-        fitsRight
-    ) {
+    } else if (fitsRight) {
         popup.classList.add(
             'preview-position-right'
         );
@@ -952,9 +931,7 @@ function positionPreview(
                     popupHeight -
                     SCREEN_PADDING
             );
-    } else if (
-        fitsLeft
-    ) {
+    } else if (fitsLeft) {
         popup.classList.add(
             'preview-position-left'
         );
@@ -1019,13 +996,9 @@ export function updateVisiblePreviewPositions() {
         .querySelectorAll(
             `.game-card:not(.${PREVIEW_CLOSED_CLASS})`
         )
-        .forEach(
-            card => {
-                positionPreview(
-                    card
-                );
-            }
-        );
+        .forEach(card => {
+            positionPreview(card);
+        });
 }
 
 
@@ -1034,31 +1007,25 @@ export function closeAllPreviews() {
         .querySelectorAll(
             '.game-card'
         )
-        .forEach(
-            card => {
-                if (
-                    card._closePreviewImmediately
-                ) {
-                    card._closePreviewImmediately();
+        .forEach(card => {
+            if (
+                card._closePreviewImmediately
+            ) {
+                card._closePreviewImmediately();
 
-                    return;
-                }
-
-                if (
-                    card._cancelPreviewClose
-                ) {
-                    card._cancelPreviewClose();
-                }
-
-                card.classList.add(
-                    PREVIEW_CLOSED_CLASS
-                );
-
-                card.classList.remove(
-                    PREVIEW_READY_CLASS
-                );
+                return;
             }
-        );
+
+            card._cancelPreviewClose?.();
+
+            card.classList.add(
+                PREVIEW_CLOSED_CLASS
+            );
+
+            card.classList.remove(
+                PREVIEW_READY_CLASS
+            );
+        });
 }
 
 
@@ -1068,10 +1035,7 @@ function clamp(
     max
 ) {
     return Math.min(
-        Math.max(
-            value,
-            min
-        ),
+        Math.max(value, min),
         max
     );
 }
