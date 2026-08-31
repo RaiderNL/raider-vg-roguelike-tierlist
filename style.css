@@ -225,16 +225,24 @@ iframe {
  * =========================================================
  */
 
+/*
+ * =========================================================
+ * Верхушка основной страницы
+ * =========================================================
+ */
+
 .main-page-header {
     display: flex;
     align-items: flex-start;
     justify-content: space-between;
     gap: 20px;
 
+    width: 100%;
     margin-bottom: 20px;
 }
 
 .main-page-heading {
+    flex: 1 1 auto;
     min-width: 0;
 }
 
@@ -257,33 +265,23 @@ iframe {
     overflow-wrap: anywhere;
 }
 
-.main-page-description,
-.main-page-status {
-    margin: 8px 0 0;
-
-    color: var(--color-text-muted);
-    font-size: 15px;
-    line-height: 1.4;
-}
-
-.main-page-status {
-    font-size: 14px;
-    font-weight: 700;
-}
-
 
 /*
  * =========================================================
- * Переключатель версии тир-листа
+ * Переключатель основной страницы
  * =========================================================
  */
 
 .main-mode-switcher {
     display: inline-flex;
     flex: 0 0 auto;
+    align-self: flex-start;
     gap: 4px;
 
+    margin-left: auto;
     padding: 4px;
+
+    white-space: nowrap;
 
     background: var(--color-surface);
     border: 1px solid var(--color-border);
@@ -332,12 +330,6 @@ iframe {
     outline: 3px solid var(--color-accent-focus);
     outline-offset: 2px;
 }
-
-/*
- * =========================================================
- * Ссылка на создание собственного тир-листа
- * =========================================================
- */
 
 
 .custom-tierlist-header-link:hover {
