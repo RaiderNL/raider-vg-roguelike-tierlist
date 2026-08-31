@@ -1134,18 +1134,18 @@ body.price-mode-active #tier-F .game-price-discount {
         visibility 0.2s ease;
 }
 
-.game-preview-popup.game-preview-popup-with-description
-.game-preview-popup-with-actions {
+.game-preview-popup.game-preview-popup-with-description.game-preview-popup-with-actions {
     flex-direction: row;
     align-items: stretch;
 
     width: min(670px, calc(100vw - 16px));
 }
 
-.game-preview-popup.game-preview-popup-with-description
-:not(.game-preview-popup-with-actions) {
+
+.game-preview-popup.game-preview-popup-with-description:not(.game-preview-popup-with-actions) {
     width: min(330px, calc(100vw - 16px));
 }
+
 
 .game-preview-close {
     position: absolute;
