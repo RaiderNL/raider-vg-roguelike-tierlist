@@ -43,6 +43,9 @@ body {
     margin: 24px auto;
 }
 
+/*
+ * Фильтры.
+ */
 .controls {
     display: flex;
     flex-wrap: wrap;
@@ -109,6 +112,9 @@ body {
     gap: 12px;
 }
 
+/*
+ * Переключатель цен.
+ */
 .price-mode-toggle {
     position: relative;
 
@@ -218,6 +224,9 @@ body {
     color: inherit;
 }
 
+/*
+ * Тир-лист.
+ */
 .tier-list-layout {
     display: block;
 }
@@ -366,6 +375,9 @@ body {
     width: 142px;
 }
 
+/*
+ * Карточки.
+ */
 .game-card {
     position: relative;
 
@@ -468,6 +480,9 @@ body {
     border-radius: 4px;
 }
 
+/*
+ * Цены.
+ */
 .game-price {
     position: absolute;
     right: 5px;
@@ -525,7 +540,6 @@ body {
 
 .game-price.game-price-hiding::after {
     opacity: 0;
-
     animation: none;
 }
 
@@ -603,6 +617,9 @@ body {
     }
 }
 
+/*
+ * Popup на десктопе.
+ */
 .game-preview-popup {
     position: absolute;
     z-index: 100002;
@@ -861,6 +878,9 @@ body {
     text-align: center;
 }
 
+/*
+ * Панель выбранного видео.
+ */
 .selected-video-panel {
     position: sticky;
     top: 16px;
@@ -953,6 +973,9 @@ body {
     text-align: center;
 }
 
+/*
+ * Подвал.
+ */
 .site-footer {
     padding: 24px;
 
@@ -992,15 +1015,8 @@ body {
 }
 
 @media (max-width: 600px) {
-    /*
-     * Не допускаем горизонтального расширения документа.
-     */
-    html {
-        overflow-x: clip;
-    }
-
+    html,
     body {
-        position: relative;
         overflow-x: clip;
     }
 
@@ -1077,143 +1093,7 @@ body {
 
     .game-card {
         width: 145px;
-        overflow: hidden;
     }
-
-    .game-price {
-        right: 4px;
-        bottom: 4px;
-        left: 4px;
-
-        gap: 3px;
-        min-height: 22px;
-        max-height: 40px;
-        padding: 3px 4px;
-        overflow: hidden;
-
-        font-size: 11px;
-    }
-
-    .game-price-old {
-        font-size: 10px;
-    }
-
-    .game-price-discount {
-        padding: 2px 4px;
-
-        font-size: 9px;
-    }
-    /*
-     * В режиме цен плашка участвует в компоновке карточки,
-     * поэтому не накладывается на название.
-     */
-    /*
-     * В режиме цен карточка использует отдельные строки
-     * для обложки, названия и плашки цены.
-     */
-    body.price-mode-active .game-card {
-        display: grid;
-        grid-template-rows: minmax(0, 1fr) auto auto;
-
-        overflow: hidden;
-    }
-
-    body.price-mode-active .game-cover {
-        grid-row: 1;
-
-        width: 100%;
-        height: 100%;
-        min-height: 0;
-    }
-
-    body.price-mode-active .game-title {
-        grid-row: 2;
-
-        margin: 4px 5px 3px;
-
-        font-size: 12px;
-        line-height: 1.15;
-
-        -webkit-line-clamp: 1;
-    }
-
-    /*
-     * Теги скрываются только в режиме отображения цен:
-     * на узкой карточке они конкурируют с ценой за высоту.
-     */
-/*
- * При включённых ценах метки не занимают отдельную строку.
- * Они располагаются поверх обложки в правом верхнем углу.
- */
-body.price-mode-active .game-tags {
-    position: absolute;
-    top: 4px;
-    right: 4px;
-    z-index: 4;
-
-    display: flex;
-    flex: 0 1 auto;
-    flex-direction: column;
-    align-items: flex-end;
-    gap: 3px;
-
-    max-width: calc(100% - 8px);
-    max-height: calc(100% - 8px);
-    margin: 0;
-    overflow: hidden;
-
-    pointer-events: none;
-}
-
-body.price-mode-active .game-tag {
-    max-width: 100%;
-    padding: 2px 4px;
-
-    color: #fff;
-    font-size: 9px;
-    line-height: 1.15;
-    text-align: right;
-    text-shadow: 0 1px 2px rgb(0 0 0 / 45%);
-    overflow-wrap: anywhere;
-
-    background: rgb(32 35 42 / 84%);
-    border: 1px solid rgb(255 255 255 / 16%);
-    border-radius: 3px;
-    box-shadow: 0 1px 3px rgb(0 0 0 / 20%);
-}
-
-
-    body.price-mode-active .game-price {
-        position: static !important;
-        grid-row: 3;
-
-        display: flex;
-        flex: 0 0 auto;
-        align-items: center;
-        justify-content: center;
-        flex-wrap: wrap;
-        gap: 2px;
-
-        min-height: 20px;
-        max-height: 36px;
-        margin: 0 4px 4px;
-        padding: 3px 4px;
-        overflow: hidden;
-
-        font-size: 10px;
-        line-height: 1.1;
-    }
-
-    body.price-mode-active .game-price-old {
-        font-size: 9px;
-    }
-
-    body.price-mode-active .game-price-discount {
-        padding: 2px 3px;
-
-        font-size: 8px;
-    }
-
 
     #tier-S .game-card,
     #tier-A .game-card {
@@ -1251,39 +1131,125 @@ body.price-mode-active .game-tag {
         font-size: 10px;
     }
 
-    .game-price {
-        right: 4px;
-        bottom: 4px;
-        left: 4px;
+    /*
+     * Мобильная карточка в режиме цен.
+     * Цена, название и обложка получают отдельные строки.
+     */
+    body.price-mode-active .game-card {
+        display: grid;
+        grid-template-rows: minmax(0, 1fr) auto auto;
 
-        gap: 3px;
-        padding: 3px 4px;
-
-        font-size: 11px;
+        overflow: hidden;
     }
 
-    .game-price-old {
-        font-size: 10px;
+    body.price-mode-active .game-cover {
+        grid-row: 1;
+
+        width: 100%;
+        height: 100%;
+        min-height: 0;
     }
 
-    .game-price-discount {
-        padding: 2px 4px;
+    body.price-mode-active .game-title {
+        grid-row: 2;
 
-        font-size: 9px;
+        margin: 4px 5px 3px;
+
+        font-size: 12px;
+        line-height: 1.15;
+
+        -webkit-line-clamp: 1;
     }
 
     /*
-     * Пока popup находится в карточке, он не должен
-     * участвовать в ширине страницы. При открытии JS
-     * переносит его в body и добавляет mobile-modal.
+     * Метки не занимают отдельную строку.
+     * Они показываются поверх обложки справа сверху.
+     */
+    body.price-mode-active .game-card .game-tags {
+        position: absolute;
+        top: 4px;
+        right: 4px;
+        left: auto;
+        z-index: 10;
+
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 3px;
+
+        width: auto;
+        max-width: calc(100% - 8px);
+        max-height: calc(100% - 8px);
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+
+        visibility: visible;
+        opacity: 1;
+        pointer-events: none;
+    }
+
+    body.price-mode-active .game-card .game-tag {
+        display: inline-block;
+        flex: 0 0 auto;
+
+        max-width: 100%;
+        padding: 2px 4px;
+
+        color: #fff;
+        font-size: 9px;
+        line-height: 1.15;
+        text-align: right;
+        text-shadow: 0 1px 2px rgb(0 0 0 / 60%);
+        overflow-wrap: anywhere;
+
+        background: rgb(32 35 42 / 86%);
+        border: 1px solid rgb(255 255 255 / 18%);
+        border-radius: 3px;
+        box-shadow: 0 1px 3px rgb(0 0 0 / 25%);
+    }
+
+    body.price-mode-active .game-price {
+        position: static;
+        grid-row: 3;
+
+        display: flex;
+        flex: 0 0 auto;
+        align-items: center;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 2px;
+
+        min-height: 20px;
+        max-height: 36px;
+        margin: 0 4px 4px;
+        padding: 3px 4px;
+        overflow: hidden;
+
+        font-size: 10px;
+        line-height: 1.1;
+    }
+
+    body.price-mode-active .game-price-old {
+        font-size: 9px;
+    }
+
+    body.price-mode-active .game-price-discount {
+        padding: 2px 3px;
+
+        font-size: 8px;
+    }
+
+    /*
+     * Закрытый popup внутри карточки не влияет
+     * на ширину мобильной страницы.
      */
     .game-card .game-preview-popup {
         display: none !important;
     }
 
     /*
-     * Popup всегда прямой потомок body, поэтому
-     * центрируется по viewport телефона.
+     * Открытый popup переносится в body через previews.js.
      */
     body > .game-preview-popup.game-preview-popup-mobile-modal {
         position: fixed !important;
