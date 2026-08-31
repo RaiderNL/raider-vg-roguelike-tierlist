@@ -8,118 +8,51 @@
         content="width=device-width, initial-scale=1.0"
     >
 
-    <meta
-        name="description"
-        content="Raider_VG Ultimate Roguelike Tierlist"
-    >
-
     <link
         rel="icon"
         type="image/x-icon"
-        href="./Ico-min.ico"
+        href="Ico-min.ico"
     >
 
     <title>Raider_VG Ultimate Roguelike Tierlist</title>
 
-    <link
-        rel="stylesheet"
-        href="./style.css"
-    >
+    <link rel="stylesheet" href="style.css">
 </head>
-
-<body class="main-page">
-
-    <!-- =====================================================
-         Шапка
-         ===================================================== -->
+<body>
 
     <header class="site-header">
-        <div class="site-header-inner">
+        <h1>Raider_VG Ultimate Roguelike Tierlist</h1>
 
-            <a
-                class="site-logo"
-                href="./index.html"
-                aria-label="Raider_VG Roguelike Tierlist"
-            >
-                Raider_VG Roguelike Tierlist
-            </a>
+        <p>
+                    <a
+            class="custom-tierlist-header-link"
+            href="custom.html"
+            aria-label="Создать собственный тир-лист"
+        >
+            <span aria-hidden="true">✎</span>
+            <span>Создать свой тир-лист</span>
+        </a>
 
-            <nav
-                class="site-navigation"
-                aria-label="Основная навигация"
-            >
-                <a
-                    class="is-active"
-                    href="./index.html"
-                    aria-current="page"
-                >
-                    Тир-лист Рэйдера
-                </a>
-
-                <a
-                    href="./custom.html"
-                >
-                    Свой тир-лист
-                </a>
-            </nav>
-
-        </div>
+            Распределение всех рогаликов, что я обозрел на своем канале по тирлисту
+        </p>
     </header>
 
 
-    <!-- =====================================================
-         Основное содержимое
-         ===================================================== -->
-
     <main class="container">
 
-        <!-- Только подпись и заголовок.
-             Дополнительного переключателя здесь нет. -->
-
-        <section class="main-page-header">
-
-            <p class="main-page-kicker">
-                Авторский список
-            </p>
-
-            <h1 class="main-page-title">
-                Тир-лист Рэйдера
-            </h1>
-
-        </section>
-
-
-        <!-- =================================================
-             Фильтры
-             ================================================= -->
-
         <section class="controls">
-
             <div class="control-group search-group">
-                <label
-                    class="visually-hidden"
-                    for="search"
-                >
-                    Поиск игры
-                </label>
-
                 <input
-                    id="search"
                     type="search"
+                    id="search"
                     placeholder="🔍 Название игры..."
-                    autocomplete="off"
+                    aria-label="Поиск игры"
                 >
             </div>
 
 
             <div class="control-group filter-group">
-                <label
-                    class="visually-hidden"
-                    for="tag-filter"
-                >
-                    Фильтр по жанру
-                </label>
-
+               
                 <select id="tag-filter">
                     <option value="">
                         Все жанры
@@ -127,38 +60,29 @@
                 </select>
             </div>
 
-
             <div class="video-filter-controls">
-
-                <div class="control-group filter-group">
-                    <label
-                        class="visually-hidden"
-                        for="video-filter"
+                    <div class="control-group filter-group">
+                    
+                        <select id="video-filter">
+                            <option value="">
+                                Все ролики
+                            </option>
+                        </select>
+                    </div>
+                    
+                    <button
+                        class="favorites-filter-button"
+                        id="favorites-filter"
+                        type="button"
+                        aria-label="Показывать только избранные игры"
+                        aria-pressed="false"
+                        title="Показывать только избранные игры"
                     >
-                        Фильтр по роликам
-                    </label>
+                        <span aria-hidden="true">☆</span>
+                    </button>
+                    
+                    <label class="price-mode-toggle">
 
-                    <select id="video-filter">
-                        <option value="">
-                            Все ролики
-                        </option>
-                    </select>
-                </div>
-
-
-                <button
-                    id="favorites-filter"
-                    class="favorites-filter-button"
-                    type="button"
-                    aria-label="Показать избранные игры"
-                    aria-pressed="false"
-                    title="Показать избранные игры"
-                >
-                    <span aria-hidden="true">☆</span>
-                </button>
-
-
-                <label class="price-mode-toggle">
                     <input
                         id="price-mode-toggle"
                         type="checkbox"
@@ -175,292 +99,324 @@
                         Показывать цены
                     </span>
                 </label>
-
             </div>
+        <div class="filter-actions">
+            <button
+                class="filter-action-button"
+                id="reset-filters"
+                type="button"
+                aria-label="Сбросить фильтры"
+                title="Сбросить фильтры"
+            >
+                <span aria-hidden="true">↻</span>
+            </button>
+        
+            <button
+                class="filter-action-button"
+                id="share-filters"
+                type="button"
+                aria-label="Скопировать ссылку на подборку"
+                title="Скопировать ссылку на подборку"
+            >
+                <span aria-hidden="true">🔗</span>
+            </button>
+        </div>
 
-
-            <div class="filter-actions">
-
-                <button
-                    id="reset-filters"
-                    class="filter-action-button"
-                    type="button"
-                    aria-label="Сбросить фильтры"
-                    title="Сбросить фильтры"
-                >
-                    <span aria-hidden="true">↻</span>
-                </button>
-
-                <button
-                    id="share-filters"
-                    class="filter-action-button"
-                    type="button"
-                    aria-label="Скопировать ссылку на подборку"
-                    title="Скопировать ссылку на подборку"
-                >
-                    <span aria-hidden="true">🔗</span>
-                </button>
-
-            </div>
 
         </section>
-
-
-        <!-- =================================================
-             Навигация по уровням на мобильных устройствах
-             ================================================= -->
-
-        <nav
+                        <nav
             class="mobile-tier-navigation"
-            aria-label="Навигация по уровням"
+            aria-label="Навигация по уровням тир-листа"
         >
             <button
                 class="mobile-tier-navigation-button home-button"
                 type="button"
                 data-tier-target="HOME"
-                aria-label="Вернуться к началу"
-                title="В начало"
+                aria-label="Вернуться в начало страницы"
+                title="В начало страницы"
             >
-                <span aria-hidden="true">⌂</span>
+                <span aria-hidden="true">🏠</span>
             </button>
 
+        
             <button
                 class="mobile-tier-navigation-button tier-navigation-s"
                 type="button"
                 data-tier-target="S"
+                aria-label="Перейти к уровню S"
             >
                 S
             </button>
-
+        
             <button
                 class="mobile-tier-navigation-button tier-navigation-a"
                 type="button"
                 data-tier-target="A"
+                aria-label="Перейти к уровню A"
             >
                 A
             </button>
-
+        
             <button
                 class="mobile-tier-navigation-button tier-navigation-b"
                 type="button"
                 data-tier-target="B"
+                aria-label="Перейти к уровню B"
             >
                 B
             </button>
-
+        
             <button
                 class="mobile-tier-navigation-button tier-navigation-c"
                 type="button"
                 data-tier-target="C"
+                aria-label="Перейти к уровню C"
             >
                 C
             </button>
-
+        
             <button
                 class="mobile-tier-navigation-button tier-navigation-d"
                 type="button"
                 data-tier-target="D"
+                aria-label="Перейти к уровню D"
             >
                 D
             </button>
-
+        
             <button
                 class="mobile-tier-navigation-button tier-navigation-e"
                 type="button"
                 data-tier-target="E"
+                aria-label="Перейти к уровню E"
             >
                 E
             </button>
-
+        
             <button
                 class="mobile-tier-navigation-button tier-navigation-f"
                 type="button"
                 data-tier-target="F"
+                aria-label="Перейти к уровню F"
             >
                 F
             </button>
         </nav>
 
 
-        <!-- =================================================
-             Легенда
-             ================================================= -->
+
 
         <details class="tier-legend">
             <summary class="tier-legend-summary">
-                Легенда тир-листа
+                <span>Легенда тир-листа</span>
             </summary>
 
             <div class="tier-legend-list">
-
                 <div class="tier-legend-row">
-                    <div class="tier-legend-label tier-s">S</div>
+                    <div class="tier-legend-label tier-s">
+                        S
+                    </div>
 
                     <p class="tier-legend-description">
-                        Почти идеальные рогалики, которые можно смело
-                        рекомендовать всем, кто любит жанр.
+                        Почти идеальные рогалики, которые можно смело рекомендовать всем, кто любит жанр. 
+                        Игра уверенно работает на базовом уровне, предлагает глубокие билды, хорошую реиграбельность и хотя бы несколько собственных идей. Она не обязана изобретать новый жанр, но должна понимать, зачем существует каждая её механика.
+                        В S-тире рогалик не ощущается набором приклеенных друг к другу систем. Всё работает на общий игровой цикл: награды интересны, проигрыш не кажется пустой тратой времени, а новый забег действительно хочется начать сразу после предыдущего.
                     </p>
                 </div>
 
                 <div class="tier-legend-row">
-                    <div class="tier-legend-label tier-a">A</div>
+                    <div class="tier-legend-label tier-a">
+                        A
+                    </div>
 
                     <p class="tier-legend-description">
-                        Хорошие и крепкие игры с небольшими недостатками.
+                        Хорошие, крепкие и достойные игры, которым немного не хватило свежих идей.
+                        Основные правила жанра соблюдены, игровой цикл работает, играть приятно, но проект либо недостаточно смелый, либо не дотягивает по контенту, глубине, балансу или реиграбельности.
+                        Тем не менее это отличные игры. A-тир можно рекомендовать, просто без фанатичного крика о шедевре. Они могут быть отличным способом убить десяток часов, но вряд ли станут вашей новой смыслообразующей зависимостью.
                     </p>
                 </div>
 
                 <div class="tier-legend-row">
-                    <div class="tier-legend-label tier-b">B</div>
+                    <div class="tier-legend-label tier-b">
+                        B
+                    </div>
 
                     <p class="tier-legend-description">
-                        Играбельные проекты с отдельными удачными идеями,
-                        но заметными недостатками.
+                        Играбельные проекты с отдельными удачными идеями, но заметными недостатками. Здесь может быть приятная боёвка, необычная механика или хороший визуал, однако всё остальное часто работает лишь на минимально допустимом уровне.
+                        Поиграть можно, особенно если вам нравится конкретная тематика или вы уже перебрали всё более достойное. Но называть такие игры обязательными к ознакомлению было бы большим преувеличением.
+                        
+                </div>
+
+                <div class="tier-legend-row">
+                    <div class="tier-legend-label tier-c">
+                        C
+                    </div>
+
+                    <p class="tier-legend-description">
+                        Неплохие игры. Абсолютно стандартные, ничем не выделяющиеся ни в плохую ни в хорошую сторону. Лучше всего подходит такой термин как жвачка.
+                        Играть в это можно, на базовом уровне оно будет работать. Но проекты такого рода забудутся спустя пару часов как вы закончите их играть.
                     </p>
                 </div>
 
                 <div class="tier-legend-row">
-                    <div class="tier-legend-label tier-c">C</div>
+                    <div class="tier-legend-label tier-d">
+                        D
+                    </div>
 
                     <p class="tier-legend-description">
-                        Неплохие, но стандартные и ничем особенно
-                        не выделяющиеся игры.
+                        Игры, которые вроде бы существуют, но совершенно непонятно зачем. Чаще всего это клоны уже известных проектов, собранные без собственного лица, либо эксперименты, где одна забавная идея должна была заменить весь остальной геймдизайн.
+                        В них можно найти рабочие элементы, но они быстро превращаются в рутину, гринд или унылое повторение одного и того же. Поиграть можно, но только если вам совсем нечем заняться.
                     </p>
                 </div>
 
                 <div class="tier-legend-row">
-                    <div class="tier-legend-label tier-d">D</div>
+                    <div class="tier-legend-label tier-e">
+                        E
+                    </div>
 
                     <p class="tier-legend-description">
-                        Игры с серьёзными проблемами, в которые можно
-                        играть только при большом интересе к теме.
+                        Игры, которые не справились даже с базовыми задачами. Плохая боёвка, отвратительный темп, отсутствие агентности, сломанный баланс, унылый контент, технические проблемы или бездумное копирование — всё, что превращает рогалик в наказание.
                     </p>
                 </div>
 
                 <div class="tier-legend-row">
-                    <div class="tier-legend-label tier-e">E</div>
+                    <div class="tier-legend-label tier-f">
+                        F
+                    </div>
 
                     <p class="tier-legend-description">
-                        Игры, которые не справились с базовыми задачами.
+                        Полнейшее дерьмо
                     </p>
                 </div>
-
-                <div class="tier-legend-row">
-                    <div class="tier-legend-label tier-f">F</div>
-
-                    <p class="tier-legend-description">
-                        Полнейшее дерьмо.
-                    </p>
-                </div>
-
             </div>
         </details>
 
 
-        <!-- =================================================
-             Тир-лист
-             ================================================= -->
-
         <div class="tier-list-layout">
 
-            <section
-                class="tier-list"
-                aria-label="Уровни тир-листа"
-            >
+            <section class="tier-list">
 
-                <div
-                    id="tier-S"
-                    class="tier-row"
-                >
-                    <div class="tier-label tier-s">S</div>
-                    <div class="games-container"></div>
+                <div class="tier-row">
+                    <div class="tier-label tier-s">
+                        S
+                    </div>
+
+                    <div
+                        class="games-container"
+                        id="tier-S"
+                    >
+                        <!-- Игры уровня S будут добавлены здесь -->
+                    </div>
                 </div>
 
-                <div
-                    id="tier-A"
-                    class="tier-row"
-                >
-                    <div class="tier-label tier-a">A</div>
-                    <div class="games-container"></div>
+                <div class="tier-row">
+                    <div class="tier-label tier-a">
+                        A
+                    </div>
+
+                    <div
+                        class="games-container"
+                        id="tier-A"
+                    >
+                        <!-- Игры уровня A будут добавлены здесь -->
+                    </div>
                 </div>
 
-                <div
-                    id="tier-B"
-                    class="tier-row"
-                >
-                    <div class="tier-label tier-b">B</div>
-                    <div class="games-container"></div>
+                <div class="tier-row">
+                    <div class="tier-label tier-b">
+                        B
+                    </div>
+
+                    <div
+                        class="games-container"
+                        id="tier-B"
+                    >
+                        <!-- Игры уровня B будут добавлены здесь -->
+                    </div>
                 </div>
 
-                <div
-                    id="tier-C"
-                    class="tier-row"
-                >
-                    <div class="tier-label tier-c">C</div>
-                    <div class="games-container"></div>
+                <div class="tier-row">
+                    <div class="tier-label tier-c">
+                        C
+                    </div>
+
+                    <div
+                        class="games-container"
+                        id="tier-C"
+                    >
+                        <!-- Игры уровня C будут добавлены здесь -->
+                    </div>
                 </div>
 
-                <div
-                    id="tier-D"
-                    class="tier-row"
-                >
-                    <div class="tier-label tier-d">D</div>
-                    <div class="games-container"></div>
+                <div class="tier-row">
+                    <div class="tier-label tier-d">
+                        D
+                    </div>
+
+                    <div
+                        class="games-container"
+                        id="tier-D"
+                    >
+                        <!-- Игры уровня D будут добавлены здесь -->
+                    </div>
                 </div>
 
-                <div
-                    id="tier-E"
-                    class="tier-row"
-                >
-                    <div class="tier-label tier-e">E</div>
-                    <div class="games-container"></div>
+                <div class="tier-row">
+                    <div class="tier-label tier-e">
+                        E
+                    </div>
+
+                    <div
+                        class="games-container"
+                        id="tier-E"
+                    >
+                        <!-- Игры уровня E будут добавлены здесь -->
+                    </div>
                 </div>
 
-                <div
-                    id="tier-F"
-                    class="tier-row"
-                >
-                    <div class="tier-label tier-f">F</div>
-                    <div class="games-container"></div>
+                <div class="tier-row">
+                    <div class="tier-label tier-f">
+                        F
+                    </div>
+
+                    <div
+                        class="games-container"
+                        id="tier-F"
+                    >
+                        <!-- Игры уровня F будут добавлены здесь -->
+                    </div>
                 </div>
 
             </section>
 
 
             <aside
-                id="selected-video-panel"
                 class="selected-video-panel"
+                id="selected-video-panel"
                 aria-hidden="true"
-            ></aside>
+            >
+                <!-- Выбранное видео будет добавлено через script.js -->
+            </aside>
 
         </div>
 
     </main>
 
 
-    <!-- =====================================================
-         Кнопка возврата наверх
-         ===================================================== -->
-
     <button
-        id="back-to-top"
         class="back-to-top"
+        id="back-to-top"
         type="button"
-        aria-label="Вернуться наверх"
+        aria-label="Вернуться к началу страницы"
     >
         <span aria-hidden="true">↑</span>
         <span>Наверх</span>
     </button>
 
 
-    <!-- =====================================================
-         Подвал
-         ===================================================== -->
-
     <footer class="site-footer">
         <p>
             Все обзоры доступны на
-
             <a
                 class="channel-link"
                 href="https://www.youtube.com/@raider_videogame"
@@ -475,7 +431,7 @@
 
     <script
         type="module"
-        src="./js/main.js"
+        src="js/main.js"
     ></script>
 
 </body>
