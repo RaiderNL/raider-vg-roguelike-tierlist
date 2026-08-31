@@ -1130,6 +1130,12 @@ iframe {
  * =========================================================
  */
 
+/*
+ * =========================================================
+ * Цены
+ * =========================================================
+ */
+
 .game-price {
     position: absolute;
     right: 6px;
@@ -1316,13 +1322,13 @@ body.price-mode-active #tier-F .game-price-discount {
     align-items: stretch;
 
     width: min(670px, calc(100vw - 16px));
+    max-width: calc(100vw - 16px);
 }
-
 
 .game-preview-popup.game-preview-popup-with-description:not(.game-preview-popup-with-actions) {
     width: min(330px, calc(100vw - 16px));
+    max-width: calc(100vw - 16px);
 }
-
 
 .game-preview-close {
     position: absolute;
@@ -1911,23 +1917,23 @@ body.price-mode-active #tier-F .game-price-discount {
                 env(safe-area-inset-bottom)
             );
     }
-    
+
     .mobile-tier-navigation {
         position: fixed;
         right: 0;
         bottom: 0;
         left: 0;
         z-index: 1000;
-    
+
         display: flex;
         align-items: stretch;
         justify-content: stretch;
         gap: 0;
-    
+
         width: 100%;
         min-height: 58px;
         padding: 0 0 env(safe-area-inset-bottom);
-    
+
         background: rgb(255 255 255 / 96%);
         border-top: 1px solid
             rgb(207 210 216 / 90%);
@@ -1937,43 +1943,39 @@ body.price-mode-active #tier-F .game-price-discount {
         backdrop-filter: blur(8px);
     }
 
-
-    
     .mobile-tier-navigation-button {
         display: inline-flex;
         flex: 1 1 0;
         align-items: center;
         justify-content: center;
-    
+
         width: 0;
         min-width: 0;
         min-height: 58px;
         padding: 5px 2px;
-    
+
         color: var(--color-dark);
         font-size: 14px;
         font-weight: 700;
         line-height: 1;
-    
+
         cursor: pointer;
-    
+
         background: var(--color-surface);
         border: 0;
         border-right: 1px solid rgb(0 0 0 / 12%);
         border-radius: 0;
-    
+
         transition:
             color 0.2s ease,
             background 0.2s ease,
             transform 0.2s ease,
             filter 0.2s ease;
     }
-    
+
     .mobile-tier-navigation-button:last-child {
         border-right: 0;
     }
-
-
 
     .mobile-tier-navigation-button:hover,
     .mobile-tier-navigation-button:focus-visible {
@@ -1991,14 +1993,13 @@ body.price-mode-active #tier-F .game-price-discount {
 
     .mobile-tier-navigation-button.home-button {
         flex-grow: 1;
-    
+
         font-size: 22px;
-    
+
         background: var(--color-dark);
         border-color: rgb(255 255 255 / 15%);
         color: #fff;
     }
-
 
     .mobile-tier-navigation-button.tier-navigation-s {
         color: #5b4300;
@@ -2051,6 +2052,13 @@ body.price-mode-active #tier-F .game-price-discount {
 
     .filter-action-button {
         width: 38px;
+    }
+
+    .favorites-filter-button {
+        align-self: flex-start;
+
+        width: 38px;
+        min-width: 38px;
     }
 
     .site-header {
@@ -2182,6 +2190,17 @@ body.price-mode-active #tier-F .game-price-discount {
         border-radius: 6px 6px 0 0;
     }
 
+    .favorite-button {
+        top: 5px;
+        left: 5px;
+        z-index: 5;
+
+        width: 30px;
+        height: 30px;
+
+        font-size: 23px;
+    }
+
     .game-title {
         width: calc(100% - 12px);
         margin: 4px auto 3px;
@@ -2267,6 +2286,7 @@ body.price-mode-active #tier-F .game-price-discount {
         font-size: 8px;
     }
 
+
     /*
      * Popup внутри карточки на мобильных скрывается.
      */
@@ -2274,48 +2294,83 @@ body.price-mode-active #tier-F .game-price-discount {
         display: none !important;
     }
 
+
     /*
      * Открытый popup переносится в body через previews.js.
      */
-body > .game-preview-popup.game-preview-popup-mobile-modal {
-    position: fixed !important;
-    top: 50dvh !important;
-    right: auto !important;
-    bottom: auto !important;
-    left: 50vw !important;
-    z-index: 100003 !important;
+    body > .game-preview-popup.game-preview-popup-mobile-modal {
+        position: fixed !important;
+        top: 50dvh !important;
+        right: auto !important;
+        bottom: auto !important;
+        left: 50vw !important;
+        z-index: 100003 !important;
 
-    display: flex !important;
-    flex-direction: column;
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: 12px;
 
-    width: calc(100vw - 24px) !important;
-    max-width: calc(100vw - 24px) !important;
-    max-height: calc(100dvh - 24px);
+        width: calc(100vw - 24px) !important;
+        max-width: calc(100vw - 24px) !important;
+        height: auto !important;
+        max-height: calc(100dvh - 24px) !important;
 
-    padding: 12px;
-    overflow-x: hidden;
-    overflow-y: auto;
+        padding: 12px;
+        overflow-x: hidden !important;
+        overflow-y: auto !important;
 
-    visibility: visible !important;
-    opacity: 1 !important;
-    pointer-events: auto !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        pointer-events: auto !important;
 
-    background: var(--color-dark);
-    transform: translate(-50%, -50%) !important;
+        background: var(--color-dark);
+        transform: translate(-50%, -50%) !important;
 
-    overscroll-behavior: contain;
-    -webkit-overflow-scrolling: touch;
-}
+        overscroll-behavior: contain;
+        -webkit-overflow-scrolling: touch;
+    }
 
+    body > .game-preview-popup.game-preview-popup-mobile-modal.game-preview-popup-with-description.game-preview-popup-with-actions {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: stretch !important;
 
-        body > .game-preview-popup.game-preview-popup-mobile-modal.game-preview-popup-with-description.game-preview-popup-with-actions {
-            flex-direction: column;
-            align-items: stretch;
-        
-            width: calc(100vw - 24px) !important;
-            max-width: calc(100vw - 24px) !important;
-        }
+        width: calc(100vw - 24px) !important;
+        max-width: calc(100vw - 24px) !important;
+    }
 
+    body > .game-preview-popup.game-preview-popup-mobile-modal.game-preview-popup-with-description:not(.game-preview-popup-with-actions) {
+        width: calc(100vw - 24px) !important;
+        max-width: calc(100vw - 24px) !important;
+    }
+
+    body > .game-preview-popup.game-preview-popup-mobile-modal .preview-actions,
+    body > .game-preview-popup.game-preview-popup-mobile-modal .preview-description {
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
+    }
+
+    body > .game-preview-popup.game-preview-popup-mobile-modal .preview-actions {
+        display: flex;
+        flex: 0 0 auto;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    body > .game-preview-popup.game-preview-popup-mobile-modal .preview-description {
+        display: flex;
+        flex: 0 0 auto;
+        min-height: 0;
+        padding: 30px 22px 34px;
+
+        font-size: 14px;
+        line-height: 1.45;
+        overflow-wrap: anywhere;
+
+        aspect-ratio: auto;
+    }
 
     body > .game-preview-popup.game-preview-popup-mobile-modal::after {
         display: none;
@@ -2338,23 +2393,6 @@ body > .game-preview-popup.game-preview-popup-mobile-modal {
         margin-bottom: -32px;
 
         background: rgb(32 35 42 / 94%);
-    }
-
-    .game-preview-popup-mobile-modal .preview-description {
-        flex: 0 0 auto;
-
-        min-height: 0;
-        padding: 30px 22px 34px;
-
-        font-size: 14px;
-        line-height: 1.45;
-        overflow-wrap: anywhere;
-
-        aspect-ratio: auto;
-    }
-
-    .game-preview-popup-mobile-modal .preview-actions {
-        flex: 0 0 auto;
     }
 
     .game-preview-popup-mobile-modal .preview-image {
@@ -2380,15 +2418,23 @@ body > .game-preview-popup.game-preview-popup-mobile-modal {
     .selected-video-title {
         font-size: 15px;
     }
-    .back-to-top {
-    right: max(10px, env(safe-area-inset-right));
-    bottom: calc(
-        58px +
-        env(safe-area-inset-bottom) +
-        10px
-    );
-}
 
+    /*
+     * Кнопка «Наверх» располагается полностью
+     * над мобильной навигацией.
+     */
+    .back-to-top {
+        right: max(
+            10px,
+            env(safe-area-inset-right)
+        );
+        bottom: calc(
+            58px +
+            env(safe-area-inset-bottom) +
+            10px
+        );
+        z-index: 100004;
+    }
 }
 
 
@@ -2399,6 +2445,26 @@ body > .game-preview-popup.game-preview-popup-mobile-modal {
  */
 
 @media (max-width: 400px) {
+    .mobile-tier-navigation {
+        gap: 0;
+        padding-right: 0;
+        padding-left: 0;
+    }
+
+    .mobile-tier-navigation-button {
+        flex: 1 1 0;
+        width: 0;
+        min-width: 0;
+        min-height: 52px;
+        padding: 5px 2px;
+        font-size: 13px;
+    }
+
+    .mobile-tier-navigation-button.home-button {
+        flex-grow: 1;
+        min-width: 0;
+        font-size: 20px;
+    }
 
     .tier-label {
         flex-basis: 45px;
@@ -2441,19 +2507,21 @@ body > .game-preview-popup.game-preview-popup-mobile-modal {
     }
 
     .back-to-top {
-        right: max(8px, env(safe-area-inset-right));
+        right: max(
+            8px,
+            env(safe-area-inset-right)
+        );
         bottom: calc(
-            58px +
+            52px +
             env(safe-area-inset-bottom) +
             8px
         );
-    
+
         width: 38px;
         max-width: 38px;
         height: 38px;
         max-height: 38px;
     }
-
 
     .back-to-top span:first-child {
         font-size: 20px;
@@ -2480,43 +2548,9 @@ body > .game-preview-popup.game-preview-popup-mobile-modal {
     .game-preview-close,
     .preview-link,
     .filter-action-button,
-.favorites-filter-button,
-.mobile-tier-navigation-button {
-
-    
-}
-/*
- * =========================================================
- * Положение кнопки «Наверх» над мобильной навигацией
- * =========================================================
- */
-
-@media (max-width: 600px) {
-    .back-to-top {
-        right: max(
-            10px,
-            env(safe-area-inset-right)
-        );
-        bottom: calc(
-            58px +
-            env(safe-area-inset-bottom) +
-            12px
-        );
-        z-index: 100004;
+    .favorites-filter-button,
+    .mobile-tier-navigation-button {
+        transition: none;
+        animation: none;
     }
 }
-
-@media (max-width: 400px) {
-    .back-to-top {
-        right: max(
-            8px,
-            env(safe-area-inset-right)
-        );
-        bottom: calc(
-            58px +
-            env(safe-area-inset-bottom) +
-            10px
-        );
-    }
-}
-
