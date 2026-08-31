@@ -735,6 +735,27 @@ body.custom-mode-view .custom-trash-drop-area {
     user-select: none;
     touch-action: none;
 }
+.custom-games-container .game-card {
+    transition:
+        transform 0.22s cubic-bezier(0.22, 1, 0.36, 1),
+        opacity 0.18s ease,
+        box-shadow 0.22s ease;
+}
+
+body.custom-drag-active
+.custom-games-container
+.game-card:not(.is-dragging) {
+    transition:
+        transform 0.22s cubic-bezier(0.22, 1, 0.36, 1),
+        opacity 0.18s ease;
+}
+
+body.custom-drag-active
+.custom-games-container
+.game-card.is-dragging {
+    opacity: 0.3;
+    transform: scale(0.97);
+}
 
 .custom-games-container .game-card:hover {
     transform: translateY(-3px);
