@@ -1,7 +1,19 @@
 import {
     loadGames,
-    getGameTags
+    getGameTags,
+    getVideoUrl,
+    getVideoTitle,
+    getVideoNumber,
+    getVideoLabel
 } from './data.js';
+import {
+    isFavoritesFilterActive,
+    getActiveFavoriteIds,
+    setFavoritesFilter
+} from './favorites.js';
+import {
+    setPriceMode
+} from './steam-price.js';
 
 import {
     createGameCard
@@ -54,6 +66,9 @@ async function init() {
             await loadGames();
 
         fillTagFilter();
+        fillVideoFilter();
+setCustomFiltersFromUrl();
+
 
         const startData =
             getStartLayout(
