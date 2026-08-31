@@ -21,7 +21,10 @@ const MOBILE_PREVIEW_QUERY =
 export function setupCardHover(
     card,
     name,
-    steamLink
+    steamLink,
+    {
+        openOnCardClick = true
+    } = {}
 ) {
     let closeTimer = null;
     let layerCleanupTimer = null;
@@ -32,7 +35,7 @@ export function setupCardHover(
         );
 
     if (!popup) {
-        return;
+        return null;
     }
 
     const closeButton =
@@ -354,6 +357,12 @@ export function setupCardHover(
         'click',
         event => {
             if (
+                !openOnCardClick
+            ) {
+                return;
+            }
+
+            if (
                 event.target.closest(
                     '.game-preview-popup'
                 )
@@ -368,6 +377,12 @@ export function setupCardHover(
     card.addEventListener(
         'keydown',
         event => {
+            if (
+                !openOnCardClick
+            ) {
+                return;
+            }
+
             if (
                 event.key !== 'Enter' &&
                 event.key !== ' '
@@ -411,6 +426,12 @@ export function setupCardHover(
         'focusin',
         () => {
             if (
+                !openOnCardClick
+            ) {
+                return;
+            }
+
+            if (
                 document.activeElement === card &&
                 !isMobilePreview()
             ) {
@@ -442,6 +463,8 @@ export function setupCardHover(
 
     popup._closePreviewImmediately =
         closePreviewImmediately;
+
+    return openPreview;
 }
 
 
