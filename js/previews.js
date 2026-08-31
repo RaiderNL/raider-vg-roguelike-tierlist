@@ -15,6 +15,10 @@ import {
 } from './video.js';
 
 
+const MOBILE_PREVIEW_QUERY =
+    '(max-width: 600px)';
+
+
 export function setupCardHover(
     card,
     name,
@@ -37,6 +41,15 @@ export function setupCardHover(
         return;
     }
 
+    const closeButton =
+        createPreviewCloseButton(
+            card
+        );
+
+    popup.appendChild(
+        closeButton
+    );
+
     card.classList.add(
         'game-card-clickable'
     );
@@ -55,6 +68,11 @@ export function setupCardHover(
         'aria-label',
         `Открыть меню игры ${name}`
     );
+
+    const isMobilePreview =
+        () => window.matchMedia(
+            MOBILE_PREVIEW_QUERY
+        ).matches;
 
     const cancelClose = () => {
         if (
@@ -80,10 +98,34 @@ export function setupCardHover(
         }
     };
 
+    const closePreviewImmediately = () => {
+        cancelClose();
+
+        card.classList.add(
+            PREVIEW_CLOSED_CLASS
+        );
+
+        card.classList.remove(
+            PREVIEW_READY_CLASS
+        );
+
+        popup.classList.remove(
+            'game-preview-popup-mobile-modal'
+        );
+
+        card.classList.remove(
+            ACTIVE_CARD_CLASS
+        );
+
+        setTierRowActive(
+            card,
+            false
+        );
+    };
+
     /*
-     * При активном фильтре видео popup карточки
-     * скрывается, поэтому клик по карточке открывает
-     * страницу игры в Steam.
+     * В режиме выбранного видео popup скрыт,
+     * поэтому карточка ведёт на Steam-страницу.
      */
     const openSteamPageForSelectedVideo = () => {
         const layout =
@@ -131,6 +173,14 @@ export function setupCardHover(
             return;
         }
 
+        const mobilePreview =
+            isMobilePreview();
+
+        popup.classList.toggle(
+            'game-preview-popup-mobile-modal',
+            mobilePreview
+        );
+
         card.classList.remove(
             PREVIEW_CLOSED_CLASS
         );
@@ -147,14 +197,27 @@ export function setupCardHover(
         requestAnimationFrame(
             () => {
                 if (
-                    !card.classList.contains(
+                    card.classList.contains(
                         PREVIEW_CLOSED_CLASS
                     )
                 ) {
-                    positionPreview(
-                        card
-                    );
+                    return;
                 }
+
+                if (
+                    mobilePreview
+                ) {
+                    popup.scrollTop =
+                        0;
+
+                    closeButton.focus();
+
+                    return;
+                }
+
+                positionPreview(
+                    card
+                );
             }
         );
     };
@@ -203,6 +266,12 @@ export function setupCardHover(
         respectFocus = true
     ) => {
         if (
+            isMobilePreview()
+        ) {
+            return;
+        }
+
+        if (
             closeTimer
         ) {
             clearTimeout(
@@ -250,6 +319,18 @@ export function setupCardHover(
             );
     };
 
+    closeButton.addEventListener(
+        'click',
+        event => {
+            event.preventDefault();
+            event.stopPropagation();
+
+            closePreviewImmediately();
+
+            card.focus();
+        }
+    );
+
     popup.addEventListener(
         'mouseenter',
         cancelClose
@@ -270,6 +351,13 @@ export function setupCardHover(
             closePreview(
                 false
             );
+        }
+    );
+
+    popup.addEventListener(
+        'click',
+        event => {
+            event.stopPropagation();
         }
     );
 
@@ -346,7 +434,8 @@ export function setupCardHover(
         'focusin',
         () => {
             if (
-                document.activeElement === card
+                document.activeElement === card &&
+                !isMobilePreview()
             ) {
                 openPreview();
             }
@@ -372,19 +461,36 @@ export function setupCardHover(
         cancelClose;
 
     card._closePreviewImmediately =
-        () => {
-            cancelClose();
+        closePreviewImmediately;
+}
 
-            card.classList.add(
-                PREVIEW_CLOSED_CLASS
-            );
 
-            card.classList.remove(
-                PREVIEW_READY_CLASS
-            );
+function createPreviewCloseButton(
+    card
+) {
+    const button =
+        document.createElement(
+            'button'
+        );
 
-            scheduleLayerCleanup();
-        };
+    button.className =
+        'game-preview-close';
+
+    button.type =
+        'button';
+
+    button.setAttribute(
+        'aria-label',
+        'Закрыть меню игры'
+    );
+
+    button.title =
+        'Закрыть';
+
+    button.textContent =
+        '×';
+
+    return button;
 }
 
 
@@ -505,13 +611,6 @@ export function createPreviewPopup({
             descriptionElement
         );
     }
-
-    popup.addEventListener(
-        'click',
-        event => {
-            event.stopPropagation();
-        }
-    );
 
     popup.addEventListener(
         'keydown',
@@ -707,6 +806,22 @@ function positionPreview(
         return;
     }
 
+    if (
+        window.matchMedia(
+            MOBILE_PREVIEW_QUERY
+        ).matches
+    ) {
+        popup.classList.add(
+            'game-preview-popup-mobile-modal'
+        );
+
+        return;
+    }
+
+    popup.classList.remove(
+        'game-preview-popup-mobile-modal'
+    );
+
     card.classList.remove(
         PREVIEW_READY_CLASS
     );
@@ -882,18 +997,9 @@ export function updateVisiblePreviewPositions() {
         )
         .forEach(
             card => {
-                const popup =
-                    card.querySelector(
-                        '.game-preview-popup'
-                    );
-
-                if (
-                    popup
-                ) {
-                    positionPreview(
-                        card
-                    );
-                }
+                positionPreview(
+                    card
+                );
             }
         );
 }
