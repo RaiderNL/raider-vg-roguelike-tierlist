@@ -751,17 +751,6 @@ body.custom-mode-view .custom-trash-drop-area {
     cursor: grabbing;
 }
 
-.custom-drop-placeholder {
-    flex: 0 0 190px;
-
-    width: 190px;
-    min-height: 190px;
-
-    background: rgb(37 99 235 / 10%);
-    border: 2px dashed var(--color-primary);
-    border-radius: var(--radius-md);
-}
-
 
 /*
  * =========================================================
@@ -832,10 +821,6 @@ body.custom-drag-active
     display: none !important;
 }
 
-body.custom-drag-active
-.game-card {
-    pointer-events: none;
-}
 
 body.custom-mode-edit
 .custom-games-container
@@ -849,12 +834,6 @@ body.custom-mode-edit
     cursor: grabbing;
 }
 
-body.custom-mode-edit .custom-drop-placeholder {
-    flex-basis: 142px;
-
-    width: 142px;
-    min-height: 142px;
-}
 
 body.custom-mode-edit .custom-tier-row {
     min-height: 116px;
