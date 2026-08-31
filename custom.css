@@ -1116,10 +1116,10 @@ body.custom-mode-view .custom-unranked-section {
  * Видимость по режимам
  * ========================================================= */
 
-body.custom-mode-view #custom-edit-controls,
 body.custom-mode-view #custom-edit-actions {
     display: none;
 }
+
 
 body.custom-mode-edit #custom-view-actions {
     display: none;
