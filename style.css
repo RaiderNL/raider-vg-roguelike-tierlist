@@ -2277,40 +2277,45 @@ body.price-mode-active #tier-F .game-price-discount {
     /*
      * Открытый popup переносится в body через previews.js.
      */
-    body > .game-preview-popup.game-preview-popup-mobile-modal {
-        position: fixed !important;
-        top: 50dvh !important;
-        right: auto !important;
-        bottom: auto !important;
-        left: 50vw !important;
-        z-index: 100003 !important;
+body > .game-preview-popup.game-preview-popup-mobile-modal {
+    position: fixed !important;
+    top: 50dvh !important;
+    right: auto !important;
+    bottom: auto !important;
+    left: 50vw !important;
+    z-index: 100003 !important;
 
-        display: flex !important;
-        flex-direction: column;
+    display: flex !important;
+    flex-direction: column;
 
-        width: calc(100vw - 24px) !important;
-        max-width: calc(100vw - 24px);
-        max-height: calc(100dvh - 24px);
-        padding: 12px;
-        overflow-x: hidden;
-        overflow-y: auto;
+    width: calc(100vw - 24px) !important;
+    max-width: calc(100vw - 24px) !important;
+    max-height: calc(100dvh - 24px);
 
-        visibility: visible !important;
-        opacity: 1 !important;
-        pointer-events: auto !important;
+    padding: 12px;
+    overflow-x: hidden;
+    overflow-y: auto;
 
-        background: var(--color-dark);
-        transform: translate(-50%, -50%) !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
 
-        overscroll-behavior: contain;
-        -webkit-overflow-scrolling: touch;
-    }
+    background: var(--color-dark);
+    transform: translate(-50%, -50%) !important;
 
-    body > .game-preview-popup.game-preview-popup-mobile-modal
-    .game-preview-popup-with-description
-    .game-preview-popup-with-actions {
-        flex-direction: column;
-    }
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+}
+
+
+        body > .game-preview-popup.game-preview-popup-mobile-modal.game-preview-popup-with-description.game-preview-popup-with-actions {
+            flex-direction: column;
+            align-items: stretch;
+        
+            width: calc(100vw - 24px) !important;
+            max-width: calc(100vw - 24px) !important;
+        }
+
 
     body > .game-preview-popup.game-preview-popup-mobile-modal::after {
         display: none;
