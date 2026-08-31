@@ -763,18 +763,19 @@ body.custom-drag-active
  * ========================================================= */
 
 .custom-drop-placeholder {
-    flex: 0 0 190px;
+    flex: 0 0 142px;
 
-    width: 190px;
-    min-height: 190px;
+    width: 142px;
+    min-height: 142px;
     box-sizing: border-box;
 
     pointer-events: none;
 
-    background: rgb(37 99 235 / 10%);
+    background: rgb(37 99 235 / 8%);
     border: 2px dashed var(--color-primary);
-    border-radius: var(--radius-md);
+    border-radius: var(--radius-sm);
 }
+
 
 
 body.custom-mode-edit
