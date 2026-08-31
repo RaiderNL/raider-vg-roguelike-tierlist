@@ -841,6 +841,116 @@ iframe {
 
     background: #e5e7eb;
 }
+/*
+ * =========================================================
+ * Кнопка избранного на карточке
+ * =========================================================
+ */
+
+.favorite-button {
+    position: absolute;
+    top: 6px;
+    left: 6px;
+    z-index: 4;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 32px;
+    height: 32px;
+    padding: 0;
+
+    color: #fff;
+    font-size: 25px;
+    line-height: 1;
+
+    cursor: pointer;
+
+    background: rgb(32 35 42 / 82%);
+    border: 1px solid rgb(255 255 255 / 28%);
+    border-radius: var(--radius-round);
+    box-shadow: 0 2px 6px rgb(0 0 0 / 28%);
+
+    opacity: 0;
+    visibility: hidden;
+
+    transition:
+        color 0.2s ease,
+        background 0.2s ease,
+        border-color 0.2s ease,
+        opacity 0.2s ease,
+        visibility 0.2s ease,
+        transform 0.2s ease;
+}
+
+
+/*
+ * Звёздочка появляется при наведении,
+ * фокусе или открытом popup.
+ */
+.game-card:hover .favorite-button,
+.game-card:focus-within .favorite-button,
+.game-card:not(.preview-closed) .favorite-button {
+    opacity: 1;
+    visibility: visible;
+}
+
+
+/*
+ * Уже добавленная игра показывает звёздочку
+ * даже в неактивном состоянии карточки.
+ */
+.favorite-button.is-favorite {
+    color: #f5c542;
+    opacity: 1;
+    visibility: visible;
+
+    background: rgb(32 35 42 / 92%);
+    border-color: rgb(245 197 66 / 70%);
+}
+
+
+.favorite-button:hover {
+    color: #ffe58a;
+    background: rgb(32 35 42 / 100%);
+    border-color: #f5c542;
+    transform: scale(1.1);
+}
+
+
+.favorite-button.is-favorite:hover {
+    color: #ffd84d;
+}
+
+
+.favorite-button:active {
+    transform: scale(0.94);
+}
+
+
+.favorite-button:focus-visible {
+    outline: 3px solid var(--color-accent-focus);
+    outline-offset: 2px;
+}
+
+
+/*
+ * На мобильных устройствах звёздочка
+ * не должна перекрываться другими элементами.
+ */
+@media (max-width: 600px) {
+    .favorite-button {
+        top: 5px;
+        left: 5px;
+        z-index: 5;
+
+        width: 30px;
+        height: 30px;
+
+        font-size: 23px;
+    }
+}
 
 #tier-S .game-card,
 #tier-A .game-card {
