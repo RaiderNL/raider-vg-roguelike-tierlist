@@ -168,10 +168,7 @@ function init() {
         document.querySelector(
             '#back-to-top'
         );
-        const tierListWidthRange =
-        document.querySelector(
-            '#tier-list-width-range'
-        );
+
 
     const tierCardScaleRange =
         document.querySelector(
@@ -288,7 +285,6 @@ function init() {
         backToTopButton
     );
         setupTierListAppearanceControls(
-        tierListWidthRange,
         tierCardScaleRange
     );
 
@@ -926,46 +922,13 @@ function showLoadingError() {
  * Настройка размеров тир-листа
  * =========================================================
  */
-
 function setupTierListAppearanceControls(
-    widthRange,
     cardScaleRange
 ) {
-    const widthValue =
-        document.querySelector(
-            '#tier-list-width-value'
-        );
-
     const cardScaleValue =
         document.querySelector(
             '#tier-card-scale-value'
         );
-
-    const updateTierListWidth =
-        () => {
-            if (
-                !widthRange
-            ) {
-                return;
-            }
-
-            const value =
-                Number(
-                    widthRange.value
-                );
-
-            document.documentElement.style.setProperty(
-                '--tier-list-width',
-                `${value}%`
-            );
-
-            if (
-                widthValue
-            ) {
-                widthValue.textContent =
-                    `${value}%`;
-            }
-        };
 
     const updateCardScale =
         () => {
@@ -995,20 +958,13 @@ function setupTierListAppearanceControls(
             }
         };
 
-    widthRange?.addEventListener(
-        'input',
-        updateTierListWidth
-    );
-
     cardScaleRange?.addEventListener(
         'input',
         updateCardScale
     );
 
-    updateTierListWidth();
     updateCardScale();
 }
-
 
 /*
  * =========================================================
