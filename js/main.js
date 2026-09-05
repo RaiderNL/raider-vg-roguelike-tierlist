@@ -1208,6 +1208,168 @@ async function downloadTierListScreenshot() {
                             clonedDocument.head.appendChild(
                                 style
                             );
+                            /*
+ * html2canvas ненадёжно поддерживает object-fit: cover.
+ *
+ * Поэтому вручную рассчитываем размер обложки:
+ * она полностью заполняет .game-media, а лишние части
+ * выходят за границы контейнера и обрезаются через overflow.
+ */
+clonedDocument
+    .querySelectorAll(
+        '.tierlist-screenshot-render .game-media'
+    )
+    .forEach(
+        media => {
+            const image =
+                media.querySelector(
+                    '.game-cover'
+                );
+
+            if (
+                !image ||
+                !image.naturalWidth ||
+                !image.naturalHeight
+            ) {
+                return;
+            }
+
+            const mediaWidth =
+                media.offsetWidth;
+
+            const mediaHeight =
+                media.offsetHeight;
+
+            if (
+                !mediaWidth ||
+                !mediaHeight
+            ) {
+                return;
+            }
+
+            const imageRatio =
+                image.naturalWidth /
+                image.naturalHeight;
+
+            const mediaRatio =
+                mediaWidth /
+                mediaHeight;
+
+            let renderedWidth;
+            let renderedHeight;
+
+            /*
+             * Повторяем object-fit: cover:
+             *
+             * Если изображение относительно шире блока,
+             * ограничиваем его по высоте — обрежутся края.
+             *
+             * Если оно относительно выше блока,
+             * ограничиваем по ширине — обрежутся верх и низ.
+             */
+            if (
+                imageRatio >
+                mediaRatio
+            ) {
+                renderedHeight =
+                    mediaHeight;
+
+                renderedWidth =
+                    mediaHeight *
+                    imageRatio;
+            } else {
+                renderedWidth =
+                    mediaWidth;
+
+                renderedHeight =
+                    mediaWidth /
+                    imageRatio;
+            }
+
+            const offsetLeft =
+                (
+                    mediaWidth -
+                    renderedWidth
+                ) / 2;
+
+            const offsetTop =
+                (
+                    mediaHeight -
+                    renderedHeight
+                ) / 2;
+
+            image.style.setProperty(
+                'position',
+                'absolute',
+                'important'
+            );
+
+            image.style.setProperty(
+                'display',
+                'block',
+                'important'
+            );
+
+            image.style.setProperty(
+                'width',
+                `${renderedWidth}px`,
+                'important'
+            );
+
+            image.style.setProperty(
+                'height',
+                `${renderedHeight}px`,
+                'important'
+            );
+
+            image.style.setProperty(
+                'max-width',
+                'none',
+                'important'
+            );
+
+            image.style.setProperty(
+                'max-height',
+                'none',
+                'important'
+            );
+
+            image.style.setProperty(
+                'left',
+                `${offsetLeft}px`,
+                'important'
+            );
+
+            image.style.setProperty(
+                'top',
+                `${offsetTop}px`,
+                'important'
+            );
+
+            image.style.setProperty(
+                'right',
+                'auto',
+                'important'
+            );
+
+            image.style.setProperty(
+                'bottom',
+                'auto',
+                'important'
+            );
+
+            /*
+             * Теперь object-fit уже не нужен:
+             * размеры рассчитаны вручную.
+             */
+            image.style.setProperty(
+                'object-fit',
+                'fill',
+                'important'
+            );
+        }
+    );
+
                         }
                 }
             );
