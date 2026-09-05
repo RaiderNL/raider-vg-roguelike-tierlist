@@ -5,8 +5,10 @@ import {
 import {
     loadGames,
     normalizeTier,
-    compareGamesByOrder
+    compareGamesByOrder,
+    getVideoUrl
 } from './data.js';
+
 
 import {
     fillTagFilter,
@@ -55,6 +57,14 @@ import {
 
 const SEARCH_RENDER_DELAY =
     150;
+const VIDEO_PRESENTATION_INTERVAL =
+    1000;
+
+const VIDEO_PRESENTATION_ACTIVE_CLASS =
+    'video-presentation-active';
+
+const VIDEO_PRESENTATION_TIER_ACTIVE_CLASS =
+    'tier-row-presentation-active';
 
 const BACK_TO_TOP_VISIBLE_CLASS =
     'is-visible';
@@ -79,6 +89,17 @@ let screenshotFormatMenu =
 
 let screenshotFormatMenuCleanup =
     null;
+let videoPresentationTimer =
+    null;
+
+let videoPresentationGames =
+    [];
+
+let videoPresentationStep =
+    0;
+
+let videoPresentationVideoUrl =
+    '';
 
 
 
@@ -185,6 +206,11 @@ function init() {
         document.querySelector(
             '#download-tierlist-screenshot'
         );
+    const videoPresentationButton =
+    document.querySelector(
+        '#video-presentation'
+    );
+
 
 
 
@@ -219,6 +245,11 @@ function init() {
             renderGames
         );
     }
+    videoPresentationButton?.addEventListener(
+    'click',
+    toggleVideoPresentation
+);
+
     if (
     favoritesFilter
     ) {
@@ -365,6 +396,15 @@ function scheduleSearchRender() {
 
 
 function renderGames() {
+    if (
+    videoPresentationTimer
+) {
+    stopVideoPresentation({
+        restoreRegularView:
+            false
+    });
+}
+
     closeAllPreviews();
 
     clearTierContainers();
@@ -385,6 +425,10 @@ function renderGames() {
     updateVideoFilterState(
         selectedVideo
     );
+    updateVideoPresentationButton(
+    selectedVideo
+);
+
     updateFavoritesFilterState();
 
 
@@ -427,32 +471,18 @@ const filteredGames =
 
 
     filteredGames.forEach(
-        game => {
-            const tier =
-                normalizeTier(
-                    game['Tier']
-                );
-
-            const container =
-                tierContainers[tier];
-
-            if (
-                !container
-            ) {
-                return;
+    game => {
+        appendGameCardToTier(
+            game,
+            {
+                videoFilterActive:
+                    selectedVideo !== ''
             }
+        );
+    }
+);
+    function clearTierContainers() {
 
-            container.appendChild(
-                createGameCard(
-                    game,
-                    {
-                        videoFilterActive:
-                            selectedVideo !== ''
-                    }
-                )
-            );
-        }
-    );
 
 
     renderSelectedVideo(
@@ -461,6 +491,545 @@ const filteredGames =
     );
 }
 
+/*
+ * =========================================================
+ * Презентация вердиктов выбранного видео
+ * =========================================================
+ *
+ * Режим предназначен для записи видео:
+ * игры выбранного ролика появляются по одной,
+ * в глобальном порядке из поля Order.
+ */
+
+
+/*
+ * Добавляет карточку в её тир.
+ *
+ * Обычный рендер использует эту функцию без анимации.
+ * Режим презентации передаёт presentationEntry: true,
+ * чтобы карточка появилась с эффектом «помещения» в тир.
+ */
+function appendGameCardToTier(
+    game,
+    {
+        videoFilterActive = false,
+        presentationEntry = false
+    } = {}
+) {
+    const tier =
+        normalizeTier(
+            game['Tier']
+        );
+
+    const container =
+        tierContainers[tier];
+
+    if (
+        !container
+    ) {
+        return null;
+    }
+
+    const card =
+        createGameCard(
+            game,
+            {
+                videoFilterActive,
+
+                /*
+                 * Во время записи не нужны звёздочка,
+                 * popup и реакция карточки на клик.
+                 */
+                showFavorite:
+                    !presentationEntry,
+
+                openOnCardClick:
+                    !presentationEntry
+            }
+        );
+
+    if (
+        presentationEntry
+    ) {
+        card.classList.add(
+            'presentation-card-entering'
+        );
+    }
+
+    container.appendChild(
+        card
+    );
+
+    if (
+        presentationEntry
+    ) {
+        animatePresentationCard(
+            card,
+            tier
+        );
+    }
+
+    return card;
+}
+
+
+/*
+ * Запускает CSS-анимацию новой карточки и кратко
+ * подсвечивает ряд, в который она была добавлена.
+ */
+function animatePresentationCard(
+    card,
+    tier
+) {
+    const tierRow =
+        tierContainers[tier]?.closest(
+            '.tier-row'
+        );
+
+    /*
+     * Первый requestAnimationFrame даёт браузеру
+     * применить стартовое состояние карточки.
+     *
+     * Второй гарантирует, что переход к анимации
+     * не будет склеен с её вставкой в DOM.
+     */
+    requestAnimationFrame(
+        () => {
+            requestAnimationFrame(
+                () => {
+                    if (
+                        !card.isConnected
+                    ) {
+                        return;
+                    }
+
+                    card.classList.remove(
+                        'presentation-card-entering'
+                    );
+
+                    card.classList.add(
+                        'presentation-card-visible'
+                    );
+
+                    if (
+                        !tierRow
+                    ) {
+                        return;
+                    }
+
+                    tierRow.classList.remove(
+                        VIDEO_PRESENTATION_TIER_ACTIVE_CLASS
+                    );
+
+                    /*
+                     * Перезапускаем подсветку тира,
+                     * если игры подряд попали в один
+                     * и тот же уровень.
+                     */
+                    void tierRow.offsetWidth;
+
+                    tierRow.classList.add(
+                        VIDEO_PRESENTATION_TIER_ACTIVE_CLASS
+                    );
+
+                    window.setTimeout(
+                        () => {
+                            tierRow.classList.remove(
+                                VIDEO_PRESENTATION_TIER_ACTIVE_CLASS
+                            );
+                        },
+                        720
+                    );
+                }
+            );
+        }
+    );
+}
+
+
+/*
+ * Кнопка работает в двух состояниях:
+ *
+ * ▶ Показать тирлист — начать анимацию;
+ * ■ Остановить показ — отменить её и вернуть
+ * обычный интерактивный список выбранного ролика.
+ */
+function toggleVideoPresentation() {
+    if (
+        isVideoPresentationActive()
+    ) {
+        stopVideoPresentation({
+            restoreRegularView:
+                true
+        });
+
+        return;
+    }
+
+    startVideoPresentation();
+}
+
+
+/*
+ * Запускает показ игр выбранного ролика.
+ *
+ * Важно: поиск, жанры и избранное намеренно
+ * не учитываются. Используется только выбранный
+ * URL видео и глобальный порядок Order.
+ */
+function startVideoPresentation() {
+    const selectedVideo =
+        getSelectedVideo();
+
+    if (
+        !selectedVideo
+    ) {
+        return;
+    }
+
+    closeAllPreviews();
+
+    const gamesForVideo =
+        appState.games
+            .filter(
+                game =>
+                    getVideoUrl(
+                        game
+                    ) === selectedVideo
+            )
+            .sort(
+                compareGamesByOrder
+            );
+
+    /*
+     * На случай некорректных данных или видео,
+     * в котором пока нет ни одной игры.
+     */
+    if (
+        gamesForVideo.length === 0
+    ) {
+        return;
+    }
+
+    clearTierContainers();
+
+    videoPresentationGames =
+        gamesForVideo;
+
+    videoPresentationStep =
+        0;
+
+    videoPresentationVideoUrl =
+        selectedVideo;
+
+    const layout =
+        document.querySelector(
+            '.tier-list-layout'
+        );
+
+    layout?.classList.add(
+        VIDEO_PRESENTATION_ACTIVE_CLASS
+    );
+
+    updateVideoPresentationButton(
+        selectedVideo
+    );
+
+    /*
+     * Первую игру показываем мгновенно —
+     * не нужно ждать одну секунду после клика.
+     */
+    showNextVideoPresentationGame();
+
+    /*
+     * Если ролик состоял только из одной игры,
+     * showNextVideoPresentationGame() уже завершил
+     * показ и запускать interval не требуется.
+     */
+    if (
+        videoPresentationStep >=
+        videoPresentationGames.length
+    ) {
+        finishVideoPresentation();
+
+        return;
+    }
+
+    videoPresentationTimer =
+        window.setInterval(
+            showNextVideoPresentationGame,
+            VIDEO_PRESENTATION_INTERVAL
+        );
+}
+
+
+/*
+ * Показывает одну следующую игру в порядке Order.
+ */
+function showNextVideoPresentationGame() {
+    const game =
+        videoPresentationGames[
+            videoPresentationStep
+        ];
+
+    if (
+        !game
+    ) {
+        finishVideoPresentation();
+
+        return;
+    }
+
+    appendGameCardToTier(
+        game,
+        {
+            videoFilterActive:
+                true,
+
+            presentationEntry:
+                true
+        }
+    );
+
+    videoPresentationStep += 1;
+
+    if (
+        videoPresentationStep >=
+        videoPresentationGames.length
+    ) {
+        finishVideoPresentation();
+    }
+}
+
+
+/*
+ * Завершение происходит автоматически после
+ * последней карточки.
+ *
+ * Сам режим остаётся визуально активным:
+ * - справа не возвращается панель YouTube;
+ * - карточки не становятся интерактивными;
+ * - итоговый тирлист остаётся чистой сценой
+ *   для записи или захвата в OBS.
+ *
+ * Кнопка остаётся «Остановить показ»: она вернёт
+ * обычный вид со звёздочками, popup и панелью видео.
+ */
+function finishVideoPresentation() {
+    if (
+        videoPresentationTimer
+    ) {
+        window.clearInterval(
+            videoPresentationTimer
+        );
+
+        videoPresentationTimer =
+            null;
+    }
+
+    updateVideoPresentationButton(
+        videoPresentationVideoUrl
+    );
+}
+
+
+/*
+ * Полностью завершает презентационный режим.
+ *
+ * restoreRegularView: true:
+ * пользователь нажал Stop — нужно перерисовать
+ * обычный тирлист и вернуть все его элементы.
+ *
+ * restoreRegularView: false:
+ * renderGames() уже сам готовится нарисовать
+ * новый список после смены фильтра.
+ */
+function stopVideoPresentation(
+    {
+        restoreRegularView = false
+    } = {}
+) {
+    if (
+        videoPresentationTimer
+    ) {
+        window.clearInterval(
+            videoPresentationTimer
+        );
+
+        videoPresentationTimer =
+            null;
+    }
+
+    videoPresentationGames =
+        [];
+
+    videoPresentationStep =
+        0;
+
+    videoPresentationVideoUrl =
+        '';
+
+    const layout =
+        document.querySelector(
+            '.tier-list-layout'
+        );
+
+    layout?.classList.remove(
+        VIDEO_PRESENTATION_ACTIVE_CLASS
+    );
+
+    /*
+     * Убираем возможную краткую подсветку,
+     * если остановка произошла прямо во время
+     * появления карточки.
+     */
+    document
+        .querySelectorAll(
+            `.${VIDEO_PRESENTATION_TIER_ACTIVE_CLASS}`
+        )
+        .forEach(
+            tierRow => {
+                tierRow.classList.remove(
+                    VIDEO_PRESENTATION_TIER_ACTIVE_CLASS
+                );
+            }
+        );
+
+    if (
+        restoreRegularView
+    ) {
+        renderGames();
+
+        return;
+    }
+
+    updateVideoPresentationButton(
+        getSelectedVideo()
+    );
+}
+
+
+/*
+ * Режим считается активным не только пока работает
+ * таймер, но и после завершения последней игры.
+ *
+ * Благодаря этому готовый тирлист остаётся «чистой
+ * сценой», пока пользователь сам не нажмёт Stop.
+ */
+function isVideoPresentationActive() {
+    const layout =
+        document.querySelector(
+            '.tier-list-layout'
+        );
+
+    return Boolean(
+        layout?.classList.contains(
+            VIDEO_PRESENTATION_ACTIVE_CLASS
+        )
+    );
+}
+
+
+/*
+ * Обновляет доступность и внешний вид кнопки.
+ */
+function updateVideoPresentationButton(
+    selectedVideo =
+        getSelectedVideo()
+) {
+    const button =
+        document.querySelector(
+            '#video-presentation'
+        );
+
+    if (
+        !button
+    ) {
+        return;
+    }
+
+    const hasSelectedVideo =
+        Boolean(
+            selectedVideo
+        );
+
+    const isActive =
+        isVideoPresentationActive();
+
+    button.hidden =
+        !hasSelectedVideo;
+
+    button.disabled =
+        !hasSelectedVideo;
+
+    const icon =
+        button.querySelector(
+            '.video-presentation-button-icon'
+        );
+
+    const text =
+        button.querySelector(
+            '.video-presentation-button-text'
+        );
+
+    if (
+        isActive
+    ) {
+        button.classList.add(
+            'is-active'
+        );
+
+        button.setAttribute(
+            'aria-label',
+            'Остановить показ и вернуть обычный тирлист'
+        );
+
+        button.title =
+            'Остановить показ и вернуть обычный тирлист';
+
+        if (
+            icon
+        ) {
+            icon.textContent =
+                '■';
+        }
+
+        if (
+            text
+        ) {
+            text.textContent =
+                'Остановить показ';
+        }
+
+        return;
+    }
+
+    button.classList.remove(
+        'is-active'
+    );
+
+    button.setAttribute(
+        'aria-label',
+        'Запустить показ тирлиста выбранного видео'
+    );
+
+    button.title =
+        'Запустить показ тирлиста выбранного видео';
+
+    if (
+        icon
+    ) {
+        icon.textContent =
+            '▶';
+    }
+
+    if (
+        text
+    ) {
+        text.textContent =
+            'Показать тирлист';
+    }
+}
 
 function clearTierContainers() {
     TIER_NAMES.forEach(
