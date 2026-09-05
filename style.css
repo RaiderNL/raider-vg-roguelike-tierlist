@@ -4747,5 +4747,134 @@ body.main-page {
 .tier-controls .tier-controls-quick-actions {
     margin-top: 0;
 }
+/*
+ * =========================================================
+ * Мобильная сетка тир-листа и нижняя навигация — исправление
+ * =========================================================
+ */
+
+@media (max-width: 600px) {
+    /*
+     * Оставляем место под фиксированную нижнюю панель.
+     */
+    body {
+        padding-bottom: calc(
+            66px +
+            env(safe-area-inset-bottom)
+        );
+    }
+
+    /*
+     * Нижняя навигация всегда закреплена снизу
+     * и занимает всю ширину viewport.
+     */
+    .mobile-tier-navigation {
+        position: fixed !important;
+        right: 0 !important;
+        bottom: 0 !important;
+        left: 0 !important;
+        z-index: 1000;
+
+        display: flex !important;
+        align-items: stretch;
+        justify-content: stretch;
+
+        width: 100vw !important;
+        max-width: none !important;
+        min-height: 58px;
+        padding: 0 0 env(safe-area-inset-bottom);
+
+        background: rgb(255 255 255 / 96%);
+        border-top: 1px solid rgb(207 210 216 / 90%);
+        box-shadow: 0 -4px 16px rgb(0 0 0 / 14%);
+        backdrop-filter: blur(8px);
+    }
+
+    .mobile-tier-navigation-button {
+        display: inline-flex !important;
+        flex: 1 1 0 !important;
+        align-items: center;
+        justify-content: center;
+
+        width: 0 !important;
+        min-width: 0 !important;
+        min-height: 58px;
+        padding: 5px 2px;
+
+        white-space: nowrap;
+    }
+
+    /*
+     * Контейнер карточек становится сеткой из двух колонок.
+     * Это не позволяет крупным карточкам S/A или мелким D/F
+     * менять число элементов в строке.
+     */
+    .tier-list .games-container {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        flex: 1 1 0;
+        gap: 8px;
+
+        width: 0;
+        min-width: 0;
+        padding: 10px;
+    }
+
+    /*
+     * Во всех тирах карточки имеют одинаковую ширину:
+     * ровно половина доступного пространства контейнера.
+     *
+     * !important нужен, чтобы отменить старые правила
+     * для S/A и D/E/F, а также масштабирование карточек.
+     */
+    .tier-list .game-card,
+    .tier-list #tier-S .game-card,
+    .tier-list #tier-A .game-card,
+    .tier-list #tier-B .game-card,
+    .tier-list #tier-C .game-card,
+    .tier-list #tier-D .game-card,
+    .tier-list #tier-E .game-card,
+    .tier-list #tier-F .game-card {
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+
+    /*
+     * Убираем различие в размере области обложки у S/A.
+     * Визуальная структура карточек теперь единая во всех тирах.
+     */
+    .tier-list #tier-S .game-card,
+    .tier-list #tier-A .game-card {
+        grid-template-rows:
+            minmax(0, 66.666%)
+            minmax(0, 1fr)
+            auto;
+    }
+}
+
+
+/*
+ * На очень узких экранах оставляем те же две колонки,
+ * не позволяя старому правилу с --tier-card-scale
+ * сломать сетку.
+ */
+@media (max-width: 400px) {
+    .tier-list .games-container {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 6px;
+        padding: 8px;
+    }
+
+    .tier-list .game-card,
+    .tier-list #tier-S .game-card,
+    .tier-list #tier-A .game-card,
+    .tier-list #tier-B .game-card,
+    .tier-list #tier-C .game-card,
+    .tier-list #tier-D .game-card,
+    .tier-list #tier-E .game-card,
+    .tier-list #tier-F .game-card {
+        width: 100% !important;
+    }
+}
 
 
