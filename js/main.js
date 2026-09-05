@@ -1134,10 +1134,11 @@ function updateFavoritesFilterState() {
             ? 'Показывать все игры'
             : 'Показывать только избранные игры';
 
-    const icon =
-        button.querySelector(
-            'span'
-        );
+const icon =
+    button.querySelector(
+        '.tier-control-button-icon, span[aria-hidden="true"]'
+    );
+
 
     if (
         icon
