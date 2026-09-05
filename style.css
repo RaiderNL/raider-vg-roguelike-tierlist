@@ -4575,4 +4575,7 @@ body.main-page {
         width: 100%;
     }
 }
+body {
+    outline: 8px solid red !important;
+}
 
