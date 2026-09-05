@@ -257,7 +257,29 @@ export function compareGamesByOrder(
             secondGame['Order']
         ) || 999999;
 
-    return firstOrder - secondOrder;
+    const orderDifference =
+        firstOrder -
+        secondOrder;
+
+    if (
+        orderDifference !== 0
+    ) {
+        return orderDifference;
+    }
+
+    /*
+     * Если в таблице случайно встретятся
+     * одинаковые Order, порядок всё равно
+     * останется стабильным и понятным.
+     */
+    return String(
+        firstGame['Name'] || ''
+    ).localeCompare(
+        String(
+            secondGame['Name'] || ''
+        ),
+        'ru'
+    );
 }
 
 
