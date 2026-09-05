@@ -4714,5 +4714,38 @@ body.main-page {
 .tier-controls .tier-controls-actions-list {
     gap: 7px;
 }
+/*
+ * =========================================================
+ * Финальная компактность панели управления
+ * =========================================================
+ */
+
+.tier-controls .tier-display-controls {
+    flex: 0 0 auto;
+    gap: 8px;
+}
+
+/*
+ * Важно: отменяет старое flex: 1 1 280px.
+ * Именно оно растягивало ползунок по вертикали.
+ */
+.tier-controls .tier-range-control {
+    flex: 0 0 auto;
+    min-height: 0;
+    height: auto;
+    row-gap: 5px;
+}
+
+/*
+ * Все колонки получают только необходимую им высоту.
+ */
+.tier-controls > .tier-controls-section {
+    align-self: start;
+    height: auto;
+}
+
+.tier-controls .tier-controls-quick-actions {
+    margin-top: 0;
+}
 
 
