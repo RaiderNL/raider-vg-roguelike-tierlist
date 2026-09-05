@@ -1241,172 +1241,245 @@ async function downloadTierListScreenshot(
                                      */
                                     object-position: center !important;
                                 }
+                                
                                 /*
- * =====================================================
- * Горизонтальный экспорт 16:9
- * =====================================================
- *
- * Семь рядов равномерно распределяются
- * по высоте холста 1920 × 1080.
- */
-.tierlist-screenshot-render
-.tierlist-screenshot-landscape {
-    width: 1920px !important;
-    height: 1080px !important;
-    min-width: 1920px !important;
-    max-width: none !important;
+                                 * =====================================================
+                                 * Горизонтальный экспорт 16:9
+                                 * =====================================================
+                                 *
+                                 * Классы стоят на одном .tier-list:
+                                 *
+                                 * <section class="
+                                 *     tier-list
+                                 *     tierlist-screenshot-render
+                                 *     tierlist-screenshot-landscape
+                                 * ">
+                                 *
+                                 * Поэтому между двумя классами НЕТ пробела.
+                                 */
+                                .tierlist-screenshot-render.tierlist-screenshot-landscape {
+                                    display: flex !important;
+                                    flex-direction: column !important;
+                                    gap: 6px !important;
+                                
+                                    width: 1920px !important;
+                                    min-width: 1920px !important;
+                                    max-width: none !important;
+                                    height: 1080px !important;
+                                    min-height: 1080px !important;
+                                
+                                    padding: 18px !important;
+                                    overflow: hidden !important;
+                                
+                                    background: #f3f4f6 !important;
+                                }
+                                
+                                
+                                /*
+                                 * После внутренних отступов остаётся:
+                                 *
+                                 * 1080 - 18 - 18 = 1044px
+                                 *
+                                 * Между семью рядами шесть промежутков по 6px:
+                                 *
+                                 * 1044 - 36 = 1008px
+                                 *
+                                 * 1008 / 7 = 144px на каждый тир.
+                                 *
+                                 * Высота жёсткая: ни один ряд не может разрастись
+                                 * из-за переноса карточек.
+                                 */
+                                .tierlist-screenshot-render.tierlist-screenshot-landscape
+                                .tier-row {
+                                    display: flex !important;
+                                    flex: 0 0 calc(
+                                        (100% - 36px) / 7
+                                    ) !important;
+                                
+                                    width: 100% !important;
+                                    min-width: 0 !important;
+                                    height: calc(
+                                        (100% - 36px) / 7
+                                    ) !important;
+                                    min-height: 0 !important;
+                                    max-height: calc(
+                                        (100% - 36px) / 7
+                                    ) !important;
+                                
+                                    overflow: hidden !important;
+                                    border-radius: 8px !important;
+                                }
+                                
+                                
+                                /*
+                                 * Левая полоса с буквой тира.
+                                 */
+                                .tierlist-screenshot-render.tierlist-screenshot-landscape
+                                .tier-label {
+                                    flex: 0 0 76px !important;
+                                
+                                    min-width: 76px !important;
+                                    height: 100% !important;
+                                
+                                    font-size: 25px !important;
+                                    line-height: 1 !important;
+                                }
+                                
+                                
+                                /*
+                                 * ВАЖНО:
+                                 *
+                                 * flex-wrap: nowrap запрещает A/B/C и другим тирам
+                                 * превращаться в вертикальную сетку.
+                                 *
+                                 * Если в тире больше карточек, чем физически помещается
+                                 * в строку, лишние будут скрыты справа, а не сломают
+                                 * высоту всего экспортного изображения.
+                                 */
+                                .tierlist-screenshot-render.tierlist-screenshot-landscape
+                                .games-container {
+                                    display: flex !important;
+                                    flex: 1 1 auto !important;
+                                    flex-wrap: nowrap !important;
+                                    align-items: center !important;
+                                    align-content: center !important;
+                                    justify-content: flex-start !important;
+                                    gap: 6px !important;
+                                
+                                    min-width: 0 !important;
+                                    max-width: none !important;
+                                    height: 100% !important;
+                                    min-height: 0 !important;
+                                    padding: 5px 8px !important;
+                                
+                                    overflow: hidden !important;
+                                }
+                                
+                                
+                                /*
+                                 * Все карточки получают единый размер.
+                                 *
+                                 * При высоте ряда 144px карточка 132px спокойно
+                                 * помещается с внутренними отступами контейнера.
+                                 *
+                                 * В ширину доступно примерно:
+                                 * 1920 - 36 (внешние отступы) - 76 (ярлык) = 1808px.
+                                 *
+                                 * Туда помещается примерно 13 карточек по 132px
+                                 * с промежутками по 6px.
+                                 */
+                                .tierlist-screenshot-render.tierlist-screenshot-landscape
+                                .game-card,
+                                .tierlist-screenshot-render.tierlist-screenshot-landscape
+                                #tier-S .game-card,
+                                .tierlist-screenshot-render.tierlist-screenshot-landscape
+                                #tier-A .game-card,
+                                .tierlist-screenshot-render.tierlist-screenshot-landscape
+                                #tier-B .game-card,
+                                .tierlist-screenshot-render.tierlist-screenshot-landscape
+                                #tier-C .game-card,
+                                .tierlist-screenshot-render.tierlist-screenshot-landscape
+                                #tier-D .game-card,
+                                .tierlist-screenshot-render.tierlist-screenshot-landscape
+                                #tier-E .game-card,
+                                .tierlist-screenshot-render.tierlist-screenshot-landscape
+                                #tier-F .game-card {
+                                    flex: 0 0 132px !important;
+                                
+                                    width: 132px !important;
+                                    min-width: 132px !important;
+                                    max-width: 132px !important;
+                                    height: 132px !important;
+                                    min-height: 132px !important;
+                                    max-height: 132px !important;
+                                
+                                    aspect-ratio: 1 / 1 !important;
+                                }
+                                
+                                
+                                /*
+                                 * У всех тиров одна компактная структура карточки.
+                                 * Иначе правила S/A с крупной обложкой могут
+                                 * вести себя иначе, чем B–F.
+                                 */
+                                .tierlist-screenshot-render.tierlist-screenshot-landscape
+                                .game-card,
+                                .tierlist-screenshot-render.tierlist-screenshot-landscape
+                                #tier-S .game-card,
+                                .tierlist-screenshot-render.tierlist-screenshot-landscape
+                                #tier-A .game-card {
+                                    grid-template-rows:
+                                        minmax(0, 72%)
+                                        minmax(0, 1fr)
+                                        auto !important;
+                                }
+                                
+                                
+                                /*
+                                 * Компактные подписи для карточки 132×132.
+                                 */
+                                .tierlist-screenshot-render.tierlist-screenshot-landscape
+                                .game-title,
+                                .tierlist-screenshot-render.tierlist-screenshot-landscape
+                                #tier-B .game-title,
+                                .tierlist-screenshot-render.tierlist-screenshot-landscape
+                                #tier-C .game-title,
+                                .tierlist-screenshot-render.tierlist-screenshot-landscape
+                                #tier-D .game-title,
+                                .tierlist-screenshot-render.tierlist-screenshot-landscape
+                                #tier-E .game-title,
+                                .tierlist-screenshot-render.tierlist-screenshot-landscape
+                                #tier-F .game-title {
+                                    display: -webkit-box !important;
+                                
+                                    width: calc(100% - 8px) !important;
+                                    min-height: 0 !important;
+                                    margin: 3px auto 2px !important;
+                                    overflow: hidden !important;
+                                
+                                    font-size: 9px !important;
+                                    line-height: 1.1 !important;
+                                    text-align: center !important;
+                                    text-overflow: clip !important;
+                                    white-space: normal !important;
+                                
+                                    -webkit-box-orient: vertical !important;
+                                    -webkit-line-clamp: 2 !important;
+                                }
+                                
+                                
+                                .tierlist-screenshot-render.tierlist-screenshot-landscape
+                                .game-tags,
+                                .tierlist-screenshot-render.tierlist-screenshot-landscape
+                                #tier-D .game-tags,
+                                .tierlist-screenshot-render.tierlist-screenshot-landscape
+                                #tier-E .game-tags,
+                                .tierlist-screenshot-render.tierlist-screenshot-landscape
+                                #tier-F .game-tags {
+                                    width: calc(100% - 8px) !important;
+                                    max-height: 20px !important;
+                                    margin: 0 auto 4px !important;
+                                    gap: 2px !important;
+                                
+                                    overflow: hidden !important;
+                                }
+                                
+                                
+                                .tierlist-screenshot-render.tierlist-screenshot-landscape
+                                .game-tag,
+                                .tierlist-screenshot-render.tierlist-screenshot-landscape
+                                #tier-D .game-tag,
+                                .tierlist-screenshot-render.tierlist-screenshot-landscape
+                                #tier-E .game-tag,
+                                .tierlist-screenshot-render.tierlist-screenshot-landscape
+                                #tier-F .game-tag {
+                                    max-width: 100% !important;
+                                    padding: 2px 3px !important;
+                                
+                                    font-size: 7px !important;
+                                    line-height: 1 !important;
+                                }
 
-    display: flex !important;
-    flex-direction: column !important;
-    gap: 6px !important;
-
-    padding: 18px !important;
-    overflow: hidden !important;
-
-    background: #f3f4f6 !important;
-}
-
-/*
- * Каждый тир получает одинаковую долю
- * вертикального пространства.
- */
-.tierlist-screenshot-render
-.tierlist-screenshot-landscape
-.tier-row {
-    display: flex !important;
-    flex: 1 1 0 !important;
-
-    min-height: 0 !important;
-    height: auto !important;
-
-    overflow: hidden !important;
-}
-
-/*
- * Компактные, но читаемые ярлыки тиров.
- */
-.tierlist-screenshot-render
-.tierlist-screenshot-landscape
-.tier-label {
-    flex: 0 0 76px !important;
-
-    font-size: 25px !important;
-}
-
-/*
- * В ширину доступно почти 1800px —
- * поэтому карточек помещается заметно больше.
- */
-.tierlist-screenshot-render
-.tierlist-screenshot-landscape
-.games-container {
-    display: flex !important;
-    flex: 1 1 auto !important;
-    flex-wrap: wrap !important;
-    align-content: center !important;
-    align-items: center !important;
-
-    min-height: 0 !important;
-    padding: 4px !important;
-    gap: 6px !important;
-
-    overflow: hidden !important;
-}
-
-/*
- * Единый компактный размер карточек для
- * всех тиров. 132px позволяет уместить
- * семь полноценных полос по высоте 1080px.
- */
-.tierlist-screenshot-render
-.tierlist-screenshot-landscape
-.game-card,
-.tierlist-screenshot-render
-.tierlist-screenshot-landscape
-#tier-S
-.game-card,
-.tierlist-screenshot-render
-.tierlist-screenshot-landscape
-#tier-A
-.game-card,
-.tierlist-screenshot-render
-.tierlist-screenshot-landscape
-#tier-B
-.game-card,
-.tierlist-screenshot-render
-.tierlist-screenshot-landscape
-#tier-C
-.game-card,
-.tierlist-screenshot-render
-.tierlist-screenshot-landscape
-#tier-D
-.game-card,
-.tierlist-screenshot-render
-.tierlist-screenshot-landscape
-#tier-E
-.game-card,
-.tierlist-screenshot-render
-.tierlist-screenshot-landscape
-#tier-F
-.game-card {
-    flex: 0 0 132px !important;
-
-    width: 132px !important;
-    height: 132px !important;
-    max-width: none !important;
-
-    aspect-ratio: 1 / 1 !important;
-}
-
-/*
- * У S/A сохраняем более высокую медиазону,
- * но в пределах компактной экспортной карточки.
- */
-.tierlist-screenshot-render
-.tierlist-screenshot-landscape
-#tier-S
-.game-card,
-.tierlist-screenshot-render
-.tierlist-screenshot-landscape
-#tier-A
-.game-card {
-    grid-template-rows:
-        minmax(0, 74%)
-        minmax(0, 1fr)
-        auto !important;
-}
-
-/*
- * Текст делаем компактнее, чтобы он не вылезал
- * из карточек на горизонтальном изображении.
- */
-.tierlist-screenshot-render
-.tierlist-screenshot-landscape
-.game-title {
-    width: calc(100% - 8px) !important;
-    margin: 3px auto 2px !important;
-
-    font-size: 9px !important;
-    line-height: 1.1 !important;
-}
-
-.tierlist-screenshot-render
-.tierlist-screenshot-landscape
-.game-tags {
-    width: calc(100% - 8px) !important;
-    max-height: 22px !important;
-    margin: 0 auto 4px !important;
-    gap: 2px !important;
-}
-
-.tierlist-screenshot-render
-.tierlist-screenshot-landscape
-.game-tag {
-    padding: 2px 3px !important;
-
-    font-size: 7px !important;
-    line-height: 1 !important;
-}
 
 
 
