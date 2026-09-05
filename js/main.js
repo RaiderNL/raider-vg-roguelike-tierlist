@@ -396,21 +396,24 @@ function scheduleSearchRender() {
 
 
 function renderGames() {
+    /*
+     * Обычная смена фильтров отменяет показ,
+     * включая уже завершённую презентацию.
+     */
     if (
-    videoPresentationTimer
-) {
-    stopVideoPresentation({
-        restoreRegularView:
-            false
-    });
-}
+        isVideoPresentationActive()
+    ) {
+        stopVideoPresentation({
+            restoreRegularView:
+                false
+        });
+    }
 
     closeAllPreviews();
 
     clearTierContainers();
 
     updateUrlFromFilters();
-
 
     const searchValue =
         getSearchValue();
@@ -421,75 +424,70 @@ function renderGames() {
     const selectedVideo =
         getSelectedVideo();
 
-
     updateVideoFilterState(
         selectedVideo
     );
-    updateVideoPresentationButton(
-    selectedVideo
-);
 
     updateFavoritesFilterState();
 
-
+    updateVideoPresentationButton(
+        selectedVideo
+    );
 
     const favoritesFilterActive =
-    isFavoritesFilterActive();
+        isFavoritesFilterActive();
 
-const activeFavoriteIds =
-    getActiveFavoriteIds();
+    const activeFavoriteIds =
+        getActiveFavoriteIds();
 
-const filteredGames =
-    appState.games
-        .filter(
-            game => {
-                const matchesRegularFilters =
-                    gameMatchesFilters(
-                        game,
-                        searchValue,
-                        selectedTag,
-                        selectedVideo
+    const filteredGames =
+        appState.games
+            .filter(
+                game => {
+                    const matchesRegularFilters =
+                        gameMatchesFilters(
+                            game,
+                            searchValue,
+                            selectedTag,
+                            selectedVideo
+                        );
+
+                    const matchesFavorites =
+                        !favoritesFilterActive ||
+                        activeFavoriteIds.has(
+                            getGameId(
+                                game
+                            )
+                        );
+
+                    return (
+                        matchesRegularFilters &&
+                        matchesFavorites
                     );
-
-                const matchesFavorites =
-                    !favoritesFilterActive ||
-                    activeFavoriteIds.has(
-                        getGameId(
-                            game
-                        )
-                    );
-
-                return (
-                    matchesRegularFilters &&
-                    matchesFavorites
-                );
-            }
-        )
-        .sort(
-            compareGamesByOrder
-        );
-
+                }
+            )
+            .sort(
+                compareGamesByOrder
+            );
 
     filteredGames.forEach(
-    game => {
-        appendGameCardToTier(
-            game,
-            {
-                videoFilterActive:
-                    selectedVideo !== ''
-            }
-        );
-    }
-);
-    function clearTierContainers() {
-
-
+        game => {
+            appendGameCardToTier(
+                game,
+                {
+                    videoFilterActive:
+                        selectedVideo !== ''
+                }
+            );
+        }
+    );
 
     renderSelectedVideo(
         appState.games,
         selectedVideo
     );
 }
+
 
 /*
  * =========================================================
