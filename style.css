@@ -3421,6 +3421,19 @@ body.main-page {
         box-shadow 0.2s ease,
         transform 0.2s ease;
 }
+.video-presentation-button {
+    display: inline-flex;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+
+    /* остальные существующие стили */
+}
+
+.video-presentation-button[hidden] {
+    display: none !important;
+}
 
 .video-presentation-button:hover {
     background:
