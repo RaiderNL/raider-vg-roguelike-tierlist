@@ -5,9 +5,6 @@
  */
 
 :root {
-    /*
-     * Цвета интерфейса.
-     */
     --color-page-bg: #f3f4f6;
     --color-surface: #fff;
     --color-surface-soft: #f8fafc;
@@ -32,29 +29,27 @@
     --color-border: #e1e3e8;
     --color-border-control: #cfd2d8;
 
-    /*
-     * Радиусы.
-     */
     --radius-sm: 6px;
     --radius-md: 8px;
     --radius-lg: 10px;
     --radius-round: 50%;
     --radius-pill: 999px;
 
-    /*
-     * Тени.
-     */
     --shadow-card: 0 2px 6px rgb(0 0 0 / 12%);
     --shadow-panel: 0 2px 8px rgb(0 0 0 / 8%);
     --shadow-hover: 0 5px 12px rgb(0 0 0 / 20%);
     --shadow-popup: 0 10px 30px rgb(0 0 0 / 35%);
     --shadow-floating: 0 4px 12px rgb(0 0 0 / 22%);
 
-    /*
-     * Размеры.
-     */
     --control-height: 38px;
     --page-content-width: 1300px;
+
+    /*
+     * Используется только на десктопе.
+     * На мобильном карточки всегда остаются
+     * в сетке из двух элементов.
+     */
+    --tier-card-scale: 1;
 }
 
 
@@ -100,6 +95,10 @@ select {
     font: inherit;
 }
 
+button {
+    border: 0;
+}
+
 img,
 video,
 iframe {
@@ -137,6 +136,8 @@ iframe {
     color: #d7d9df;
     line-height: 1.4;
 }
+
+
 /*
  * =========================================================
  * Шапка основной страницы
@@ -154,10 +155,7 @@ iframe {
     justify-content: space-between;
     gap: 20px;
 
-    width: min(
-        var(--page-content-width),
-        100%
-    );
+    width: min(var(--page-content-width), 100%);
     margin: 0 auto;
 }
 
@@ -200,7 +198,7 @@ iframe {
     gap: 6px;
 
     min-height: 36px;
-    padding: 8px 12px;
+    padding: 8px 10px;
 
     color: #d7d9df;
     font-size: 14px;
@@ -234,82 +232,20 @@ iframe {
 }
 
 
+/*
+ * =========================================================
+ * Контейнер и заголовок страницы
+ * =========================================================
+ */
 
-.main-page .site-header-inner {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 20px;
-
+.container {
     width: min(
         var(--page-content-width),
-        100%
+        calc(100% - 32px)
     );
-    margin: 0 auto;
+    max-width: 100%;
+    margin: 24px auto;
 }
-
-.main-page .site-logo {
-    color: #fff;
-    font-size: 19px;
-    font-weight: 700;
-    line-height: 1.2;
-    text-decoration: none;
-}
-
-.main-page .site-logo:hover {
-    color: var(--color-accent);
-}
-
-.main-page .site-logo:focus-visible {
-    outline: 3px solid var(--color-accent-focus);
-    outline-offset: 4px;
-    border-radius: var(--radius-sm);
-}
-
-
-.main-page .site-navigation a {
-    padding: 8px 10px;
-
-    color: #d7d9df;
-    font-size: 14px;
-    font-weight: 700;
-    line-height: 1.2;
-    text-decoration: none;
-
-    border-radius: var(--radius-sm);
-
-    transition:
-        color 0.2s ease,
-        background 0.2s ease;
-}
-
-.main-page .site-navigation a:hover {
-    color: #fff;
-    background: rgb(255 255 255 / 12%);
-}
-
-.main-page .site-navigation a.is-active {
-    color: #fff;
-    background: rgb(255 255 255 / 18%);
-}
-
-.main-page .site-navigation a:focus-visible {
-    outline: 3px solid var(--color-accent-focus);
-    outline-offset: 2px;
-}
-
-
-/*
- * =========================================================
- * Заголовок основной страницы
- * =========================================================
- */
-
-/*
- * =========================================================
- * Верхушка основной страницы
- * =========================================================
- */
 
 .main-page-header {
     display: flex;
@@ -348,7 +284,7 @@ iframe {
 
 /*
  * =========================================================
- * Переключатель основной страницы
+ * Переключатель режима страницы
  * =========================================================
  */
 
@@ -381,7 +317,6 @@ iframe {
     font-size: 14px;
     font-weight: 700;
     line-height: 1;
-    text-align: center;
     text-decoration: none;
 
     cursor: pointer;
@@ -412,45 +347,9 @@ iframe {
 }
 
 
-.custom-tierlist-header-link:hover {
-    color: #342800;
-    background: #f0d77f;
-    border-color: #e0ae2d;
-    box-shadow:
-        0 5px 12px rgb(0 0 0 / 25%),
-        inset 0 1px 0 rgb(255 255 255 / 55%);
-    transform: translateY(-2px);
-}
-
-.custom-tierlist-header-link:active {
-    transform: translateY(0);
-}
-
-.custom-tierlist-header-link:focus-visible {
-    outline: 3px solid var(--color-accent-focus);
-    outline-offset: 3px;
-}
-
-
 /*
  * =========================================================
- * Основной контейнер
- * =========================================================
- */
-
-.container {
-    width: min(
-        var(--page-content-width),
-        calc(100% - 32px)
-    );
-    max-width: 100%;
-    margin: 24px auto;
-}
-
-
-/*
- * =========================================================
- * Фильтры
+ * Старые фильтры
  * =========================================================
  */
 
@@ -517,7 +416,6 @@ iframe {
 .search-group,
 .filter-group {
     flex: 0 0 180px;
-
     width: 180px;
     min-width: 180px;
 }
@@ -527,22 +425,7 @@ iframe {
     width: 180px;
 }
 
-.video-filter-controls {
-    display: flex;
-    flex: 0 0 auto;
-    align-items: center;
-    gap: 12px;
-
-    max-width: 100%;
-}
-
-
-/*
- * =========================================================
- * Кнопки управления фильтрами
- * =========================================================
- */
-
+.video-filter-controls,
 .filter-actions {
     display: flex;
     flex: 0 0 auto;
@@ -552,76 +435,27 @@ iframe {
     max-width: 100%;
 }
 
-.filter-action-button {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-
-    width: 38px;
-    min-width: 38px;
-    min-height: var(--control-height);
-    padding: 6px;
-
-    color: var(--color-dark);
-    font-size: 22px;
-    line-height: 1;
-
-    cursor: pointer;
-
-    background: var(--color-surface-soft);
-    border: 1px solid var(--color-border-control);
-    border-radius: var(--radius-sm);
-
-    transition:
-        color 0.2s ease,
-        background 0.2s ease,
-        border-color 0.2s ease,
-        transform 0.2s ease;
+.video-filter-controls {
+    gap: 12px;
 }
 
-.filter-action-button:hover {
-    color: var(--color-primary-dark);
-    background: #eef4ff;
-    border-color: var(--color-primary);
-    transform: translateY(-1px);
-}
-
-.filter-action-button:active {
-    transform: translateY(0);
-}
-
-.filter-action-button:focus-visible {
-    outline: 3px solid var(--color-primary-focus);
-    outline-offset: 2px;
-}
-
-/*
- * =========================================================
- * Фильтр избранного
- * =========================================================
- */
-
+.filter-action-button,
 .favorites-filter-button {
     display: inline-flex;
-    flex: 0 0 var(--control-height);
     align-items: center;
     justify-content: center;
 
     width: var(--control-height);
     min-width: var(--control-height);
+    min-height: var(--control-height);
     height: var(--control-height);
     padding: 0;
-
-    color: #6b7280;
-    font-size: 25px;
-    line-height: 1;
 
     cursor: pointer;
 
     background: var(--color-surface-soft);
     border: 1px solid var(--color-border-control);
     border-radius: var(--radius-sm);
-    box-shadow: var(--shadow-card);
 
     transition:
         color 0.2s ease,
@@ -631,20 +465,37 @@ iframe {
         transform 0.2s ease;
 }
 
+.filter-action-button {
+    color: var(--color-dark);
+    font-size: 22px;
+    line-height: 1;
+}
+
+.filter-action-button:hover {
+    color: var(--color-primary-dark);
+    background: #eef4ff;
+    border-color: var(--color-primary);
+    transform: translateY(-1px);
+}
+
+.favorites-filter-button {
+    color: #6b7280;
+    font-size: 25px;
+    line-height: 1;
+
+    box-shadow: var(--shadow-card);
+}
+
 .favorites-filter-button:hover {
-    color: #d29f22;
+    color: var(--color-accent-dark);
     background: var(--color-accent-soft);
     border-color: var(--color-accent);
     box-shadow: var(--shadow-hover);
     transform: translateY(-1px);
 }
 
-.favorites-filter-button:active {
-    transform: translateY(0);
-}
-
 .favorites-filter-button.is-active {
-    color: #d29f22;
+    color: var(--color-accent-dark;
     background: #fff4c5;
     border-color: var(--color-accent-dark);
     box-shadow:
@@ -652,14 +503,25 @@ iframe {
         var(--shadow-card);
 }
 
+.filter-action-button:active,
+.favorites-filter-button:active {
+    transform: translateY(0);
+}
+
+.filter-action-button:focus-visible {
+    outline: 3px solid var(--color-primary-focus);
+    outline-offset: 2px;
+}
+
 .favorites-filter-button:focus-visible {
     outline: 3px solid var(--color-accent-focus);
     outline-offset: 2px;
 }
 
+
 /*
  * =========================================================
- * Режим цен
+ * Переключатель цен
  * =========================================================
  */
 
@@ -684,12 +546,11 @@ iframe {
     cursor: pointer;
     user-select: none;
 
-    background:
-        linear-gradient(
-            135deg,
-            rgb(255 255 255 / 88%),
-            rgb(255 249 223 / 92%)
-        );
+    background: linear-gradient(
+        135deg,
+        rgb(255 255 255 / 88%),
+        rgb(255 249 223 / 92%)
+    );
     border: 1px solid var(--color-accent);
     border-radius: var(--radius-md);
     box-shadow:
@@ -704,13 +565,24 @@ iframe {
         transform 0.2s ease;
 }
 
-.price-mode-toggle::before {
-    content: '';
+.price-mode-toggle input {
+    position: absolute;
 
+    width: 1px;
+    height: 1px;
+    margin: 0;
+
+    opacity: 0;
+    pointer-events: none;
+}
+
+.price-mode-toggle::before {
     flex: 0 0 40px;
 
     width: 40px;
     height: 22px;
+
+    content: '';
 
     background: #aeb4bd;
     border-radius: var(--radius-pill);
@@ -722,14 +594,14 @@ iframe {
 }
 
 .price-mode-toggle::after {
-    content: '';
-
     position: absolute;
     top: 50%;
     left: 14px;
 
     width: 16px;
     height: 16px;
+
+    content: '';
 
     background: #fff;
     border-radius: var(--radius-round);
@@ -743,13 +615,6 @@ iframe {
 
 .price-mode-toggle:hover {
     color: #3f3005;
-
-    background:
-        linear-gradient(
-            135deg,
-            #fff,
-            var(--color-accent-soft)
-        );
     border-color: var(--color-accent-dark);
     box-shadow:
         0 4px 10px rgb(120 87 0 / 18%),
@@ -759,13 +624,7 @@ iframe {
 
 .price-mode-toggle:has(input:checked) {
     color: #493707;
-
-    background:
-        linear-gradient(
-            135deg,
-            #fff9df,
-            #fff4c5
-        );
+    background: linear-gradient(135deg, #fff9df, #fff4c5);
     border-color: var(--color-accent-dark);
 }
 
@@ -781,21 +640,6 @@ iframe {
 .price-mode-toggle:has(input:focus-visible) {
     outline: 3px solid var(--color-primary-focus);
     outline-offset: 2px;
-}
-
-.price-mode-toggle input {
-    position: absolute;
-
-    width: 1px;
-    height: 1px;
-    margin: 0;
-
-    opacity: 0;
-    pointer-events: none;
-}
-
-.price-mode-toggle span {
-    display: inline-block;
 }
 
 
@@ -839,10 +683,10 @@ iframe {
 }
 
 .tier-legend-summary::before {
-    content: '▶';
-
     color: var(--color-primary);
     font-size: 12px;
+
+    content: '▶';
 
     transition: transform 0.2s ease;
 }
@@ -899,47 +743,11 @@ iframe {
     margin: 0;
     padding: 10px 14px;
 
-    color: var(--color-text);
     font-size: 14px;
     line-height: 1.4;
     overflow-wrap: anywhere;
 
     background: var(--color-surface-soft);
-}
-
-.tier-legend-row:has(.tier-s)
-.tier-legend-description {
-    background: #fffcf1;
-}
-
-.tier-legend-row:has(.tier-a)
-.tier-legend-description {
-    background: #fff9f5;
-}
-
-.tier-legend-row:has(.tier-b)
-.tier-legend-description {
-    background: #fffdf5;
-}
-
-.tier-legend-row:has(.tier-c)
-.tier-legend-description {
-    background: #f8fcf5;
-}
-
-.tier-legend-row:has(.tier-d)
-.tier-legend-description {
-    background: #f5fbfd;
-}
-
-.tier-legend-row:has(.tier-e)
-.tier-legend-description {
-    background: #faf9fd;
-}
-
-.tier-legend-row:has(.tier-f)
-.tier-legend-description {
-    background: #f7f9fc;
 }
 
 
@@ -949,21 +757,17 @@ iframe {
  * =========================================================
  */
 
-.tier-list-layout {
-    display: block;
-
-    min-width: 0;
-    max-width: 100%;
-}
-
+.tier-list-layout,
 .tier-list-layout .tier-list {
     min-width: 0;
     max-width: 100%;
 }
 
-.tier-list-layout:has(
-    .selected-video-panel.is-visible
-) {
+.tier-list-layout {
+    display: block;
+}
+
+.tier-list-layout:has(.selected-video-panel.is-visible) {
     display: grid;
     grid-template-columns: minmax(0, 1fr) 320px;
     align-items: start;
@@ -974,9 +778,6 @@ iframe {
     display: flex;
     flex-direction: column;
     gap: 8px;
-
-    min-width: 0;
-    max-width: 100%;
 }
 
 .tier-row {
@@ -987,7 +788,6 @@ iframe {
 
     min-width: 0;
     min-height: 150px;
-    overflow: visible;
 
     background: var(--color-surface);
     border: 1px solid rgb(225 227 232 / 70%);
@@ -998,38 +798,43 @@ iframe {
     scroll-margin-bottom: 76px;
 }
 
-.tier-row:has(.tier-s) {
+.tier-row:has(.tier-s),
+.tier-legend-row:has(.tier-s) .tier-legend-description {
     background: #fffcf1;
 }
 
-.tier-row:has(.tier-a) {
+.tier-row:has(.tier-a),
+.tier-legend-row:has(.tier-a) .tier-legend-description {
     background: #fff9f5;
 }
 
-.tier-row:has(.tier-b) {
+.tier-row:has(.tier-b),
+.tier-legend-row:has(.tier-b) .tier-legend-description {
     background: #fffdf5;
 }
 
-.tier-row:has(.tier-c) {
+.tier-row:has(.tier-c),
+.tier-legend-row:has(.tier-c) .tier-legend-description {
     background: #f8fcf5;
 }
 
-.tier-row:has(.tier-d) {
+.tier-row:has(.tier-d),
+.tier-legend-row:has(.tier-d) .tier-legend-description {
     background: #f5fbfd;
 }
 
-.tier-row:has(.tier-e) {
+.tier-row:has(.tier-e),
+.tier-legend-row:has(.tier-e) .tier-legend-description {
     background: #faf9fd;
 }
 
-.tier-row:has(.tier-f) {
+.tier-row:has(.tier-f),
+.tier-legend-row:has(.tier-f) .tier-legend-description {
     background: #f7f9fc;
 }
 
 .tier-row-active,
-.tier-row:has(
-    .game-card:not(.preview-closed)
-) {
+.tier-row:has(.game-card:not(.preview-closed)) {
     z-index: 100000;
 }
 
@@ -1085,7 +890,7 @@ iframe {
 
 .games-container {
     display: flex;
-    flex: 1;
+    flex: 1 1 auto;
     flex-wrap: wrap;
     align-items: flex-start;
     gap: 8px;
@@ -1093,24 +898,6 @@ iframe {
     min-width: 0;
     max-width: 100%;
     padding: 12px;
-    overflow: visible;
-}
-
-#tier-S .game-card,
-#tier-A .game-card {
-    width: 230px;
-}
-
-#tier-D,
-#tier-E,
-#tier-F {
-    gap: 6px;
-}
-
-#tier-D .game-card,
-#tier-E .game-card,
-#tier-F .game-card {
-    width: 142px;
 }
 
 
@@ -1129,7 +916,7 @@ iframe {
         minmax(0, 1fr)
         auto;
 
-    width: 190px;
+    width: calc(190px * var(--tier-card-scale));
     max-width: 100%;
     aspect-ratio: 1 / 1;
 
@@ -1141,6 +928,28 @@ iframe {
     transition:
         transform 0.2s ease,
         box-shadow 0.2s ease;
+}
+
+#tier-S .game-card,
+#tier-A .game-card {
+    width: calc(230px * var(--tier-card-scale));
+
+    grid-template-rows:
+        minmax(0, 74%)
+        minmax(0, 1fr)
+        auto;
+}
+
+#tier-D,
+#tier-E,
+#tier-F {
+    gap: 6px;
+}
+
+#tier-D .game-card,
+#tier-E .game-card,
+#tier-F .game-card {
+    width: calc(142px * var(--tier-card-scale));
 }
 
 .game-card:hover,
@@ -1163,13 +972,6 @@ iframe {
     outline: 3px solid var(--color-primary);
     outline-offset: 3px;
 }
-
-
-/*
- * =========================================================
- * Медиа карточки
- * =========================================================
- */
 
 .game-media {
     position: relative;
@@ -1195,9 +997,104 @@ iframe {
 
     background: #e5e7eb;
 }
+
+.game-title {
+    display: -webkit-box;
+    align-self: center;
+    width: calc(100% - 16px);
+    min-width: 0;
+    margin: 5px auto 3px;
+    overflow: hidden;
+
+    font-size: 15px;
+    font-weight: 700;
+    line-height: 1.2;
+    text-align: center;
+    overflow-wrap: anywhere;
+
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+}
+
+.game-tags {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: center;
+    gap: 4px;
+
+    width: calc(100% - 16px);
+    max-height: 34px;
+    margin: 0 auto 7px;
+    overflow: hidden;
+}
+
+.game-tag {
+    display: inline-block;
+    padding: 3px 6px;
+
+    color: #4b5563;
+    font-size: 11px;
+    line-height: 1.2;
+    text-align: center;
+    overflow-wrap: anywhere;
+
+    background: #f0f2f5;
+    border-radius: var(--radius-sm);
+}
+
+#tier-B .game-title,
+#tier-C .game-title {
+    display: block;
+
+    width: calc(100% - 14px);
+    margin: 5px auto 3px;
+
+    font-size: 13px;
+    line-height: 1.2;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+#tier-D .game-title,
+#tier-E .game-title,
+#tier-F .game-title {
+    display: block;
+
+    width: calc(100% - 10px);
+    margin: 4px auto 3px;
+    overflow: hidden;
+
+    font-size: 11px;
+    line-height: 1.15;
+    text-align: center;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+#tier-D .game-tags,
+#tier-E .game-tags,
+#tier-F .game-tags {
+    width: calc(100% - 10px);
+    max-height: 27px;
+    margin: 0 auto 5px;
+    gap: 3px;
+}
+
+#tier-D .game-tag,
+#tier-E .game-tag,
+#tier-F .game-tag {
+    max-width: 100%;
+    padding: 2px 4px;
+
+    font-size: 9px;
+    line-height: 1.1;
+}
+
+
 /*
  * =========================================================
- * Кнопка избранного на карточке
+ * Избранное
  * =========================================================
  */
 
@@ -1238,225 +1135,42 @@ iframe {
         transform 0.2s ease;
 }
 
-
-/*
- * Звёздочка появляется при наведении,
- * фокусе или открытом popup.
- */
 .game-card:hover .favorite-button,
 .game-card:focus-within .favorite-button,
-.game-card:not(.preview-closed) .favorite-button {
+.game-card:not(.preview-closed) .favorite-button,
+.favorite-button.is-favorite {
     opacity: 1;
     visibility: visible;
 }
 
-
-/*
- * Уже добавленная игра показывает звёздочку
- * даже в неактивном состоянии карточки.
- */
 .favorite-button.is-favorite {
     color: #f5c542;
-    opacity: 1;
-    visibility: visible;
 
     background: rgb(32 35 42 / 92%);
     border-color: rgb(245 197 66 / 70%);
 }
 
-
 .favorite-button:hover {
     color: #ffe58a;
+
     background: rgb(32 35 42 / 100%);
     border-color: #f5c542;
     transform: scale(1.1);
 }
 
-
 .favorite-button.is-favorite:hover {
     color: #ffd84d;
 }
 
-
 .favorite-button:active {
     transform: scale(0.94);
 }
-
 
 .favorite-button:focus-visible {
     outline: 3px solid var(--color-accent-focus);
     outline-offset: 2px;
 }
 
-
-/*
- * На мобильных устройствах звёздочка
- * не должна перекрываться другими элементами.
- */
-@media (max-width: 600px) {
-    .favorite-button {
-        top: 5px;
-        left: 5px;
-        z-index: 5;
-
-        width: 30px;
-        height: 30px;
-
-        font-size: 23px;
-    }
-    .main-page .site-header {
-        padding: 16px;
-    }
-
-    .main-page .site-header-inner {
-        align-items: flex-start;
-        flex-direction: column;
-        gap: 12px;
-    }
-
-    .main-page .site-navigation {
-        justify-content: flex-start;
-        width: 100%;
-    }
-
-    .main-page-header {
-        align-items: stretch;
-        flex-direction: column;
-    }
-
-    .main-mode-switcher {
-        align-self: flex-start;
-        max-width: 100%;
-    }
-
-    .main-mode-button {
-        flex: 1 1 auto;
-        padding-right: 12px;
-        padding-left: 12px;
-    }
-
-    .main-page-title {
-        font-size: 24px;
-    }
-
-}
-    
-#tier-S .game-card,
-#tier-A .game-card {
-    grid-template-rows:
-        minmax(0, 74%)
-        minmax(0, 1fr)
-        auto;
-}
-
-.game-title {
-    display: -webkit-box;
-    align-self: center;
-    min-width: 0;
-    overflow: hidden;
-
-    width: calc(100% - 16px);
-    margin: 5px auto 3px;
-
-    font-size: 15px;
-    font-weight: 700;
-    line-height: 1.2;
-    text-align: center;
-    overflow-wrap: anywhere;
-
-    -webkit-box-orient: vertical;
-    -webkit-line-clamp: 2;
-}
-
-.game-tags {
-    display: flex;
-    align-items: flex-end;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 4px;
-
-    width: calc(100% - 16px);
-    max-height: 34px;
-    margin: 0 auto 7px;
-    overflow: hidden;
-}
-
-.game-tag {
-    display: inline-block;
-    padding: 3px 6px;
-
-    color: #4b5563;
-    font-size: 11px;
-    line-height: 1.2;
-    text-align: center;
-    overflow-wrap: anywhere;
-
-    background: #f0f2f5;
-    border-radius: var(--radius-sm);
-}
-
-#tier-B .game-title,
-#tier-C .game-title {
-    display: block;
-
-    width: calc(100% - 14px);
-    margin: 5px auto 3px;
-    overflow: hidden;
-
-    font-size: 13px;
-    line-height: 1.2;
-    text-align: center;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
-#tier-D .game-title,
-#tier-E .game-title,
-#tier-F .game-title {
-    display: block;
-
-    width: calc(100% - 10px);
-    margin: 4px auto 3px;
-    overflow: hidden;
-
-    font-size: 11px;
-    line-height: 1.15;
-    text-align: center;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
-#tier-D .game-tags,
-#tier-E .game-tags,
-#tier-F .game-tags {
-    width: calc(100% - 10px);
-    max-height: 27px;
-    margin: 0 auto 5px;
-    gap: 3px;
-}
-
-#tier-D .game-tag,
-#tier-E .game-tag,
-#tier-F .game-tag {
-    max-width: 100%;
-    padding: 2px 4px;
-
-    font-size: 9px;
-    line-height: 1.1;
-}
-
-    .favorites-filter-button {
-        align-self: flex-start;
-
-        width: 38px;
-        min-width: 38px;
-    }
-
-/*
- * =========================================================
- * Цены
- * =========================================================
- */
 
 /*
  * =========================================================
@@ -1468,13 +1182,12 @@ iframe {
     position: absolute;
     right: 6px;
     bottom: 6px;
-    left: auto;
     z-index: 3;
 
     display: inline-flex;
+    flex-wrap: wrap;
     align-items: center;
     justify-content: center;
-    flex-wrap: wrap;
     gap: 4px;
 
     width: max-content;
@@ -1498,10 +1211,6 @@ iframe {
     animation: price-panel-appear 280ms ease-out both;
 }
 
-.game-price.game-price-hiding {
-    animation: price-panel-disappear 220ms ease-in both;
-}
-
 .game-price-current {
     color: #fff;
     font-weight: 700;
@@ -1514,7 +1223,6 @@ iframe {
 }
 
 .game-price-discount {
-    display: inline-block;
     padding: 2px 4px;
 
     color: #26351a;
@@ -1535,6 +1243,10 @@ iframe {
 
 .game-price-unavailable {
     opacity: 0.75;
+}
+
+.game-price.game-price-hiding {
+    animation: price-panel-disappear 220ms ease-in both;
 }
 
 .game-description,
@@ -1564,50 +1276,6 @@ iframe {
         opacity: 0;
         transform: translateY(6px) scale(0.97);
     }
-}
-
-body.price-mode-active #tier-D .game-price,
-body.price-mode-active #tier-E .game-price,
-body.price-mode-active #tier-F .game-price {
-    display: flex;
-    flex-wrap: nowrap;
-    align-items: center;
-    gap: 3px;
-
-    width: max-content;
-    max-width: calc(100% - 10px);
-    min-height: 20px;
-    padding: 3px 5px;
-
-    font-size: 10px;
-    line-height: 1;
-}
-
-body.price-mode-active #tier-D .game-price-old,
-body.price-mode-active #tier-E .game-price-old,
-body.price-mode-active #tier-F .game-price-old {
-    display: none !important;
-    visibility: hidden !important;
-
-    width: 0 !important;
-    max-width: 0 !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    overflow: hidden !important;
-}
-
-body.price-mode-active #tier-D .game-price-discount,
-body.price-mode-active #tier-E .game-price-discount,
-body.price-mode-active #tier-F .game-price-discount {
-    display: inline-block;
-    flex: 0 0 auto;
-
-    max-width: none;
-    padding: 2px 4px;
-
-    font-size: 8px;
-    line-height: 1;
-    white-space: nowrap;
 }
 
 
@@ -1650,12 +1318,65 @@ body.price-mode-active #tier-F .game-price-discount {
     align-items: stretch;
 
     width: min(670px, calc(100vw - 16px));
-    max-width: calc(100vw - 16px);
 }
 
-.game-preview-popup.game-preview-popup-with-description:not(.game-preview-popup-with-actions) {
-    width: min(330px, calc(100vw - 16px));
-    max-width: calc(100vw - 16px);
+.game-card:not(.preview-closed) .game-preview-popup {
+    visibility: visible;
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.game-card.preview-closed .game-preview-popup {
+    visibility: hidden !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+}
+
+.game-preview-popup.preview-position-right,
+.game-preview-popup.preview-position-left,
+.game-preview-popup.preview-position-bottom {
+    transform: none;
+}
+
+.game-preview-popup::after {
+    position: absolute;
+
+    content: '';
+
+    background: transparent;
+    pointer-events: auto;
+}
+
+.game-preview-popup:not(.preview-position-right):not(.preview-position-left):not(.preview-position-bottom)::after {
+    right: 0;
+    bottom: -14px;
+    left: 0;
+
+    height: 14px;
+}
+
+.game-preview-popup.preview-position-right::after {
+    top: -12px;
+    bottom: -12px;
+    left: -18px;
+
+    width: 18px;
+}
+
+.game-preview-popup.preview-position-left::after {
+    top: -12px;
+    right: -18px;
+    bottom: -12px;
+
+    width: 18px;
+}
+
+.game-preview-popup.preview-position-bottom::after {
+    top: -14px;
+    right: 0;
+    left: 0;
+
+    height: 14px;
 }
 
 .game-preview-close {
@@ -1695,71 +1416,6 @@ body.price-mode-active #tier-F .game-price-discount {
     outline-offset: 2px;
 }
 
-.game-card:not(.preview-closed)
-.game-preview-popup {
-    visibility: visible;
-    opacity: 1;
-    pointer-events: auto;
-}
-
-.game-card.preview-closed
-.game-preview-popup {
-    visibility: hidden !important;
-    opacity: 0 !important;
-    pointer-events: none !important;
-}
-
-.game-preview-popup.preview-position-right,
-.game-preview-popup.preview-position-left,
-.game-preview-popup.preview-position-bottom {
-    transform: none;
-}
-
-.game-preview-popup::after {
-    content: '';
-
-    position: absolute;
-
-    background: transparent;
-    pointer-events: auto;
-}
-
-.game-preview-popup:not(.preview-position-right)
-:not(.preview-position-left)
-:not(.preview-position-bottom)::after {
-    right: 0;
-    bottom: -14px;
-    left: 0;
-
-    height: 14px;
-}
-
-.game-preview-popup.preview-position-right::after {
-    top: -12px;
-    right: auto;
-    bottom: -12px;
-    left: -18px;
-
-    width: 18px;
-}
-
-.game-preview-popup.preview-position-left::after {
-    top: -12px;
-    right: -18px;
-    bottom: -12px;
-    left: auto;
-
-    width: 18px;
-}
-
-.game-preview-popup.preview-position-bottom::after {
-    top: -14px;
-    right: 0;
-    left: 0;
-
-    height: 14px;
-}
-
 .preview-actions {
     display: flex;
     flex: 1 1 0;
@@ -1794,8 +1450,7 @@ body.price-mode-active #tier-F .game-price-discount {
     border-radius: var(--radius-md);
 }
 
-.game-preview-popup.game-preview-popup-with-description
-.preview-description {
+.game-preview-popup.game-preview-popup-with-description .preview-description {
     aspect-ratio: 1 / 1;
 }
 
@@ -1812,20 +1467,21 @@ body.price-mode-active #tier-F .game-price-discount {
 }
 
 .preview-description::before {
-    content: '“';
-
     top: 10px;
     left: 12px;
+
+    content: '“';
 }
 
 .preview-description::after {
-    content: '”';
-
     right: 13px;
     bottom: 4px;
+
+    content: '”';
 }
 
-.preview-link {
+.preview-link,
+.selected-video-link {
     display: block;
     overflow: hidden;
 
@@ -1834,7 +1490,9 @@ body.price-mode-active #tier-F .game-price-discount {
 
     background: var(--color-dark-soft);
     border-radius: var(--radius-md);
+}
 
+.preview-link {
     transition: background 0.2s ease;
 }
 
@@ -1910,14 +1568,7 @@ body.price-mode-active #tier-F .game-price-discount {
 }
 
 .selected-video-link {
-    display: block;
-    overflow: hidden;
-
-    color: #fff;
-    text-decoration: none;
-
     background: var(--color-dark);
-    border-radius: var(--radius-md);
 
     transition:
         transform 0.2s ease,
@@ -1929,12 +1580,14 @@ body.price-mode-active #tier-F .game-price-discount {
     transform: translateY(-2px);
 }
 
+.selected-video-image,
+.selected-video-placeholder {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+}
+
 .selected-video-image {
     display: block;
-
-    width: 100%;
-    height: auto;
-    aspect-ratio: 16 / 9;
 
     object-fit: cover;
     object-position: center;
@@ -1946,9 +1599,6 @@ body.price-mode-active #tier-F .game-price-discount {
     display: flex;
     align-items: center;
     justify-content: center;
-
-    width: 100%;
-    aspect-ratio: 16 / 9;
 
     color: #fff;
     font-size: 42px;
@@ -1969,2208 +1619,6 @@ body.price-mode-active #tier-F .game-price-discount {
 
 /*
  * =========================================================
- * Состояния загрузки и ошибок
- * =========================================================
- */
-
-.loading-error {
-    width: 100%;
-    padding: 20px;
-
-    color: #b91c1c;
-    text-align: center;
-}
-
-
-/*
- * =========================================================
- * Подвал
- * =========================================================
- */
-
-.site-footer {
-    max-width: 100%;
-    padding: 24px;
-
-    color: var(--color-text-muted);
-    text-align: center;
-}
-
-.site-footer a {
-    color: var(--color-primary);
-    font-weight: 700;
-    text-decoration: none;
-}
-
-.site-footer a:hover {
-    color: var(--color-primary-dark);
-    text-decoration: underline;
-}
-
-.site-footer a:focus-visible {
-    outline: 3px solid var(--color-primary-focus);
-    outline-offset: 3px;
-    border-radius: 3px;
-}
-
-
-/*
- * =========================================================
- * Кнопка «Наверх»
- * =========================================================
- */
-
-.back-to-top {
-    position: fixed;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    z-index: 100004;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    width: clamp(120px, 6vw, 160px);
-    max-width: 100vw;
-    height: 100vh;
-    padding: 0;
-    overflow: hidden;
-
-    color: #6b7280;
-    font-size: 14px;
-    font-weight: 700;
-
-    cursor: pointer;
-
-    background: transparent;
-    border: 0;
-
-    opacity: 0;
-    visibility: hidden;
-    pointer-events: none;
-
-    transition:
-        opacity 0.3s ease,
-        visibility 0.3s ease;
-}
-
-.back-to-top::before {
-    content: '';
-
-    position: absolute;
-    inset: 0;
-    z-index: -1;
-
-    background: linear-gradient(
-        90deg,
-        rgb(37 99 235 / 15%),
-        rgb(37 99 235 / 7%),
-        transparent
-    );
-
-    opacity: 0;
-
-    transition: opacity 0.45s ease;
-}
-
-.back-to-top.is-visible {
-    opacity: 1;
-    visibility: visible;
-    pointer-events: auto;
-}
-
-.back-to-top span:first-child {
-    display: none;
-}
-
-.back-to-top span:last-child {
-    position: relative;
-    z-index: 1;
-
-    display: block;
-
-    color: #6b7280;
-    font-size: 14px;
-    font-weight: 700;
-    letter-spacing: 0.04em;
-    line-height: 1;
-    white-space: nowrap;
-
-    transition:
-        color 0.35s ease,
-        transform 0.35s ease,
-        text-shadow 0.35s ease;
-}
-
-.back-to-top.is-visible:hover::before {
-    opacity: 1;
-}
-
-.back-to-top.is-visible:hover span:last-child {
-    color: var(--color-primary);
-    text-shadow: 0 2px 8px rgb(37 99 235 / 20%);
-    transform: scale(1.08);
-}
-
-.back-to-top.is-visible:active span:last-child {
-    transform: scale(1.02);
-}
-
-.back-to-top:focus-visible {
-    outline: 3px solid var(--color-primary-focus);
-    outline-offset: -5px;
-}
-
-.back-to-top:focus-visible::before {
-    opacity: 1;
-}
-
-.back-to-top:focus-visible span:last-child {
-    color: var(--color-primary);
-}
-
-
-/*
- * =========================================================
- * Компактная кнопка «Наверх»
- * =========================================================
- */
-
-@media (max-width: 1540px) {
-    .back-to-top {
-        top: auto;
-        right: max(14px, env(safe-area-inset-right));
-        bottom: max(14px, env(safe-area-inset-bottom));
-        left: auto;
-
-        width: 42px;
-        max-width: 42px;
-        height: 42px;
-        max-height: 42px;
-
-        color: #fff;
-
-        background: var(--color-dark);
-        border: 1px solid rgb(255 255 255 / 18%);
-        border-radius: var(--radius-round);
-        box-shadow: var(--shadow-floating);
-
-        transform: translateY(10px) scale(0.9);
-
-        transition:
-            opacity 0.25s ease,
-            visibility 0.25s ease,
-            transform 0.25s ease,
-            background 0.3s ease,
-            box-shadow 0.3s ease;
-    }
-
-    .back-to-top::before {
-        display: none;
-    }
-
-    .back-to-top span:first-child {
-        display: block;
-
-        color: #fff;
-        font-size: 22px;
-        font-weight: 400;
-        line-height: 1;
-        transform: translateY(-1px);
-    }
-
-    .back-to-top span:last-child {
-        display: none;
-    }
-
-    .back-to-top.is-visible {
-        transform: translateY(0) scale(1);
-    }
-
-    .back-to-top.is-visible:hover {
-        background: var(--color-dark-soft);
-        box-shadow: 0 6px 16px rgb(0 0 0 / 30%);
-        transform: translateY(-2px) scale(1.06);
-    }
-
-    .back-to-top.is-visible:active {
-        transform: translateY(0) scale(0.96);
-    }
-
-    .back-to-top:focus-visible {
-        outline-offset: 3px;
-    }
-}
-/*
- * =========================================================
- * Положение верхушки основной страницы
- * =========================================================
- */
-
-.main-page-header {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 20px;
-
-    width: 100%;
-    margin-bottom: 20px;
-}
-
-.main-page-heading {
-    flex: 1 1 auto;
-    min-width: 0;
-}
-
-.main-mode-switcher {
-    display: inline-flex;
-    flex: 0 0 auto;
-    align-self: flex-start;
-
-    gap: 4px;
-    margin-left: auto;
-    padding: 4px;
-
-    white-space: nowrap;
-
-    background: var(--color-surface);
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-md);
-    box-shadow: var(--shadow-panel);
-}
-/*
- * =========================================================
- * Цветовая схема страницы рэйдера
- * =========================================================
- */
-
-body.main-page {
-    --color-primary: #b8860b;
-    --color-primary-dark: #8a6508;
-    --color-primary-focus: rgb(184 134 11 / 30%);
-}
-
-
-/*
- * =========================================================
- * Планшеты
- * =========================================================
- */
-
-@media (max-width: 900px) {
-    .tier-list-layout,
-    .tier-list-layout:has(
-        .selected-video-panel.is-visible
-    ) {
-        display: block;
-    }
-
-    .selected-video-panel {
-        position: static;
-
-        width: 100%;
-        margin-top: 16px;
-    }
-}
-
-
-/*
- * =========================================================
- * Мобильная нижняя навигация
- * =========================================================
- */
-
-.mobile-tier-navigation {
-    display: none;
-}
-
-@media (max-width: 600px) {
-    body {
-        padding-bottom:
-            calc(
-                66px +
-                env(safe-area-inset-bottom)
-            );
-    }
-
-    .mobile-tier-navigation {
-        position: fixed;
-        right: 0;
-        bottom: 0;
-        left: 0;
-        z-index: 1000;
-
-        display: flex;
-        align-items: stretch;
-        justify-content: stretch;
-        gap: 0;
-
-        width: 100%;
-        min-height: 58px;
-        padding: 0 0 env(safe-area-inset-bottom);
-
-        background: rgb(255 255 255 / 96%);
-        border-top: 1px solid
-            rgb(207 210 216 / 90%);
-        box-shadow:
-            0 -4px 16px
-            rgb(0 0 0 / 14%);
-        backdrop-filter: blur(8px);
-    }
-
-    .mobile-tier-navigation-button {
-        display: inline-flex;
-        flex: 1 1 0;
-        align-items: center;
-        justify-content: center;
-
-        width: 0;
-        min-width: 0;
-        min-height: 58px;
-        padding: 5px 2px;
-
-        color: var(--color-dark);
-        font-size: 14px;
-        font-weight: 700;
-        line-height: 1;
-
-        cursor: pointer;
-
-        background: var(--color-surface);
-        border: 0;
-        border-right: 1px solid rgb(0 0 0 / 12%);
-        border-radius: 0;
-
-        transition:
-            color 0.2s ease,
-            background 0.2s ease,
-            transform 0.2s ease,
-            filter 0.2s ease;
-    }
-
-    .mobile-tier-navigation-button:last-child {
-        border-right: 0;
-    }
-
-    .mobile-tier-navigation-button:hover,
-    .mobile-tier-navigation-button:focus-visible {
-        filter: brightness(0.94);
-    }
-
-    .mobile-tier-navigation-button:active {
-        transform: scale(0.94);
-    }
-
-    .mobile-tier-navigation-button:focus-visible {
-        outline: 3px solid var(--color-primary-focus);
-        outline-offset: 2px;
-    }
-
-    .mobile-tier-navigation-button.home-button {
-        flex-grow: 1;
-
-        font-size: 22px;
-
-        background: var(--color-dark);
-        border-color: rgb(255 255 255 / 15%);
-        color: #fff;
-    }
-
-    .mobile-tier-navigation-button.tier-navigation-s {
-        color: #5b4300;
-        background: #e8c766;
-        border-color: #e8c766;
-    }
-
-    .mobile-tier-navigation-button.tier-navigation-a {
-        color: #5a3d2b;
-        background: #e8b58f;
-        border-color: #e8b58f;
-    }
-
-    .mobile-tier-navigation-button.tier-navigation-b {
-        color: #51452d;
-        background: #d8c58a;
-        border-color: #d8c58a;
-    }
-
-    .mobile-tier-navigation-button.tier-navigation-c {
-        color: #344638;
-        background: #b7d1a5;
-        border-color: #b7d1a5;
-    }
-
-    .mobile-tier-navigation-button.tier-navigation-d {
-        color: #294354;
-        background: #a9cdd8;
-        border-color: #a9cdd8;
-    }
-
-    .mobile-tier-navigation-button.tier-navigation-e {
-        color: #443d5c;
-        background: #bdb6d1;
-        border-color: #bdb6d1;
-    }
-
-    .mobile-tier-navigation-button.tier-navigation-f {
-        color: #334155;
-        background: #9daabd;
-        border-color: #9daabd;
-    }
-
-    .filter-actions {
-        width: auto;
-        align-items: center;
-        flex-direction: row;
-        gap: 8px;
-    }
-
-    .filter-action-button {
-        width: 38px;
-    }
-
-    .favorites-filter-button {
-        align-self: flex-start;
-
-        width: 38px;
-        min-width: 38px;
-    }
-
-    .site-header {
-        padding: 24px 16px;
-    }
-
-    .site-header h1 {
-        font-size: 25px;
-    }
-
-    .container {
-        width: calc(100% - 20px);
-        margin: 16px auto;
-    }
-
-    .controls {
-        align-items: stretch;
-        flex-direction: column;
-
-        margin-bottom: 16px;
-    }
-
-    .control-group,
-    .search-group,
-    .filter-group {
-        flex: 0 0 auto;
-
-        width: 100%;
-        min-width: 0;
-    }
-
-    .search-group input,
-    .filter-group select {
-        width: 100%;
-    }
-
-    .video-filter-controls {
-        width: 100%;
-        align-items: stretch;
-        flex-direction: column;
-        gap: 10px;
-    }
-
-    .video-filter-controls .filter-group {
-        width: 100%;
-    }
-
-    .price-mode-toggle {
-        align-self: flex-start;
-    }
-
-    .tier-legend {
-        margin-bottom: 16px;
-    }
-
-    .tier-legend-summary {
-        min-height: 44px;
-        padding: 10px 12px;
-
-        font-size: 14px;
-    }
-
-    .tier-legend-list {
-        padding: 0 8px 8px;
-    }
-
-    .tier-legend-row {
-        grid-template-columns: 42px minmax(0, 1fr);
-        min-height: 48px;
-    }
-
-    .tier-legend-label {
-        font-size: 18px;
-    }
-
-    .tier-legend-description {
-        padding: 8px 10px;
-
-        font-size: 12px;
-        line-height: 1.3;
-    }
-
-    .tier-row {
-        min-height: 120px;
-    }
-
-    .tier-label {
-        flex: 0 0 90px;
-
-        font-size: 32px;
-        text-shadow: 0 1px 2px rgb(0 0 0 / 18%);
-    }
-
-    .games-container {
-        gap: 8px;
-        padding: 10px;
-    }
-
-    .game-card {
-        width: 145px;
-    }
-
-    #tier-S .game-card,
-    #tier-A .game-card {
-        width: 165px;
-    }
-
-    #tier-D,
-    #tier-E,
-    #tier-F {
-        gap: 6px;
-    }
-
-    #tier-D .game-card,
-    #tier-E .game-card,
-    #tier-F .game-card {
-        width: 108px;
-    }
-
-    #tier-S .game-card,
-    #tier-A .game-card {
-        grid-template-rows:
-            minmax(0, 72%)
-            minmax(0, 1fr)
-            auto;
-    }
-
-    .game-media {
-        border-radius: 6px 6px 0 0;
-    }
-
-    .favorite-button {
-        top: 5px;
-        left: 5px;
-        z-index: 5;
-
-        width: 30px;
-        height: 30px;
-
-        font-size: 23px;
-    }
-
-    .game-title {
-        width: calc(100% - 12px);
-        margin: 4px auto 3px;
-
-        font-size: 12px;
-        line-height: 1.15;
-    }
-
-    #tier-B .game-title,
-    #tier-C .game-title,
-    #tier-D .game-title,
-    #tier-E .game-title,
-    #tier-F .game-title {
-        display: block;
-
-        width: calc(100% - 10px);
-        margin: 4px auto 3px;
-        overflow: hidden;
-
-        font-size: 10px;
-        line-height: 1.15;
-        text-align: center;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-    }
-
-    #tier-D .game-title,
-    #tier-E .game-title,
-    #tier-F .game-title {
-        font-size: 9px;
-    }
-
-    .game-tags {
-        width: calc(100% - 12px);
-        max-height: 30px;
-        margin: 0 auto 5px;
-        gap: 3px;
-    }
-
-    .game-tag {
-        padding: 2px 5px;
-
-        font-size: 10px;
-    }
-
-    #tier-D .game-tags,
-    #tier-E .game-tags,
-    #tier-F .game-tags {
-        width: calc(100% - 10px);
-        max-height: 25px;
-        margin: 0 auto 5px;
-        gap: 3px;
-    }
-
-    #tier-D .game-tag,
-    #tier-E .game-tag,
-    #tier-F .game-tag {
-        padding: 2px 4px;
-
-        font-size: 8px;
-        line-height: 1.1;
-    }
-
-    body.price-mode-active .game-price {
-        right: 5px;
-        bottom: 5px;
-
-        min-height: 20px;
-        max-width: calc(100% - 10px);
-        padding: 3px 5px;
-
-        font-size: 10px;
-        line-height: 1.1;
-    }
-
-    body.price-mode-active .game-price-old {
-        font-size: 9px;
-    }
-
-    body.price-mode-active .game-price-discount {
-        padding: 2px 4px;
-
-        font-size: 8px;
-    }
-
-
-    /*
-     * Popup внутри карточки на мобильных скрывается.
-     */
-    .game-card .game-preview-popup {
-        display: none !important;
-    }
-
-
-    /*
-     * Открытый popup переносится в body через previews.js.
-     */
-    body > .game-preview-popup.game-preview-popup-mobile-modal {
-        position: fixed !important;
-        top: 50dvh !important;
-        right: auto !important;
-        bottom: auto !important;
-        left: 50vw !important;
-        z-index: 100003 !important;
-
-        display: flex !important;
-        flex-direction: column !important;
-        align-items: stretch !important;
-        gap: 12px;
-
-        width: calc(100vw - 24px) !important;
-        max-width: calc(100vw - 24px) !important;
-        height: auto !important;
-        max-height: calc(100dvh - 24px) !important;
-
-        padding: 12px;
-        overflow-x: hidden !important;
-        overflow-y: auto !important;
-
-        visibility: visible !important;
-        opacity: 1 !important;
-        pointer-events: auto !important;
-
-        background: var(--color-dark);
-        transform: translate(-50%, -50%) !important;
-
-        overscroll-behavior: contain;
-        -webkit-overflow-scrolling: touch;
-    }
-
-    body > .game-preview-popup.game-preview-popup-mobile-modal.game-preview-popup-with-description.game-preview-popup-with-actions {
-        display: flex !important;
-        flex-direction: column !important;
-        align-items: stretch !important;
-
-        width: calc(100vw - 24px) !important;
-        max-width: calc(100vw - 24px) !important;
-    }
-
-    body > .game-preview-popup.game-preview-popup-mobile-modal.game-preview-popup-with-description:not(.game-preview-popup-with-actions) {
-        width: calc(100vw - 24px) !important;
-        max-width: calc(100vw - 24px) !important;
-    }
-
-    body > .game-preview-popup.game-preview-popup-mobile-modal .preview-actions,
-    body > .game-preview-popup.game-preview-popup-mobile-modal .preview-description {
-        width: 100%;
-        max-width: 100%;
-        min-width: 0;
-    }
-
-    body > .game-preview-popup.game-preview-popup-mobile-modal .preview-actions {
-        display: flex;
-        flex: 0 0 auto;
-        flex-direction: column;
-        gap: 12px;
-    }
-
-    body > .game-preview-popup.game-preview-popup-mobile-modal .preview-description {
-        display: flex;
-        flex: 0 0 auto;
-        min-height: 0;
-        padding: 30px 22px 34px;
-
-        font-size: 14px;
-        line-height: 1.45;
-        overflow-wrap: anywhere;
-
-        aspect-ratio: auto;
-    }
-
-    body > .game-preview-popup.game-preview-popup-mobile-modal::after {
-        display: none;
-    }
-
-    .game-preview-popup-mobile-modal .game-preview-close {
-        position: sticky;
-        top: 0;
-        right: auto;
-        z-index: 4;
-
-        display: inline-flex;
-        order: -1;
-        align-self: flex-end;
-        align-items: center;
-        justify-content: center;
-
-        width: 32px;
-        height: 32px;
-        margin-bottom: -32px;
-
-        background: rgb(32 35 42 / 94%);
-    }
-
-    .game-preview-popup-mobile-modal .preview-image {
-        width: 100%;
-        height: auto;
-        aspect-ratio: 16 / 9;
-    }
-
-    .preview-image {
-        height: 117px;
-    }
-
-    .preview-label {
-        padding: 9px 10px;
-
-        font-size: 13px;
-    }
-
-    .selected-video-panel {
-        padding: 10px;
-    }
-
-    .selected-video-title {
-        font-size: 15px;
-    }
-
-    /*
-     * Кнопка «Наверх» располагается полностью
-     * над мобильной навигацией.
-     */
-    .back-to-top {
-        right: max(
-            10px,
-            env(safe-area-inset-right)
-        );
-        bottom: calc(
-            58px +
-            env(safe-area-inset-bottom) +
-            10px
-        );
-        z-index: 100004;
-    }
-}
-
-
-/*
- * =========================================================
- * Очень узкие экраны
- * =========================================================
- */
-
-@media (max-width: 400px) {
-    .mobile-tier-navigation {
-        gap: 0;
-        padding-right: 0;
-        padding-left: 0;
-    }
-
-    .mobile-tier-navigation-button {
-        flex: 1 1 0;
-        width: 0;
-        min-width: 0;
-        min-height: 52px;
-        padding: 5px 2px;
-        font-size: 13px;
-    }
-
-    .mobile-tier-navigation-button.home-button {
-        flex-grow: 1;
-        min-width: 0;
-        font-size: 20px;
-    }
-
-    .tier-label {
-        flex-basis: 45px;
-
-        font-size: 20px;
-    }
-
-    .games-container {
-        gap: 6px;
-        padding: 8px;
-    }
-
-    .game-card,
-    #tier-S .game-card,
-    #tier-A .game-card,
-    #tier-D .game-card,
-    #tier-E .game-card,
-    #tier-F .game-card {
-        width: calc(50% - 3px);
-    }
-
-    #tier-S .game-card,
-    #tier-A .game-card {
-        grid-template-rows:
-            minmax(0, 72%)
-            minmax(0, 1fr)
-            auto;
-    }
-
-    #tier-D,
-    #tier-E,
-    #tier-F {
-        gap: 6px;
-    }
-
-    #tier-D .game-title,
-    #tier-E .game-title,
-    #tier-F .game-title {
-        font-size: 9px;
-    }
-
-    .back-to-top {
-        right: max(
-            8px,
-            env(safe-area-inset-right)
-        );
-        bottom: calc(
-            52px +
-            env(safe-area-inset-bottom) +
-            8px
-        );
-
-        width: 38px;
-        max-width: 38px;
-        height: 38px;
-        max-height: 38px;
-    }
-
-    .back-to-top span:first-child {
-        font-size: 20px;
-    }
-}
-
-
-/*
- * =========================================================
- * Уменьшение анимаций
- * =========================================================
- */
-
-@media (prefers-reduced-motion: reduce) {
-    .back-to-top,
-    .back-to-top::before,
-    .back-to-top span:last-child,
-    .game-price,
-    .price-mode-toggle,
-    .price-mode-toggle::before,
-    .price-mode-toggle::after,
-    .game-card,
-    .selected-video-link,
-    .game-preview-close,
-    .preview-link,
-    .filter-action-button,
-    .favorites-filter-button,
-    .mobile-tier-navigation-button {
-        transition: none;
-        animation: none;
-    }
-}
-/*
- * =========================================================
- * Настраиваемый размер тир-листа
- * =========================================================
- */
-
-:root {
-    --tier-card-scale: 1;
-}
-
-
-
-/*
- * Контейнер не даёт широкому тир-листу
- * растягивать страницу. Вместо этого
- * появляется горизонтальная прокрутка.
- */
-
-/*
- * Ширина регулируется первым ползунком.
- */
-
-
-
-/*
- * Стандартные карточки.
- */
-.tier-list .game-card {
-    width: calc(
-        190px * var(--tier-card-scale)
-    );
-}
-
-
-/*
- * S и A.
- */
-.tier-list #tier-S .game-card,
-.tier-list #tier-A .game-card {
-    width: calc(
-        230px * var(--tier-card-scale)
-    );
-}
-
-
-/*
- * D, E и F.
- */
-.tier-list #tier-D .game-card,
-.tier-list #tier-E .game-card,
-.tier-list #tier-F .game-card {
-    width: calc(
-        142px * var(--tier-card-scale)
-    );
-}
-
-
-/*
- * Ползунки интерфейса.
- */
-.tier-display-controls {
-    display: flex;
-    flex: 1 1 360px;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 10px 14px;
-
-    min-width: 0;
-}
-
-.tier-range-control {
-    display: grid;
-    grid-template-columns:
-        max-content
-        minmax(100px, 1fr)
-        46px;
-    align-items: center;
-    gap: 8px;
-
-    flex: 1 1 280px;
-    min-width: 250px;
-    min-height: var(--control-height);
-    padding: 6px 9px;
-
-    color: #4b5563;
-    font-size: 12px;
-    font-weight: 700;
-
-    background: var(--color-surface-soft);
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-sm);
-}
-
-.tier-range-label {
-    white-space: nowrap;
-}
-
-.tier-range-control input[type='range'] {
-    width: 100%;
-    min-width: 0;
-
-    accent-color: var(--color-primary);
-}
-
-.tier-range-control output {
-    color: var(--color-primary-dark);
-    font-variant-numeric: tabular-nums;
-    text-align: right;
-}
-
-
-/*
- * Подготовка к созданию PNG.
- */
-/*
- * Общая подготовка скриншота.
- * Вертикальному экспорту нельзя принудительно
- * обрезать содержимое по высоте.
- */
-.tierlist-screenshot-render {
-    isolation: isolate;
-}
-
-
-/*
- * Обрезание нужно только горизонтальному холсту
- * фиксированного размера 1920 × 1080.
- */
-.tierlist-screenshot-render.tierlist-screenshot-landscape {
-    overflow: hidden !important;
-}
-
-.tierlist-screenshot-render.tierlist-screenshot-landscape
-.tier-row {
-    overflow: hidden !important;
-}
-
-.tierlist-screenshot-render.tierlist-screenshot-landscape
-.games-container {
-    overflow: hidden !important;
-}
-
-
-
-/*
- * Мобильные размеры карточек также зависят
- * от общего ползунка масштаба.
- */
-@media (max-width: 600px) {
-    .tier-list .game-card {
-        width: calc(
-            145px * var(--tier-card-scale)
-        );
-    }
-
-    .tier-list #tier-S .game-card,
-    .tier-list #tier-A .game-card {
-        width: calc(
-            165px * var(--tier-card-scale)
-        );
-    }
-
-    .tier-list #tier-D .game-card,
-    .tier-list #tier-E .game-card,
-    .tier-list #tier-F .game-card {
-        width: calc(
-            108px * var(--tier-card-scale)
-        );
-    }
-
-    .tier-display-controls {
-        flex-basis: 100%;
-        width: 100%;
-    }
-
-    .tier-range-control {
-        flex-basis: 100%;
-        width: 100%;
-        min-width: 0;
-    }
-}
-
-
-@media (max-width: 400px) {
-    .tier-list .game-card,
-    .tier-list #tier-S .game-card,
-    .tier-list #tier-A .game-card,
-    .tier-list #tier-B .game-card,
-    .tier-list #tier-C .game-card,
-    .tier-list #tier-D .game-card,
-    .tier-list #tier-E .game-card,
-    .tier-list #tier-F .game-card {
-        width: calc(
-            (50% - 3px) *
-            var(--tier-card-scale)
-        );
-    }
-
-    .tier-range-control {
-        grid-template-columns:
-            1fr
-            minmax(90px, 1fr)
-            44px;
-    }
-
-    .tier-range-label {
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-}
-/*
- * =========================================================
- * Меню выбора формата скриншота
- * =========================================================
- */
-
-.screenshot-format-menu {
-    position: fixed;
-    z-index: 10000;
-
-    display: grid;
-    gap: 6px;
-
-    width: min(
-        238px,
-        calc(100vw - 20px)
-    );
-    padding: 7px;
-
-    border: 1px solid
-        rgba(
-            255,
-            255,
-            255,
-            0.14
-        );
-    border-radius: 12px;
-
-    background:
-        rgba(
-            28,
-            31,
-            42,
-            0.98
-        );
-
-    box-shadow:
-        0 12px 32px
-        rgba(
-            0,
-            0,
-            0,
-            0.32
-        );
-
-    animation:
-        screenshot-format-menu-show
-        0.16s
-        ease-out;
-}
-
-
-.screenshot-format-menu::after {
-    position: absolute;
-    right: 18px;
-    bottom: -6px;
-
-    width: 11px;
-    height: 11px;
-
-    content: '';
-
-    border-right: 1px solid
-        rgba(
-            255,
-            255,
-            255,
-            0.14
-        );
-    border-bottom: 1px solid
-        rgba(
-            255,
-            255,
-            255,
-            0.14
-        );
-
-    background:
-        rgb(
-            28,
-            31,
-            42
-        );
-
-    transform: rotate(
-        45deg
-    );
-}
-
-
-.screenshot-format-option {
-    display: grid;
-    grid-template-columns:
-        34px
-        minmax(
-            0,
-            1fr
-        )
-        auto;
-    align-items: center;
-    gap: 9px;
-
-    width: 100%;
-    min-height: 48px;
-    padding: 7px 9px;
-
-    color: #f5f7ff;
-    font: inherit;
-    text-align: left;
-
-    border: 0;
-    border-radius: 8px;
-
-    background: transparent;
-    cursor: pointer;
-
-    transition:
-        background-color 0.15s ease,
-        transform 0.15s ease;
-}
-
-
-.screenshot-format-option:hover,
-.screenshot-format-option:focus-visible {
-    outline: none;
-
-    background:
-        rgba(
-            255,
-            255,
-            255,
-            0.1
-        );
-}
-
-
-.screenshot-format-option:active {
-    transform: scale(
-        0.98
-    );
-}
-
-
-.screenshot-format-icon {
-    display: grid;
-    place-items: center;
-
-    width: 34px;
-    height: 34px;
-
-    color: #8ab4ff;
-
-    border-radius: 7px;
-
-    background:
-        rgba(
-            105,
-            161,
-            255,
-            0.14
-        );
-}
-
-
-.screenshot-format-icon svg {
-    width: 23px;
-    height: 23px;
-
-    fill: none;
-    stroke: currentColor;
-    stroke-width: 1.7;
-    stroke-linecap: round;
-    stroke-linejoin: round;
-}
-
-
-.screenshot-format-text {
-    overflow: hidden;
-
-    font-size: 13px;
-    font-weight: 650;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
-
-.screenshot-format-ratio {
-    padding: 3px 6px;
-
-    color:
-        rgba(
-            245,
-            247,
-            255,
-            0.62
-        );
-
-    font-size: 11px;
-    line-height: 1;
-
-    border-radius: 5px;
-
-    background:
-        rgba(
-            255,
-            255,
-            255,
-            0.08
-        );
-}
-
-
-@keyframes screenshot-format-menu-show {
-    from {
-        opacity: 0;
-        transform:
-            translateY(
-                5px
-            )
-            scale(
-                0.97
-            );
-    }
-
-    to {
-        opacity: 1;
-        transform:
-            translateY(
-                0
-            )
-            scale(
-                1
-            );
-    }
-}
-/*
- * =========================================================
- * Презентация тирлиста для видео
- * =========================================================
- */
-
-/*
- * Кнопка запуска появляется только после выбора ролика.
- */
-.video-presentation-button {
-    display: inline-flex;
-    flex: 0 0 auto;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-
-    min-height: var(--control-height);
-    padding: 8px 12px;
-
-    color: #fff;
-    font-size: 13px;
-    font-weight: 700;
-    line-height: 1;
-    white-space: nowrap;
-
-    cursor: pointer;
-
-    background:
-        linear-gradient(
-            135deg,
-            #343943,
-            #20232a
-        );
-    border: 1px solid
-        rgb(255 255 255 / 14%);
-    border-radius: var(--radius-sm);
-    box-shadow:
-        0 2px 6px
-        rgb(0 0 0 / 16%);
-
-    transition:
-        background 0.2s ease,
-        border-color 0.2s ease,
-        box-shadow 0.2s ease,
-        transform 0.2s ease;
-}
-.video-presentation-button {
-    display: inline-flex;
-    flex: 0 0 auto;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-
-    /* остальные существующие стили */
-}
-
-.video-presentation-button[hidden] {
-    display: none !important;
-}
-
-.video-presentation-button:hover {
-    background:
-        linear-gradient(
-            135deg,
-            #4a515e,
-            #30343d
-        );
-    border-color:
-        rgb(232 199 102 / 80%);
-    box-shadow:
-        0 4px 10px
-        rgb(0 0 0 / 22%);
-    transform: translateY(-1px);
-}
-
-.video-presentation-button:active {
-    transform: translateY(0) scale(0.97);
-}
-
-.video-presentation-button:focus-visible {
-    outline: 3px solid
-        var(--color-primary-focus);
-    outline-offset: 2px;
-}
-
-.video-presentation-button:disabled {
-    cursor: default;
-    opacity: 0.55;
-}
-
-.video-presentation-button-icon {
-    display: inline-grid;
-    place-items: center;
-
-    width: 18px;
-    height: 18px;
-
-    color: var(--color-accent);
-    font-size: 13px;
-    line-height: 1;
-}
-
-/*
- * Активный вариант намеренно заметнее:
- * во время записи сразу понятно, что сейчас
- * нажатие отменит презентационный режим.
- */
-.video-presentation-button.is-active {
-    color: #fff4f4;
-
-    background:
-        linear-gradient(
-            135deg,
-            #8b2635,
-            #5f1722
-        );
-    border-color:
-        rgb(255 211 211 / 45%);
-}
-
-.video-presentation-button.is-active:hover {
-    background:
-        linear-gradient(
-            135deg,
-            #a83244,
-            #761c2a
-        );
-    border-color:
-        rgb(255 235 235 / 70%);
-}
-
-.video-presentation-button.is-active
-.video-presentation-button-icon {
-    color: #ffd3d3;
-}
-
-
-/*
- * Во время презентации убираем правую панель
- * с YouTube-превью. Тирлист занимает всю ширину,
- * а сцена становится чище для захвата в OBS.
- */
-.tier-list-layout.video-presentation-active {
-    display: block !important;
-}
-
-.tier-list-layout.video-presentation-active
-.selected-video-panel {
-    display: none !important;
-}
-
-
-/*
- * Карточки презентации не должны реагировать
- * на hover, фокус и клики: это визуальный слой
- * для ролика, а не обычный список.
- */
-.tier-list-layout.video-presentation-active
-.game-card {
-    cursor: default;
-    pointer-events: none;
-}
-
-.tier-list-layout.video-presentation-active
-.game-card:hover,
-.tier-list-layout.video-presentation-active
-.game-card:focus-within {
-    z-index: auto;
-
-    box-shadow: var(--shadow-card);
-    transform: none;
-}
-
-
-/*
- * Стартовое состояние новой карточки.
- * Класс существует только пару кадров перед
- * запуском основной keyframes-анимации.
- */
-.game-card.presentation-card-entering {
-    opacity: 0;
-    transform:
-        translateY(34px)
-        scale(0.32)
-        rotate(-7deg);
-}
-
-
-/*
- * Финальная характерная анимация:
- *
- * 0%   — карточка маленькая и ниже тира;
- * 48%  — резко появляется и чуть перелетает;
- * 72%  — слегка «проседает»;
- * 100% — занимает естественное положение.
- */
-.game-card.presentation-card-visible {
-    z-index: 3;
-
-    pointer-events: none;
-}
-
-/*
- * =========================================================
- * Случайные варианты появления карточек
- * =========================================================
- *
- * Все варианты занимают одно и то же место в тире,
- * используют близкую длительность и одинаковую плавную
- * кривую. Отличается только траектория появления.
- */
-
-.game-card.presentation-card-visible.presentation-animation-rise {
-    animation:
-        presentation-card-rise
-        680ms
-        cubic-bezier(0.16, 1, 0.3, 1)
-        both;
-}
-
-.game-card.presentation-card-visible.presentation-animation-drop {
-    animation:
-        presentation-card-drop
-        680ms
-        cubic-bezier(0.16, 1, 0.3, 1)
-        both;
-}
-
-.game-card.presentation-card-visible.presentation-animation-slide-left {
-    animation:
-        presentation-card-slide-left
-        680ms
-        cubic-bezier(0.16, 1, 0.3, 1)
-        both;
-}
-
-.game-card.presentation-card-visible.presentation-animation-slide-right {
-    animation:
-        presentation-card-slide-right
-        680ms
-        cubic-bezier(0.16, 1, 0.3, 1)
-        both;
-}
-
-.game-card.presentation-card-visible.presentation-animation-pop {
-    animation:
-        presentation-card-pop
-        650ms
-        cubic-bezier(0.16, 1, 0.3, 1)
-        both;
-}
-
-.game-card.presentation-card-visible.presentation-animation-tilt-left {
-    animation:
-        presentation-card-tilt-left
-        700ms
-        cubic-bezier(0.16, 1, 0.3, 1)
-        both;
-}
-
-.game-card.presentation-card-visible.presentation-animation-tilt-right {
-    animation:
-        presentation-card-tilt-right
-        700ms
-        cubic-bezier(0.16, 1, 0.3, 1)
-        both;
-}
-
-.game-card.presentation-card-visible.presentation-animation-flip {
-    transform-origin: center bottom;
-
-    animation:
-        presentation-card-flip
-        700ms
-        cubic-bezier(0.16, 1, 0.3, 1)
-        both;
-}
-
-.game-card.presentation-card-visible.presentation-animation-zoom {
-    animation:
-        presentation-card-zoom
-        660ms
-        cubic-bezier(0.16, 1, 0.3, 1)
-        both;
-}
-
-.game-card.presentation-card-visible.presentation-animation-bounce {
-    animation:
-        presentation-card-bounce
-        720ms
-        cubic-bezier(0.16, 1, 0.3, 1)
-        both;
-}
-
-
-
-/*
- * 1. Базовый подъём снизу.
- */
-@keyframes presentation-card-rise {
-    0% {
-        opacity: 0;
-        filter: brightness(1.3) saturate(1.2);
-
-        transform:
-            translateY(34px)
-            scale(0.35)
-            rotate(-6deg);
-    }
-
-    48% {
-        opacity: 1;
-
-        transform:
-            translateY(-8px)
-            scale(1.1)
-            rotate(1.5deg);
-    }
-
-    72% {
-        transform:
-            translateY(3px)
-            scale(0.96)
-            rotate(-0.5deg);
-    }
-
-    100% {
-        opacity: 1;
-        filter: brightness(1) saturate(1);
-
-        transform:
-            translateY(0)
-            scale(1)
-            rotate(0);
-    }
-}
-
-
-/*
- * 2. Падение сверху.
- */
-@keyframes presentation-card-drop {
-    0% {
-        opacity: 0;
-        filter: brightness(1.35) saturate(1.15);
-
-        transform:
-            translateY(-30px)
-            scale(0.5)
-            rotate(5deg);
-    }
-
-    52% {
-        opacity: 1;
-
-        transform:
-            translateY(6px)
-            scale(1.08)
-            rotate(-1.5deg);
-    }
-
-    76% {
-        transform:
-            translateY(-2px)
-            scale(0.98)
-            rotate(0.4deg);
-    }
-
-    100% {
-        opacity: 1;
-        filter: brightness(1) saturate(1);
-
-        transform:
-            translateY(0)
-            scale(1)
-            rotate(0);
-    }
-}
-
-
-/*
- * 3. Въезд слева.
- */
-@keyframes presentation-card-slide-left {
-    0% {
-        opacity: 0;
-        filter: brightness(1.3);
-
-        transform:
-            translateX(-46px)
-            translateY(9px)
-            scale(0.55)
-            rotate(-5deg);
-    }
-
-    55% {
-        opacity: 1;
-
-        transform:
-            translateX(7px)
-            translateY(-3px)
-            scale(1.08)
-            rotate(1deg);
-    }
-
-    78% {
-        transform:
-            translateX(-2px)
-            translateY(1px)
-            scale(0.98);
-    }
-
-    100% {
-        opacity: 1;
-        filter: brightness(1);
-
-        transform:
-            translate(0, 0)
-            scale(1)
-            rotate(0);
-    }
-}
-
-
-/*
- * 4. Въезд справа.
- */
-@keyframes presentation-card-slide-right {
-    0% {
-        opacity: 0;
-        filter: brightness(1.3);
-
-        transform:
-            translateX(46px)
-            translateY(9px)
-            scale(0.55)
-            rotate(5deg);
-    }
-
-    55% {
-        opacity: 1;
-
-        transform:
-            translateX(-7px)
-            translateY(-3px)
-            scale(1.08)
-            rotate(-1deg);
-    }
-
-    78% {
-        transform:
-            translateX(2px)
-            translateY(1px)
-            scale(0.98);
-    }
-
-    100% {
-        opacity: 1;
-        filter: brightness(1);
-
-        transform:
-            translate(0, 0)
-            scale(1)
-            rotate(0);
-    }
-}
-
-
-/*
- * 5. Быстрый pop-эффект из центра.
- */
-@keyframes presentation-card-pop {
-    0% {
-        opacity: 0;
-        filter: brightness(1.45) saturate(1.3);
-
-        transform:
-            scale(0.1)
-            rotate(-10deg);
-    }
-
-    45% {
-        opacity: 1;
-
-        transform:
-            scale(1.17)
-            rotate(2deg);
-    }
-
-    70% {
-        transform:
-            scale(0.94)
-            rotate(-0.7deg);
-    }
-
-    100% {
-        opacity: 1;
-        filter: brightness(1) saturate(1);
-
-        transform:
-            scale(1)
-            rotate(0);
-    }
-}
-
-
-/*
- * 6. Подъём с наклоном влево.
- */
-@keyframes presentation-card-tilt-left {
-    0% {
-        opacity: 0;
-
-        transform:
-            translate(-20px, 30px)
-            scale(0.42)
-            rotate(-14deg);
-    }
-
-    50% {
-        opacity: 1;
-
-        transform:
-            translate(4px, -7px)
-            scale(1.1)
-            rotate(3deg);
-    }
-
-    76% {
-        transform:
-            translate(-1px, 2px)
-            scale(0.97)
-            rotate(-0.8deg);
-    }
-
-    100% {
-        opacity: 1;
-
-        transform:
-            translate(0, 0)
-            scale(1)
-            rotate(0);
-    }
-}
-
-
-/*
- * 7. Подъём с наклоном вправо.
- */
-@keyframes presentation-card-tilt-right {
-    0% {
-        opacity: 0;
-
-        transform:
-            translate(20px, 30px)
-            scale(0.42)
-            rotate(14deg);
-    }
-
-    50% {
-        opacity: 1;
-
-        transform:
-            translate(-4px, -7px)
-            scale(1.1)
-            rotate(-3deg);
-    }
-
-    76% {
-        transform:
-            translate(1px, 2px)
-            scale(0.97)
-            rotate(0.8deg);
-    }
-
-    100% {
-        opacity: 1;
-
-        transform:
-            translate(0, 0)
-            scale(1)
-            rotate(0);
-    }
-}
-
-
-/*
- * 8. Лёгкий «переворот» вокруг нижней грани.
- */
-@keyframes presentation-card-flip {
-    0% {
-        opacity: 0;
-        filter: brightness(1.3);
-
-        transform:
-            perspective(500px)
-            rotateX(-72deg)
-            translateY(22px)
-            scale(0.78);
-    }
-
-    55% {
-        opacity: 1;
-
-        transform:
-            perspective(500px)
-            rotateX(10deg)
-            translateY(-4px)
-            scale(1.05);
-    }
-
-    78% {
-        transform:
-            perspective(500px)
-            rotateX(-3deg)
-            translateY(1px)
-            scale(0.99);
-    }
-
-    100% {
-        opacity: 1;
-        filter: brightness(1);
-
-        transform:
-            perspective(500px)
-            rotateX(0)
-            translateY(0)
-            scale(1);
-    }
-}
-
-
-/*
- * 9. Увеличение с небольшой вспышкой.
- */
-@keyframes presentation-card-zoom {
-    0% {
-        opacity: 0;
-        filter: brightness(1.6) saturate(1.35);
-
-        transform:
-            scale(0.45);
-    }
-
-    50% {
-        opacity: 1;
-        filter: brightness(1.12);
-
-        transform:
-            scale(1.13);
-    }
-
-    74% {
-        transform:
-            scale(0.97);
-    }
-
-    100% {
-        opacity: 1;
-        filter: brightness(1) saturate(1);
-
-        transform:
-            scale(1);
-    }
-}
-
-
-/*
- * 10. Мягкое приземление с коротким отскоком.
- */
-@keyframes presentation-card-bounce {
-    0% {
-        opacity: 0;
-
-        transform:
-            translateY(42px)
-            scale(0.5);
-    }
-
-    40% {
-        opacity: 1;
-
-        transform:
-            translateY(-13px)
-            scale(1.08);
-    }
-
-    58% {
-        transform:
-            translateY(5px)
-            scale(0.97);
-    }
-
-    74% {
-        transform:
-            translateY(-4px)
-            scale(1.02);
-    }
-
-    88% {
-        transform:
-            translateY(1px)
-            scale(0.995);
-    }
-
-    100% {
-        opacity: 1;
-
-        transform:
-            translateY(0)
-            scale(1);
-    }
-}
-
-
-
-/*
- * Мягкая вспышка тира, в который только что
- * отправлен вердикт.
- */
-.tier-row.tier-row-presentation-active::after {
-    position: absolute;
-    inset: 0;
-    z-index: 1;
-
-    content: '';
-
-    pointer-events: none;
-
-    border: 2px solid
-        rgb(232 199 102 / 92%);
-    border-radius: inherit;
-    box-shadow:
-        inset 0 0 30px
-        rgb(232 199 102 / 24%),
-        0 0 18px
-        rgb(232 199 102 / 30%);
-
-    animation:
-        presentation-tier-flash
-        720ms
-        ease-out
-        both;
-}
-
-
-@keyframes presentation-tier-flash {
-    0% {
-        opacity: 0;
-        transform: scale(0.994);
-    }
-
-    22% {
-        opacity: 1;
-    }
-
-    100% {
-        opacity: 0;
-        transform: scale(1);
-    }
-}
-
-
-/*
- * На мобильном кнопка должна быть полноценной
- * строкой интерфейса, а не сжиматься рядом
- * со звёздочкой и переключателем цен.
- */
-@media (max-width: 600px) {
-    .video-presentation-button {
-        width: 100%;
-    }
-}
-
-
-/*
- * Учитываем системную настройку уменьшения движения.
- */
-@media (prefers-reduced-motion: reduce) {
-    .game-card.presentation-card-entering,
-    .game-card.presentation-card-visible,
-    .tier-row.tier-row-presentation-active::after {
-        animation: none !important;
-        transform: none !important;
-    }
-
-    .game-card.presentation-card-entering {
-        opacity: 0;
-    }
-
-    .game-card.presentation-card-visible {
-        opacity: 1;
-    }
-}
-/*
- * =========================================================
  * Единая панель управления тир-листом
  * =========================================================
  */
@@ -4178,34 +1626,30 @@ body.main-page {
 .tier-controls {
     display: grid;
     grid-template-columns:
-        minmax(0, 1.55fr)
-        minmax(250px, 1fr)
-        minmax(250px, 1fr);
-    align-items: stretch;
+        minmax(440px, 1.55fr)
+        minmax(245px, 0.9fr)
+        minmax(260px, 1fr);
+    align-items: start;
     gap: 12px;
 
     margin-bottom: 24px;
     padding: 12px;
 
-    background:
-        linear-gradient(
-            145deg,
-            #ffffff,
-            #f8fafc
-        );
+    background: linear-gradient(145deg, #fff, #f8fafc);
     border: 1px solid rgb(203 213 225 / 85%);
     border-radius: 14px;
-    box-shadow:
-        0 8px 22px rgb(15 23 42 / 10%);
+    box-shadow: 0 8px 22px rgb(15 23 42 / 10%);
 }
 
 .tier-controls-section {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    align-self: start;
+    gap: 10px;
 
     min-width: 0;
-    padding: 13px;
+    height: auto;
+    padding: 12px;
 
     background: rgb(248 250 252 / 85%);
     border: 1px solid #e2e8f0;
@@ -4218,7 +1662,7 @@ body.main-page {
     gap: 9px;
 
     min-width: 0;
-    padding-bottom: 10px;
+    padding-bottom: 8px;
 
     border-bottom: 1px solid #e2e8f0;
 }
@@ -4256,10 +1700,6 @@ body.main-page {
     line-height: 1.2;
 }
 
-
-/*
- * Поля поиска и select.
- */
 .tier-controls-fields {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -4308,11 +1748,16 @@ body.main-page {
     box-shadow: 0 0 0 3px rgb(196 147 22 / 18%);
 }
 
+.tier-controls-quick-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
 
-/*
- * Унифицированные кнопки.
- */
-.tier-control-button {
+    margin-top: 0;
+}
+
+.tier-control-button,
+.video-presentation-button {
     display: inline-flex;
     flex: 0 0 auto;
     align-items: center;
@@ -4322,7 +1767,6 @@ body.main-page {
     min-height: 38px;
     padding: 8px 10px;
 
-    color: #384554;
     font-size: 12px;
     font-weight: 800;
     line-height: 1;
@@ -4330,10 +1774,7 @@ body.main-page {
 
     cursor: pointer;
 
-    background: #fff;
-    border: 1px solid #cbd5e1;
     border-radius: 7px;
-    box-shadow: 0 1px 2px rgb(15 23 42 / 6%);
 
     transition:
         color 0.18s ease,
@@ -4341,6 +1782,14 @@ body.main-page {
         border-color 0.18s ease,
         box-shadow 0.18s ease,
         transform 0.18s ease;
+}
+
+.tier-control-button {
+    color: #384554;
+
+    background: #fff;
+    border: 1px solid #cbd5e1;
+    box-shadow: 0 1px 2px rgb(15 23 42 / 6%);
 }
 
 .tier-control-button:hover {
@@ -4352,11 +1801,13 @@ body.main-page {
     transform: translateY(-1px);
 }
 
-.tier-control-button:active {
-    transform: translateY(0);
+.tier-control-button:active,
+.video-presentation-button:active {
+    transform: translateY(0) scale(0.97);
 }
 
-.tier-control-button:focus-visible {
+.tier-control-button:focus-visible,
+.video-presentation-button:focus-visible {
     outline: 3px solid rgb(196 147 22 / 28%);
     outline-offset: 2px;
 }
@@ -4369,24 +1820,14 @@ body.main-page {
 .tier-control-button-primary {
     color: #fff;
 
-    background:
-        linear-gradient(
-            135deg,
-            #3d4653,
-            #20232a
-        );
+    background: linear-gradient(135deg, #3d4653, #20232a);
     border-color: #20232a;
 }
 
 .tier-control-button-primary:hover {
     color: #fff;
 
-    background:
-        linear-gradient(
-            135deg,
-            #505c6c,
-            #303945
-        );
+    background: linear-gradient(135deg, #505c6c, #303945);
     border-color: #cfa230;
 }
 
@@ -4398,27 +1839,11 @@ body.main-page {
     box-shadow: 0 0 0 3px rgb(210 159 34 / 15%);
 }
 
-
-/*
- * Нижние быстрые кнопки фильтров.
- */
-.tier-controls-quick-actions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-
-    margin-top: auto;
-}
-
-
-/*
- * Блок внешнего вида.
- */
 .tier-controls .tier-display-controls {
     display: flex;
-    flex: 1 1 auto;
+    flex: 0 0 auto;
     flex-direction: column;
-    gap: 10px;
+    gap: 8px;
 
     width: 100%;
     min-width: 0;
@@ -4429,10 +1854,11 @@ body.main-page {
     grid-template-columns:
         minmax(0, 1fr)
         44px;
-    gap: 8px;
+    gap: 5px 8px;
 
     width: 100%;
     min-width: 0;
+    min-height: 0;
     padding: 0;
 
     background: transparent;
@@ -4447,15 +1873,19 @@ body.main-page {
     font-weight: 800;
 }
 
-.tier-controls .tier-range-control input[type='range'] {
+.tier-range-control input[type='range'] {
+    width: 100%;
     min-width: 0;
+
     accent-color: #c49316;
 }
 
-.tier-controls .tier-range-control output {
+.tier-range-control output {
     color: #8a6508;
     font-size: 12px;
     font-weight: 800;
+    font-variant-numeric: tabular-nums;
+    text-align: right;
 }
 
 .tier-controls .price-mode-toggle {
@@ -4490,51 +1920,667 @@ body.main-page {
     transform: translate(15px, -50%);
 }
 
-
-/*
- * Блок действий.
- */
 .tier-controls-actions-list {
     display: grid;
-    gap: 8px;
+    gap: 7px;
 }
 
-.tier-controls-actions-list .tier-control-button {
+.tier-controls-actions-list .tier-control-button,
+.tier-controls-actions-list .video-presentation-button {
     justify-content: flex-start;
-
     width: 100%;
 }
 
-.tier-controls-actions-list .video-presentation-button {
-    display: inline-flex;
+
+/*
+ * =========================================================
+ * Кнопка презентации
+ * =========================================================
+ */
+
+.video-presentation-button {
+    color: #fff;
+
+    background: linear-gradient(135deg, #343943, #20232a);
+    border: 1px solid rgb(255 255 255 / 14%);
+    box-shadow: 0 2px 6px rgb(0 0 0 / 16%);
 }
 
-.tier-controls-actions-list .video-presentation-button[hidden] {
+.video-presentation-button[hidden] {
     display: none !important;
 }
 
-/*
- * Сохраняем красный вид кнопки Stop,
- * который используется presentation-режимом.
- */
-.tier-controls-actions-list
+.video-presentation-button:hover {
+    background: linear-gradient(135deg, #4a515e, #30343d);
+    border-color: rgb(232 199 102 / 80%);
+    box-shadow: 0 4px 10px rgb(0 0 0 / 22%);
+    transform: translateY(-1px);
+}
+
+.video-presentation-button:disabled {
+    cursor: default;
+    opacity: 0.55;
+}
+
+.video-presentation-button-icon {
+    display: inline-grid;
+    place-items: center;
+
+    width: 18px;
+    height: 18px;
+
+    color: var(--color-accent);
+    font-size: 13px;
+    line-height: 1;
+}
+
 .video-presentation-button.is-active {
     color: #fff4f4;
 
-    background:
-        linear-gradient(
-            135deg,
-            #8b2635,
-            #5f1722
-        );
+    background: linear-gradient(135deg, #8b2635, #5f1722);
     border-color: rgb(255 211 211 / 45%);
+}
+
+.video-presentation-button.is-active:hover {
+    background: linear-gradient(135deg, #a83244, #761c2a);
+    border-color: rgb(255 235 235 / 70%);
+}
+
+.video-presentation-button.is-active .video-presentation-button-icon {
+    color: #ffd3d3;
 }
 
 
 /*
- * Планшеты: фильтры получают полную строку,
- * остальные два блока становятся рядом.
+ * =========================================================
+ * Скриншот тир-листа
+ * =========================================================
  */
+
+.tierlist-screenshot-render {
+    isolation: isolate;
+}
+
+.tierlist-screenshot-render.tierlist-screenshot-landscape,
+.tierlist-screenshot-render.tierlist-screenshot-landscape .tier-row,
+.tierlist-screenshot-render.tierlist-screenshot-landscape .games-container {
+    overflow: hidden !important;
+}
+
+.screenshot-format-menu {
+    position: fixed;
+    z-index: 10000;
+
+    display: grid;
+    gap: 6px;
+
+    width: min(238px, calc(100vw - 20px));
+    padding: 7px;
+
+    background: rgb(28 31 42 / 98%);
+    border: 1px solid rgb(255 255 255 / 14%);
+    border-radius: 12px;
+    box-shadow: 0 12px 32px rgb(0 0 0 / 32%);
+
+    animation: screenshot-format-menu-show 0.16s ease-out;
+}
+
+.screenshot-format-menu::after {
+    position: absolute;
+    right: 18px;
+    bottom: -6px;
+
+    width: 11px;
+    height: 11px;
+
+    content: '';
+
+    background: rgb(28 31 42);
+    border-right: 1px solid rgb(255 255 255 / 14%);
+    border-bottom: 1px solid rgb(255 255 255 / 14%);
+
+    transform: rotate(45deg);
+}
+
+.screenshot-format-option {
+    display: grid;
+    grid-template-columns: 34px minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 9px;
+
+    width: 100%;
+    min-height: 48px;
+    padding: 7px 9px;
+
+    color: #f5f7ff;
+    font: inherit;
+    text-align: left;
+
+    cursor: pointer;
+
+    background: transparent;
+    border: 0;
+    border-radius: 8px;
+
+    transition:
+        background-color 0.15s ease,
+        transform 0.15s ease;
+}
+
+.screenshot-format-option:hover,
+.screenshot-format-option:focus-visible {
+    outline: none;
+    background: rgb(255 255 255 / 10%);
+}
+
+.screenshot-format-option:active {
+    transform: scale(0.98);
+}
+
+.screenshot-format-icon {
+    display: grid;
+    place-items: center;
+
+    width: 34px;
+    height: 34px;
+
+    color: #8ab4ff;
+
+    background: rgb(105 161 255 / 14%);
+    border-radius: 7px;
+}
+
+.screenshot-format-icon svg {
+    width: 23px;
+    height: 23px;
+
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.7;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.screenshot-format-text {
+    overflow: hidden;
+
+    font-size: 13px;
+    font-weight: 650;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.screenshot-format-ratio {
+    padding: 3px 6px;
+
+    color: rgb(245 247 255 / 62%);
+    font-size: 11px;
+    line-height: 1;
+
+    background: rgb(255 255 255 / 8%);
+    border-radius: 5px;
+}
+
+@keyframes screenshot-format-menu-show {
+    from {
+        opacity: 0;
+        transform: translateY(5px) scale(0.97);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+
+/*
+ * =========================================================
+ * Режим презентации
+ * =========================================================
+ */
+
+.tier-list-layout.video-presentation-active {
+    display: block !important;
+}
+
+.tier-list-layout.video-presentation-active .selected-video-panel {
+    display: none !important;
+}
+
+.tier-list-layout.video-presentation-active .game-card {
+    cursor: default;
+    pointer-events: none;
+}
+
+.tier-list-layout.video-presentation-active .game-card:hover,
+.tier-list-layout.video-presentation-active .game-card:focus-within {
+    z-index: auto;
+
+    box-shadow: var(--shadow-card);
+    transform: none;
+}
+
+.game-card.presentation-card-entering {
+    opacity: 0;
+    transform: translateY(34px) scale(0.32) rotate(-7deg);
+}
+
+.game-card.presentation-card-visible {
+    z-index: 3;
+    pointer-events: none;
+}
+
+.game-card.presentation-card-visible.presentation-animation-rise {
+    animation: presentation-card-rise 680ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.game-card.presentation-card-visible.presentation-animation-drop {
+    animation: presentation-card-drop 680ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.game-card.presentation-card-visible.presentation-animation-slide-left {
+    animation: presentation-card-slide-left 680ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.game-card.presentation-card-visible.presentation-animation-slide-right {
+    animation: presentation-card-slide-right 680ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.game-card.presentation-card-visible.presentation-animation-pop {
+    animation: presentation-card-pop 650ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.game-card.presentation-card-visible.presentation-animation-tilt-left {
+    animation: presentation-card-tilt-left 700ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.game-card.presentation-card-visible.presentation-animation-tilt-right {
+    animation: presentation-card-tilt-right 700ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.game-card.presentation-card-visible.presentation-animation-flip {
+    transform-origin: center bottom;
+    animation: presentation-card-flip 700ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.game-card.presentation-card-visible.presentation-animation-zoom {
+    animation: presentation-card-zoom 660ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.game-card.presentation-card-visible.presentation-animation-bounce {
+    animation: presentation-card-bounce 720ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.tier-row.tier-row-presentation-active::after {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+
+    content: '';
+
+    pointer-events: none;
+
+    border: 2px solid rgb(232 199 102 / 92%);
+    border-radius: inherit;
+    box-shadow:
+        inset 0 0 30px rgb(232 199 102 / 24%),
+        0 0 18px rgb(232 199 102 / 30%);
+
+    animation: presentation-tier-flash 720ms ease-out both;
+}
+
+@keyframes presentation-card-rise {
+    0% {
+        opacity: 0;
+        transform: translateY(34px) scale(0.35) rotate(-6deg);
+    }
+
+    48% {
+        opacity: 1;
+        transform: translateY(-8px) scale(1.1) rotate(1.5deg);
+    }
+
+    72% {
+        transform: translateY(3px) scale(0.96) rotate(-0.5deg);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1) rotate(0);
+    }
+}
+
+@keyframes presentation-card-drop {
+    0% {
+        opacity: 0;
+        transform: translateY(-30px) scale(0.5) rotate(5deg);
+    }
+
+    52% {
+        opacity: 1;
+        transform: translateY(6px) scale(1.08) rotate(-1.5deg);
+    }
+
+    76% {
+        transform: translateY(-2px) scale(0.98) rotate(0.4deg);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1) rotate(0);
+    }
+}
+
+@keyframes presentation-card-slide-left {
+    0% {
+        opacity: 0;
+        transform: translateX(-46px) translateY(9px) scale(0.55) rotate(-5deg);
+    }
+
+    55% {
+        opacity: 1;
+        transform: translateX(7px) translateY(-3px) scale(1.08) rotate(1deg);
+    }
+
+    78% {
+        transform: translateX(-2px) translateY(1px) scale(0.98);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translate(0) scale(1) rotate(0);
+    }
+}
+
+@keyframes presentation-card-slide-right {
+    0% {
+        opacity: 0;
+        transform: translateX(46px) translateY(9px) scale(0.55) rotate(5deg);
+    }
+
+    55% {
+        opacity: 1;
+        transform: translateX(-7px) translateY(-3px) scale(1.08) rotate(-1deg);
+    }
+
+    78% {
+        transform: translateX(2px) translateY(1px) scale(0.98);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translate(0) scale(1) rotate(0);
+    }
+}
+
+@keyframes presentation-card-pop {
+    0% {
+        opacity: 0;
+        transform: scale(0.1) rotate(-10deg);
+    }
+
+    45% {
+        opacity: 1;
+        transform: scale(1.17) rotate(2deg);
+    }
+
+    70% {
+        transform: scale(0.94) rotate(-0.7deg);
+    }
+
+    100% {
+        opacity: 1;
+        transform: scale(1) rotate(0);
+    }
+}
+
+@keyframes presentation-card-tilt-left {
+    0% {
+        opacity: 0;
+        transform: translate(-20px, 30px) scale(0.42) rotate(-14deg);
+    }
+
+    50% {
+        opacity: 1;
+        transform: translate(4px, -7px) scale(1.1) rotate(3deg);
+    }
+
+    76% {
+        transform: translate(-1px, 2px) scale(0.97) rotate(-0.8deg);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translate(0) scale(1) rotate(0);
+    }
+}
+
+@keyframes presentation-card-tilt-right {
+    0% {
+        opacity: 0;
+        transform: translate(20px, 30px) scale(0.42) rotate(14deg);
+    }
+
+    50% {
+        opacity: 1;
+        transform: translate(-4px, -7px) scale(1.1) rotate(-3deg);
+    }
+
+    76% {
+        transform: translate(1px, 2px) scale(0.97) rotate(0.8deg);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translate(0) scale(1) rotate(0);
+    }
+}
+
+@keyframes presentation-card-flip {
+    0% {
+        opacity: 0;
+        transform: perspective(500px) rotateX(-72deg) translateY(22px) scale(0.78);
+    }
+
+    55% {
+        opacity: 1;
+        transform: perspective(500px) rotateX(10deg) translateY(-4px) scale(1.05);
+    }
+
+    78% {
+        transform: perspective(500px) rotateX(-3deg) translateY(1px) scale(0.99);
+    }
+
+    100% {
+        opacity: 1;
+        transform: perspective(500px) rotateX(0) translateY(0) scale(1);
+    }
+}
+
+@keyframes presentation-card-zoom {
+    0% {
+        opacity: 0;
+        transform: scale(0.45);
+    }
+
+    50% {
+        opacity: 1;
+        transform: scale(1.13);
+    }
+
+    74% {
+        transform: scale(0.97);
+    }
+
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes presentation-card-bounce {
+    0% {
+        opacity: 0;
+        transform: translateY(42px) scale(0.5);
+    }
+
+    40% {
+        opacity: 1;
+        transform: translateY(-13px) scale(1.08);
+    }
+
+    58% {
+        transform: translateY(5px) scale(0.97);
+    }
+
+    74% {
+        transform: translateY(-4px) scale(1.02);
+    }
+
+    88% {
+        transform: translateY(1px) scale(0.995);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+@keyframes presentation-tier-flash {
+    0% {
+        opacity: 0;
+        transform: scale(0.994);
+    }
+
+    22% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0;
+        transform: scale(1);
+    }
+}
+
+
+/*
+ * =========================================================
+ * Состояния, подвал и кнопка «Наверх»
+ * =========================================================
+ */
+
+.loading-error {
+    width: 100%;
+    padding: 20px;
+
+    color: #b91c1c;
+    text-align: center;
+}
+
+.site-footer {
+    max-width: 100%;
+    padding: 24px;
+
+    color: var(--color-text-muted);
+    text-align: center;
+}
+
+.site-footer a {
+    color: var(--color-primary);
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.site-footer a:hover {
+    color: var(--color-primary-dark);
+    text-decoration: underline;
+}
+
+.site-footer a:focus-visible {
+    outline: 3px solid var(--color-primary-focus);
+    outline-offset: 3px;
+    border-radius: 3px;
+}
+
+.back-to-top {
+    position: fixed;
+    right: max(14px, env(safe-area-inset-right));
+    bottom: max(14px, env(safe-area-inset-bottom));
+    z-index: 100004;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 42px;
+    height: 42px;
+    padding: 0;
+
+    color: #fff;
+
+    cursor: pointer;
+
+    background: var(--color-dark);
+    border: 1px solid rgb(255 255 255 / 18%);
+    border-radius: var(--radius-round);
+    box-shadow: var(--shadow-floating);
+
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transform: translateY(10px) scale(0.9);
+
+    transition:
+        opacity 0.25s ease,
+        visibility 0.25s ease,
+        transform 0.25s ease,
+        background 0.3s ease,
+        box-shadow 0.3s ease;
+}
+
+.back-to-top span:first-child {
+    display: block;
+
+    color: #fff;
+    font-size: 22px;
+    line-height: 1;
+}
+
+.back-to-top span:last-child {
+    display: none;
+}
+
+.back-to-top.is-visible {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transform: translateY(0) scale(1);
+}
+
+.back-to-top.is-visible:hover {
+    background: var(--color-dark-soft);
+    box-shadow: 0 6px 16px rgb(0 0 0 / 30%);
+    transform: translateY(-2px) scale(1.06);
+}
+
+.back-to-top.is-visible:active {
+    transform: translateY(0) scale(0.96);
+}
+
+.back-to-top:focus-visible {
+    outline: 3px solid var(--color-primary-focus);
+    outline-offset: 3px;
+}
+
+
+/*
+ * =========================================================
+ * Планшеты
+ * =========================================================
+ */
+
 @media (max-width: 1100px) {
     .tier-controls {
         grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -4545,11 +2591,121 @@ body.main-page {
     }
 }
 
+@media (max-width: 900px) {
+    .tier-list-layout,
+    .tier-list-layout:has(.selected-video-panel.is-visible) {
+        display: block;
+    }
+
+    .selected-video-panel {
+        position: static;
+
+        width: 100%;
+        margin-top: 16px;
+    }
+}
+
 
 /*
- * Мобильный экран: аккуратная одна колонка.
+ * =========================================================
+ * Мобильная версия
+ * =========================================================
  */
+
+.mobile-tier-navigation {
+    display: none;
+}
+
 @media (max-width: 600px) {
+    body {
+        padding-bottom: calc(
+            68px +
+            env(safe-area-inset-bottom)
+        );
+    }
+
+    .main-page .site-header {
+        padding: 16px;
+    }
+
+    .main-page .site-header-inner {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .main-page .site-navigation {
+        justify-content: flex-start;
+        width: 100%;
+    }
+
+    .main-page-header {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .main-page-title {
+        font-size: 24px;
+    }
+
+    .main-mode-switcher {
+        align-self: flex-start;
+        max-width: 100%;
+        margin-left: 0;
+    }
+
+    .main-mode-button {
+        flex: 1 1 auto;
+        padding-right: 12px;
+        padding-left: 12px;
+    }
+
+    .container {
+        width: calc(100% - 20px);
+        margin: 16px auto;
+    }
+
+    .site-header {
+        padding: 24px 16px;
+    }
+
+    .site-header h1 {
+        font-size: 25px;
+    }
+
+    .controls {
+        align-items: stretch;
+        flex-direction: column;
+
+        margin-bottom: 16px;
+    }
+
+    .control-group,
+    .search-group,
+    .filter-group,
+    .search-group input,
+    .filter-group select,
+    .video-filter-controls {
+        width: 100%;
+        min-width: 0;
+    }
+
+    .control-group,
+    .search-group,
+    .filter-group {
+        flex: 0 0 auto;
+    }
+
+    .video-filter-controls {
+        align-items: stretch;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .price-mode-toggle {
+        align-self: flex-start;
+    }
+
     .tier-controls {
         display: flex;
         flex-direction: column;
@@ -4571,297 +2727,74 @@ body.main-page {
         grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 
-    .tier-controls-quick-actions .tier-control-button {
+    .tier-controls-quick-actions .tier-control-button,
+    .video-presentation-button {
         width: 100%;
     }
-}
-/*
- * =========================================================
- * Компактная версия панели управления
- * =========================================================
- */
 
-/*
- * Секции имеют собственную естественную высоту,
- * а не растягиваются до высоты самой большой колонки.
- */
-.tier-controls {
-    grid-template-columns:
-        minmax(440px, 1.55fr)
-        minmax(245px, 0.9fr)
-        minmax(260px, 1fr);
+    .tier-legend {
+        margin-bottom: 16px;
+    }
 
-    align-items: start;
-}
+    .tier-legend-summary {
+        min-height: 44px;
+        padding: 10px 12px;
 
-/*
- * Не даём внутренним блокам занимать свободную высоту.
- */
-.tier-controls-section {
-    align-self: start;
-}
+        font-size: 14px;
+    }
 
-.tier-controls .tier-display-controls {
-    flex: 0 0 auto;
-}
+    .tier-legend-list {
+        padding: 0 8px 8px;
+    }
 
-/*
- * Внешний вид: ползунок и цены идут компактно,
- * без вертикальных «пропастей».
- */
-.tier-controls .tier-controls-appearance {
-    gap: 10px;
-}
+    .tier-legend-row {
+        grid-template-columns: 42px minmax(0, 1fr);
+        min-height: 48px;
+    }
 
-.tier-controls .tier-display-controls {
-    gap: 8px;
-}
+    .tier-legend-label {
+        font-size: 18px;
+    }
 
-.tier-controls .tier-range-control {
-    row-gap: 5px;
-}
+    .tier-legend-description {
+        padding: 8px 10px;
 
-.tier-controls .price-mode-toggle {
-    margin-top: 0;
-}
-
-/*
- * Поиск: быстрые действия больше не прижимаются
- * искусственно к низу огромной карточки.
- */
-.tier-controls .tier-controls-quick-actions {
-    margin-top: 0;
-}
-
-/*
- * Чуть компактнее вертикальные отступы во всех секциях.
- */
-.tier-controls-section {
-    gap: 10px;
-    padding: 12px;
-}
-
-.tier-controls-section-heading {
-    padding-bottom: 8px;
-}
-
-/*
- * Действия: кнопки не должны занимать слишком много места.
- */
-.tier-controls-actions-list {
-    gap: 7px;
-}
-/*
- * =========================================================
- * Компактная панель управления — финальная коррекция
- * =========================================================
- */
-
-.tier-controls {
-    grid-template-columns:
-        minmax(440px, 1.55fr)
-        minmax(245px, 0.9fr)
-        minmax(260px, 1fr);
-
-    align-items: start;
-}
-
-/*
- * Каждая колонка имеет только свою естественную высоту.
- */
-.tier-controls > .tier-controls-section {
-    align-self: start;
-    height: fit-content;
-}
-
-/*
- * Главная причина пустоты в центральной колонке:
- * раньше этот блок растягивался на всю доступную высоту.
- */
-.tier-controls .tier-display-controls {
-    display: flex;
-    flex: 0 0 auto;
-    justify-content: flex-start;
-
-    height: auto;
-    min-height: 0;
-    gap: 8px;
-}
-
-/*
- * Быстрые действия поиска также остаются сразу под полями.
- */
-.tier-controls .tier-controls-quick-actions {
-    margin-top: 0;
-}
-
-/*
- * Немного уплотняем внутренности карточек.
- */
-.tier-controls > .tier-controls-section {
-    gap: 10px;
-    padding: 12px;
-}
-
-.tier-controls .tier-controls-section-heading {
-    padding-bottom: 8px;
-}
-
-.tier-controls .tier-range-control {
-    row-gap: 5px;
-}
-
-.tier-controls .tier-controls-actions-list {
-    gap: 7px;
-}
-/*
- * =========================================================
- * Финальная компактность панели управления
- * =========================================================
- */
-
-.tier-controls .tier-display-controls {
-    flex: 0 0 auto;
-    gap: 8px;
-}
-
-/*
- * Важно: отменяет старое flex: 1 1 280px.
- * Именно оно растягивало ползунок по вертикали.
- */
-.tier-controls .tier-range-control {
-    flex: 0 0 auto;
-    min-height: 0;
-    height: auto;
-    row-gap: 5px;
-}
-
-/*
- * Все колонки получают только необходимую им высоту.
- */
-.tier-controls > .tier-controls-section {
-    align-self: start;
-    height: auto;
-}
-
-.tier-controls .tier-controls-quick-actions {
-    margin-top: 0;
-}
-/*
- * =========================================================
- * Мобильная сетка тир-листа и нижняя навигация — исправление
- * =========================================================
- */
-
-@media (max-width: 600px) {
-    /*
-     * Оставляем место под фиксированную нижнюю панель.
-     */
-    body {
-        padding-bottom: calc(
-            66px +
-            env(safe-area-inset-bottom)
-        );
+        font-size: 12px;
+        line-height: 1.3;
     }
 
     /*
-     * Нижняя навигация всегда закреплена снизу
-     * и занимает всю ширину viewport.
+     * =====================================================
+     * Мобильная сетка карточек.
+     *
+     * Все тиры используют одинаковый размер.
+     * S/A и D/E/F больше не имеют исключений.
+     * Масштабирование ползунком отключено именно здесь:
+     * иначе оно ломает обязательные 2 карточки в ряд.
+     * =====================================================
      */
-    .mobile-tier-navigation {
-        position: fixed !important;
-        right: 0 !important;
-        bottom: 0 !important;
-        left: 0 !important;
-        z-index: 1000;
 
-        display: flex !important;
-        align-items: stretch;
-        justify-content: stretch;
-
-        width: 100vw !important;
-        max-width: none !important;
-        min-height: 58px;
-        padding: 0 0 env(safe-area-inset-bottom);
-
-        background: rgb(255 255 255 / 96%);
-        border-top: 1px solid rgb(207 210 216 / 90%);
-        box-shadow: 0 -4px 16px rgb(0 0 0 / 14%);
-        backdrop-filter: blur(8px);
+    .tier-row {
+        min-height: 120px;
     }
 
-    .mobile-tier-navigation-button {
-        display: inline-flex !important;
-        flex: 1 1 0 !important;
-        align-items: center;
-        justify-content: center;
+    .tier-label {
+        flex: 0 0 62px;
 
-        width: 0 !important;
-        min-width: 0 !important;
-        min-height: 58px;
-        padding: 5px 2px;
-
-        white-space: nowrap;
+        font-size: 25px;
+        text-shadow: 0 1px 2px rgb(0 0 0 / 18%);
     }
 
-    /*
-     * Контейнер карточек становится сеткой из двух колонок.
-     * Это не позволяет крупным карточкам S/A или мелким D/F
-     * менять число элементов в строке.
-     */
-    .tier-list .games-container {
+    .games-container,
+    #tier-D,
+    #tier-E,
+    #tier-F {
         display: grid;
         grid-template-columns: repeat(2, minmax(0, 1fr));
         flex: 1 1 0;
         gap: 8px;
 
-        width: 0;
         min-width: 0;
-        padding: 10px;
-    }
-
-    /*
-     * Во всех тирах карточки имеют одинаковую ширину:
-     * ровно половина доступного пространства контейнера.
-     *
-     * !important нужен, чтобы отменить старые правила
-     * для S/A и D/E/F, а также масштабирование карточек.
-     */
-    .tier-list .game-card,
-    .tier-list #tier-S .game-card,
-    .tier-list #tier-A .game-card,
-    .tier-list #tier-B .game-card,
-    .tier-list #tier-C .game-card,
-    .tier-list #tier-D .game-card,
-    .tier-list #tier-E .game-card,
-    .tier-list #tier-F .game-card {
-        width: 100% !important;
-        max-width: 100% !important;
-    }
-
-    /*
-     * Убираем различие в размере области обложки у S/A.
-     * Визуальная структура карточек теперь единая во всех тирах.
-     */
-    .tier-list #tier-S .game-card,
-    .tier-list #tier-A .game-card {
-        grid-template-rows:
-            minmax(0, 66.666%)
-            minmax(0, 1fr)
-            auto;
-    }
-}
-
-
-/*
- * На очень узких экранах оставляем те же две колонки,
- * не позволяя старому правилу с --tier-card-scale
- * сломать сетку.
- */
-@media (max-width: 400px) {
-    .tier-list .games-container {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 6px;
         padding: 8px;
     }
 
@@ -4873,8 +2806,7 @@ body.main-page {
     .tier-list #tier-D .game-card,
     .tier-list #tier-E .game-card,
     .tier-list #tier-F .game-card {
-        width: 100% !important;
-    }
-}
+        width: 100%;
+        max-width: 100%;
 
-
+        grid
