@@ -60,19 +60,52 @@
 
     <main class="container">
 
-        <section class="controls">
+        <section
+    class="controls tier-controls"
+    aria-label="Управление тир-листом"
+>
+    <!-- =================================================
+         Поиск и фильтры
+         ================================================= -->
+    <div class="tier-controls-section tier-controls-filters">
+        <div class="tier-controls-section-heading">
+            <span
+                class="tier-controls-section-icon"
+                aria-hidden="true"
+            >
+                🔎
+            </span>
+
+            <div>
+                <h2 class="tier-controls-section-title">
+                    Поиск и фильтры
+                </h2>
+
+                <p class="tier-controls-section-description">
+                    Найдите игру, жанр или выпуск
+                </p>
+            </div>
+        </div>
+
+        <div class="tier-controls-fields">
             <div class="control-group search-group">
+                <label for="search">
+                    🔎 Название игры
+                </label>
+
                 <input
-                    type="search"
                     id="search"
-                    placeholder="🔍 Название игры..."
-                    aria-label="Поиск игры"
+                    type="search"
+                    placeholder="Например, Hades..."
+                    autocomplete="off"
                 >
             </div>
 
-
             <div class="control-group filter-group">
-               
+                <label for="tag-filter">
+                    🏷️ Жанр
+                </label>
+
                 <select id="tag-filter">
                     <option value="">
                         Все жанры
@@ -80,129 +113,210 @@
                 </select>
             </div>
 
-            <div class="video-filter-controls">
-                    <div class="control-group filter-group">
-                    
-                        <select id="video-filter">
-                            <option value="">
-                                Все ролики
-                            </option>
-                        </select>
-                    </div>
-                    <button
-                        class="video-presentation-button"
-                        id="video-presentation"
-                        type="button"
-                        hidden
-                        aria-label="Запустить показ тирлиста выбранного видео"
-                    >
-                        <span
-                            class="video-presentation-button-icon"
-                            aria-hidden="true"
-                        >
-                            ▶
-                        </span>
-                    
-                        <span class="video-presentation-button-text">
-                            Показать тирлист
-                        </span>
-                    </button>
-
-                    <button
-                        class="favorites-filter-button"
-                        id="favorites-filter"
-                        type="button"
-                        aria-label="Показывать только избранные игры"
-                        aria-pressed="false"
-                        title="Показывать только избранные игры"
-                    >
-                        <span aria-hidden="true">☆</span>
-                    </button>
-                    
-                    <label class="price-mode-toggle">
-
-                    <input
-                        id="price-mode-toggle"
-                        type="checkbox"
-                    >
-
-                    <span
-                        class="price-switch"
-                        aria-hidden="true"
-                    >
-                        <span class="price-switch-thumb"></span>
-                    </span>
-
-                    <span class="price-mode-label">
-                        Показывать цены
-                    </span>
+            <div class="control-group filter-group">
+                <label for="video-filter">
+                    🎬 Выпуск
                 </label>
+
+                <select id="video-filter">
+                    <option value="">
+                        Все выпуски
+                    </option>
+                </select>
             </div>
-        <div class="tier-display-controls">
-    
+        </div>
 
-    <label
-        class="tier-range-control"
-        for="tier-card-scale-range"
-    >
-        <span class="tier-range-label">
-            Масштаб карточек
-        </span>
+        <div class="tier-controls-quick-actions">
+            <button
+                id="favorites-filter"
+                class="tier-control-button tier-control-button-favorite"
+                type="button"
+                aria-label="Показывать только избранные игры"
+                title="Только избранные"
+                aria-pressed="false"
+            >
+                <span aria-hidden="true">
+                    ☆
+                </span>
 
-        <input
-            id="tier-card-scale-range"
-            type="range"
-            min="65"
-            max="140"
-            value="100"
-            step="5"
-        >
+                <span class="tier-control-button-text">
+                    Избранное
+                </span>
+            </button>
 
-        <output
-            id="tier-card-scale-value"
-            for="tier-card-scale-range"
-        >
-            100%
-        </output>
-    </label>
-</div>
-    
-               <div class="filter-actions">
-        <button
-            class="filter-action-button"
-            id="reset-filters"
-            type="button"
-            aria-label="Сбросить фильтры"
-            title="Сбросить фильтры"
-        >
-            <span aria-hidden="true">↻</span>
-        </button>
-    
-        <button
-            class="filter-action-button"
-            id="share-filters"
-            type="button"
-            aria-label="Скопировать ссылку на подборку"
-            title="Скопировать ссылку на подборку"
-        >
-            <span aria-hidden="true">🔗</span>
-        </button>
-    
-        <button
-            id="download-tierlist-screenshot"
-            type="button"
-            aria-label="Скачать скриншот тир-листа"
-            aria-haspopup="menu"
-            aria-expanded="false"
-        >
-            Скачать скриншот
-        </button>
+            <button
+                id="reset-filters"
+                class="tier-control-button"
+                type="button"
+                aria-label="Сбросить все фильтры"
+                title="Сбросить все фильтры"
+            >
+                <span
+                    class="tier-control-button-icon"
+                    aria-hidden="true"
+                >
+                    ↻
+                </span>
 
+                <span class="tier-control-button-text">
+                    Сбросить
+                </span>
+            </button>
+        </div>
     </div>
 
 
+    <!-- =================================================
+         Внешний вид
+         ================================================= -->
+    <div class="tier-controls-section tier-controls-appearance">
+        <div class="tier-controls-section-heading">
+            <span
+                class="tier-controls-section-icon"
+                aria-hidden="true"
+            >
+                🎛️
+            </span>
 
-        </section>
+            <div>
+                <h2 class="tier-controls-section-title">
+                    Внешний вид
+                </h2>
+
+                <p class="tier-controls-section-description">
+                    Настройте список под себя
+                </p>
+            </div>
+        </div>
+
+        <div class="tier-display-controls">
+            <label
+                class="tier-range-control"
+                for="tier-card-scale-range"
+            >
+                <span class="tier-range-label">
+                    🗂️ Размер карточек
+                </span>
+
+                <input
+                    id="tier-card-scale-range"
+                    type="range"
+                    min="60"
+                    max="140"
+                    value="100"
+                    step="5"
+                >
+
+                <output id="tier-card-scale-value">
+                    100%
+                </output>
+            </label>
+
+            <label
+                class="price-mode-toggle"
+                for="price-mode-toggle"
+            >
+                <input
+                    id="price-mode-toggle"
+                    type="checkbox"
+                >
+
+                <span aria-hidden="true">
+                    💸
+                </span>
+
+                <span>
+                    Показывать цены
+                </span>
+            </label>
+        </div>
+    </div>
+
+
+    <!-- =================================================
+         Действия
+         ================================================= -->
+    <div class="tier-controls-section tier-controls-actions">
+        <div class="tier-controls-section-heading">
+            <span
+                class="tier-controls-section-icon"
+                aria-hidden="true"
+            >
+                ✨
+            </span>
+
+            <div>
+                <h2 class="tier-controls-section-title">
+                    Поделиться и записать
+                </h2>
+
+                <p class="tier-controls-section-description">
+                    Ссылка, кадр или показ для ролика
+                </p>
+            </div>
+        </div>
+
+        <div class="tier-controls-actions-list">
+            <button
+                id="video-presentation"
+                class="tier-control-button tier-control-button-primary video-presentation-button"
+                type="button"
+                hidden
+            >
+                <span
+                    class="video-presentation-button-icon"
+                    aria-hidden="true"
+                >
+                    ▶
+                </span>
+
+                <span class="video-presentation-button-text">
+                    Показать тирлист
+                </span>
+            </button>
+
+            <button
+                id="share-filters"
+                class="tier-control-button"
+                type="button"
+                aria-label="Скопировать ссылку на подборку"
+                title="Скопировать ссылку на подборку"
+            >
+                <span
+                    class="tier-control-button-icon"
+                    aria-hidden="true"
+                >
+                    🔗
+                </span>
+
+                <span class="tier-control-button-text">
+                    Скопировать ссылку
+                </span>
+            </button>
+
+            <button
+                id="download-tierlist-screenshot"
+                class="tier-control-button"
+                type="button"
+                aria-label="Скачать скриншот тир-листа"
+                title="Скачать скриншот тир-листа"
+                aria-expanded="false"
+            >
+                <span
+                    class="tier-control-button-icon"
+                    aria-hidden="true"
+                >
+                    📸
+                </span>
+
+                <span class="tier-control-button-text">
+                    Скачать скриншот
+                </span>
+            </button>
+        </div>
+    </div>
+</section>
+
                         <nav
             class="mobile-tier-navigation"
             aria-label="Навигация по уровням тир-листа"
