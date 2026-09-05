@@ -1116,21 +1116,16 @@ async function downloadTierListScreenshot(
             );
         }
     );
-        const tierListRect =
-        tierList.getBoundingClientRect();
-        const screenshotWidth =
-        isLandscape
-            ? 1920
-            : Math.ceil(
-                tierListRect.width
-            );
+const screenshotOptions =
+    isLandscape
+        ? {
+            width: 1920,
+            height: 1080,
+            windowWidth: 1920,
+            windowHeight: 1080
+        }
+        : {};
 
-    const screenshotHeight =
-        isLandscape
-            ? 1080
-            : Math.ceil(
-                tierListRect.height
-            );
 
 
 
@@ -1161,18 +1156,6 @@ async function downloadTierListScreenshot(
                      * и высоту всего списка, включая
                      * все тиры S–F.
                      */
-                   width:
-                        screenshotWidth,
-                    
-                    height:
-                        screenshotHeight,
-                    
-                    windowWidth:
-                        screenshotWidth,
-                    
-                    windowHeight:
-                        screenshotHeight,
-
 
 
                     scrollX:
@@ -1421,22 +1404,6 @@ async function downloadTierListScreenshot(
     gap: 2px !important;
 
     overflow: hidden !important;
-}
-
-
-.tierlist-screenshot-render.tierlist-screenshot-landscape
-.game-tag,
-.tierlist-screenshot-render.tierlist-screenshot-landscape
-#tier-D .game-tag,
-.tierlist-screenshot-render.tierlist-screenshot-landscape
-#tier-E .game-tag,
-.tierlist-screenshot-render.tierlist-screenshot-landscape
-#tier-F .game-tag {
-    max-width: 100% !important;
-    padding: 2px 3px !important;
-
-    font-size: 7px !important;
-    line-height: 1 !important;
 }
 
 
