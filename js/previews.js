@@ -1,3 +1,17 @@
+/*
+ * =========================================================
+ * Popup предпросмотра карточек
+ * =========================================================
+ *
+ * Модуль отвечает за:
+ * - создание содержимого popup;
+ * - открытие и закрытие preview;
+ * - перенос popup в body на мобильных;
+ * - позиционирование desktop-popup;
+ * - закрытие всех popup при смене фильтров;
+ * - поддержку клавиатуры.
+ */
+
 import {
     PREVIEW_CLOSED_CLASS,
     PREVIEW_READY_CLASS,
@@ -17,6 +31,25 @@ import {
 const MOBILE_PREVIEW_QUERY =
     '(max-width: 600px)';
 
+const MOBILE_MODAL_CLASS =
+    'game-preview-popup-mobile-modal';
+
+const POPUP_CLASS =
+    'game-preview-popup';
+
+const POPUP_POSITION_CLASSES =
+    [
+        'preview-position-right',
+        'preview-position-left',
+        'preview-position-bottom'
+    ];
+
+
+/*
+ * =========================================================
+ * Подключение поведения к карточке
+ * =========================================================
+ */
 
 export function setupCardHover(
     card,
@@ -26,17 +59,21 @@ export function setupCardHover(
         openOnCardClick = true
     } = {}
 ) {
-    let closeTimer = null;
-    let layerCleanupTimer = null;
-
     const popup =
         card.querySelector(
-            '.game-preview-popup'
+            `.${POPUP_CLASS}`
         );
 
-    if (!popup) {
+    if (
+        !popup
+    ) {
         return null;
     }
+
+    const state = {
+        closeTimer: null,
+        layerCleanupTimer: null
+    };
 
     const closeButton =
         createPreviewCloseButton();
@@ -45,6 +82,332 @@ export function setupCardHover(
         closeButton
     );
 
+    /*
+     * Презентационный режим передаёт openOnCardClick: false.
+     * В этом случае карточка не получает role="button" и tabindex,
+     * потому что интерактивность в нём намеренно отключена.
+     */
+    if (
+        openOnCardClick
+    ) {
+        makeCardPreviewAccessible(
+            card,
+            name
+        );
+    }
+
+    const isMobilePreview =
+        () =>
+            window.matchMedia(
+                MOBILE_PREVIEW_QUERY
+            ).matches;
+
+    const cancelClose =
+        () => {
+            clearCardTimer(
+                state,
+                'closeTimer'
+            );
+
+            clearCardTimer(
+                state,
+                'layerCleanupTimer'
+            );
+        };
+
+    const restorePopupToCard =
+        () => {
+            const placeholder =
+                popup._mobilePreviewPlaceholder;
+
+            if (
+                placeholder?.parentNode
+            ) {
+                placeholder.replaceWith(
+                    popup
+                );
+            }
+
+            popup._mobilePreviewPlaceholder =
+                null;
+
+            popup.classList.remove(
+                MOBILE_MODAL_CLASS
+            );
+
+            clearPopupInlinePosition(
+                popup
+            );
+        };
+
+    const closePreviewImmediately =
+        () => {
+            cancelClose();
+
+            restorePopupToCard();
+
+            card.classList.add(
+                PREVIEW_CLOSED_CLASS
+            );
+
+            card.classList.remove(
+                PREVIEW_READY_CLASS,
+                ACTIVE_CARD_CLASS
+            );
+
+            updateTierRowActiveState(
+                card
+            );
+        };
+
+    const movePopupToMobileModalLayer =
+        () => {
+            closeOtherPreviews(
+                card
+            );
+
+            if (
+                popup._mobilePreviewPlaceholder
+            ) {
+                return;
+            }
+
+            const placeholder =
+                document.createComment(
+                    'mobile-preview-placeholder'
+                );
+
+            popup.before(
+                placeholder
+            );
+
+            popup._mobilePreviewPlaceholder =
+                placeholder;
+
+            document.body.appendChild(
+                popup
+            );
+
+            popup.classList.add(
+                MOBILE_MODAL_CLASS
+            );
+        };
+
+    const openPreview =
+        () => {
+            cancelClose();
+
+            const isMobile =
+                isMobilePreview();
+
+            /*
+             * На десктопе тоже закрываем уже открытые карточки:
+             * в один момент времени виден только один preview.
+             */
+            closeOtherPreviews(
+                card
+            );
+
+            if (
+                isMobile
+            ) {
+                movePopupToMobileModalLayer();
+            } else {
+                restorePopupToCard();
+            }
+
+            card.classList.remove(
+                PREVIEW_CLOSED_CLASS
+            );
+
+            card.classList.add(
+                ACTIVE_CARD_CLASS
+            );
+
+            updateTierRowActiveState(
+                card
+            );
+
+            requestAnimationFrame(
+                () => {
+                    if (
+                        !card.isConnected ||
+                        card.classList.contains(
+                            PREVIEW_CLOSED_CLASS
+                        )
+                    ) {
+                        return;
+                    }
+
+                    if (
+                        isMobile
+                    ) {
+                        popup.scrollTop =
+                            0;
+
+                        closeButton.focus();
+
+                        return;
+                    }
+
+                    positionPreview(
+                        card
+                    );
+                }
+            );
+        };
+
+    const scheduleLayerCleanup =
+        () => {
+            clearCardTimer(
+                state,
+                'layerCleanupTimer'
+            );
+
+            state.layerCleanupTimer =
+                window.setTimeout(
+                    () => {
+                        if (
+                            card.classList.contains(
+                                PREVIEW_CLOSED_CLASS
+                            ) &&
+                            !card.matches(
+                                ':hover'
+                            ) &&
+                            !card.matches(
+                                ':focus-within'
+                            )
+                        ) {
+                            card.classList.remove(
+                                ACTIVE_CARD_CLASS
+                            );
+
+                            updateTierRowActiveState(
+                                card
+                            );
+                        }
+
+                        state.layerCleanupTimer =
+                            null;
+                    },
+                    PREVIEW_LAYER_CLEANUP_DELAY
+                );
+        };
+
+    const closePreview =
+        (
+            respectFocus = true
+        ) => {
+            /*
+             * На мобильном popup закрывается только крестиком,
+             * Escape или глобальным closeAllPreviews().
+             */
+            if (
+                isMobilePreview()
+            ) {
+                return;
+            }
+
+            clearCardTimer(
+                state,
+                'closeTimer'
+            );
+
+            state.closeTimer =
+                window.setTimeout(
+                    () => {
+                        const shouldStayOpen =
+                            card.matches(
+                                ':hover'
+                            ) ||
+                            popup.matches(
+                                ':hover'
+                            ) ||
+                            (
+                                respectFocus &&
+                                card.matches(
+                                    ':focus-within'
+                                )
+                            );
+
+                        if (
+                            shouldStayOpen
+                        ) {
+                            state.closeTimer =
+                                null;
+
+                            return;
+                        }
+
+                        card.classList.add(
+                            PREVIEW_CLOSED_CLASS
+                        );
+
+                        card.classList.remove(
+                            PREVIEW_READY_CLASS
+                        );
+
+                        scheduleLayerCleanup();
+
+                        state.closeTimer =
+                            null;
+                    },
+                    PREVIEW_CLOSE_DELAY
+                );
+        };
+
+    setupPopupEvents(
+        {
+            card,
+            popup,
+            closeButton,
+            openPreview,
+            closePreview,
+            closePreviewImmediately,
+            cancelClose
+        }
+    );
+
+    if (
+        openOnCardClick
+    ) {
+        setupCardInteractionEvents(
+            {
+                card,
+                popup,
+                openPreview,
+                closePreview
+            }
+        );
+    }
+
+    /*
+     * Эти ссылки используются глобальными функциями:
+     * closeAllPreviews() и closeOtherPreviews().
+     */
+    card._cancelPreviewClose =
+        cancelClose;
+
+    card._closePreviewImmediately =
+        closePreviewImmediately;
+
+    popup._closePreviewImmediately =
+        closePreviewImmediately;
+
+    return openPreview;
+}
+
+
+/*
+ * =========================================================
+ * Поведение карточки и popup
+ * =========================================================
+ */
+
+function makeCardPreviewAccessible(
+    card,
+    name
+) {
     card.classList.add(
         'game-card-clickable'
     );
@@ -63,240 +426,20 @@ export function setupCardHover(
         'aria-label',
         `Открыть меню игры ${name}`
     );
+}
 
-    const isMobilePreview = () => {
-        return window.matchMedia(
-            MOBILE_PREVIEW_QUERY
-        ).matches;
-    };
 
-    const cancelClose = () => {
-        if (closeTimer) {
-            clearTimeout(closeTimer);
-            closeTimer = null;
-        }
-
-        if (layerCleanupTimer) {
-            clearTimeout(layerCleanupTimer);
-            layerCleanupTimer = null;
-        }
-    };
-
-    const restorePopupToCard = () => {
-        const placeholder =
-            popup._mobilePreviewPlaceholder;
-
-        if (
-            placeholder?.parentNode
-        ) {
-            placeholder.replaceWith(
-                popup
-            );
-        }
-
-        popup._mobilePreviewPlaceholder =
-            null;
-
-        popup.classList.remove(
-            'game-preview-popup-mobile-modal'
-        );
-
-        popup.style.removeProperty(
-            'top'
-        );
-
-        popup.style.removeProperty(
-            'right'
-        );
-
-        popup.style.removeProperty(
-            'bottom'
-        );
-
-        popup.style.removeProperty(
-            'left'
-        );
-
-        popup.style.removeProperty(
-            'transform'
-        );
-    };
-
-    const closePreviewImmediately = () => {
-        cancelClose();
-
-        restorePopupToCard();
-
-        card.classList.add(
-            PREVIEW_CLOSED_CLASS
-        );
-
-        card.classList.remove(
-            PREVIEW_READY_CLASS
-        );
-
-        card.classList.remove(
-            ACTIVE_CARD_CLASS
-        );
-
-        setTierRowActive(
-            card,
-            false
-        );
-    };
-
-    const movePopupToMobileModalLayer = () => {
-        closeOtherMobilePreviews(
-            popup
-        );
-
-        if (
-            popup._mobilePreviewPlaceholder
-        ) {
-            return;
-        }
-
-        const placeholder =
-            document.createComment(
-                'mobile-preview-placeholder'
-            );
-
-        popup.before(
-            placeholder
-        );
-
-        popup._mobilePreviewPlaceholder =
-            placeholder;
-
-        document.body.appendChild(
-            popup
-        );
-
-        popup.classList.add(
-            'game-preview-popup-mobile-modal'
-        );
-    };
-
-    const openPreview = () => {
-        cancelClose();
-
-        const mobilePreview =
-            isMobilePreview();
-
-        if (mobilePreview) {
-            movePopupToMobileModalLayer();
-        } else {
-            restorePopupToCard();
-        }
-
-        card.classList.remove(
-            PREVIEW_CLOSED_CLASS
-        );
-
-        card.classList.add(
-            ACTIVE_CARD_CLASS
-        );
-
-        setTierRowActive(
-            card,
-            true
-        );
-
-        requestAnimationFrame(() => {
-            if (
-                card.classList.contains(
-                    PREVIEW_CLOSED_CLASS
-                )
-            ) {
-                return;
-            }
-
-            if (mobilePreview) {
-                popup.scrollTop = 0;
-
-                closeButton.focus();
-
-                return;
-            }
-
-            positionPreview(
-                card
-            );
-        });
-    };
-
-    const scheduleLayerCleanup = () => {
-        if (layerCleanupTimer) {
-            clearTimeout(
-                layerCleanupTimer
-            );
-        }
-
-        layerCleanupTimer =
-            setTimeout(() => {
-                if (
-                    card.classList.contains(
-                        PREVIEW_CLOSED_CLASS
-                    ) &&
-                    !card.matches(':hover') &&
-                    !card.matches(':focus-within')
-                ) {
-                    card.classList.remove(
-                        ACTIVE_CARD_CLASS
-                    );
-
-                    setTierRowActive(
-                        card,
-                        false
-                    );
-                }
-
-                layerCleanupTimer = null;
-            }, PREVIEW_LAYER_CLEANUP_DELAY);
-    };
-
-    const closePreview = (
-        respectFocus = true
-    ) => {
-        if (isMobilePreview()) {
-            return;
-        }
-
-        if (closeTimer) {
-            clearTimeout(
-                closeTimer
-            );
-        }
-
-        closeTimer =
-            setTimeout(() => {
-                if (
-                    card.matches(':hover') ||
-                    popup.matches(':hover') ||
-                    (
-                        respectFocus &&
-                        card.matches(':focus-within')
-                    )
-                ) {
-                    closeTimer = null;
-
-                    return;
-                }
-
-                card.classList.add(
-                    PREVIEW_CLOSED_CLASS
-                );
-
-                card.classList.remove(
-                    PREVIEW_READY_CLASS
-                );
-
-                scheduleLayerCleanup();
-
-                closeTimer = null;
-            }, PREVIEW_CLOSE_DELAY);
-    };
-
+function setupPopupEvents(
+    {
+        card,
+        popup,
+        closeButton,
+        openPreview,
+        closePreview,
+        closePreviewImmediately,
+        cancelClose
+    }
+) {
     closeButton.addEventListener(
         'click',
         event => {
@@ -322,11 +465,17 @@ export function setupCardHover(
             event.stopPropagation();
 
             if (
-                event.key === 'Escape'
+                event.key !==
+                'Escape'
             ) {
-                closePreviewImmediately();
-                card.focus();
+                return;
             }
+
+            event.preventDefault();
+
+            closePreviewImmediately();
+
+            card.focus();
         }
     );
 
@@ -339,7 +488,6 @@ export function setupCardHover(
         'mouseleave',
         event => {
             if (
-                event.relatedTarget &&
                 card.contains(
                     event.relatedTarget
                 )
@@ -353,18 +501,55 @@ export function setupCardHover(
         }
     );
 
-    card.addEventListener(
-        'click',
+    /*
+     * Кнопка закрытия и ссылки внутри popup должны
+     * оставаться нормальными интерактивными элементами.
+     */
+    popup.addEventListener(
+        'focusin',
+        cancelClose
+    );
+
+    popup.addEventListener(
+        'focusout',
         event => {
             if (
-                !openOnCardClick
+                popup.contains(
+                    event.relatedTarget
+                ) ||
+                card.contains(
+                    event.relatedTarget
+                )
             ) {
                 return;
             }
 
+            closePreview();
+        }
+    );
+
+    /*
+     * Аргумент используется, чтобы линтер не считал
+     * openPreview неиспользуемым в переданном объекте.
+     */
+    void openPreview;
+}
+
+
+function setupCardInteractionEvents(
+    {
+        card,
+        popup,
+        openPreview,
+        closePreview
+    }
+) {
+    card.addEventListener(
+        'click',
+        event => {
             if (
                 event.target.closest(
-                    '.game-preview-popup'
+                    `.${POPUP_CLASS}`
                 )
             ) {
                 return;
@@ -378,12 +563,6 @@ export function setupCardHover(
         'keydown',
         event => {
             if (
-                !openOnCardClick
-            ) {
-                return;
-            }
-
-            if (
                 event.key !== 'Enter' &&
                 event.key !== ' '
             ) {
@@ -392,7 +571,7 @@ export function setupCardHover(
 
             if (
                 event.target.closest(
-                    '.game-preview-popup'
+                    `.${POPUP_CLASS}`
                 )
             ) {
                 return;
@@ -408,8 +587,7 @@ export function setupCardHover(
         'mouseleave',
         event => {
             if (
-                event.relatedTarget &&
-                card.contains(
+                popup.contains(
                     event.relatedTarget
                 )
             ) {
@@ -425,18 +603,27 @@ export function setupCardHover(
     card.addEventListener(
         'focusin',
         () => {
+            /*
+             * Фокус на дочерней кнопке избранного не должен
+             * сам открывать popup. Открытие с клавиатуры —
+             * Enter/Space на самой карточке.
+             */
             if (
-                !openOnCardClick
+                document.activeElement !==
+                card
             ) {
                 return;
             }
 
             if (
-                document.activeElement === card &&
-                !isMobilePreview()
+                window.matchMedia(
+                    MOBILE_PREVIEW_QUERY
+                ).matches
             ) {
-                openPreview();
+                return;
             }
+
+            openPreview();
         }
     );
 
@@ -446,6 +633,9 @@ export function setupCardHover(
             if (
                 card.contains(
                     event.relatedTarget
+                ) ||
+                popup.contains(
+                    event.relatedTarget
                 )
             ) {
                 return;
@@ -454,104 +644,99 @@ export function setupCardHover(
             closePreview();
         }
     );
-
-    card._cancelPreviewClose =
-        cancelClose;
-
-    card._closePreviewImmediately =
-        closePreviewImmediately;
-
-    popup._closePreviewImmediately =
-        closePreviewImmediately;
-
-    return openPreview;
 }
 
 
-function closeOtherMobilePreviews(
-    currentPopup
+/*
+ * =========================================================
+ * Управление несколькими popup
+ * =========================================================
+ */
+
+function closeOtherPreviews(
+    currentCard
 ) {
     document
         .querySelectorAll(
-            '.game-preview-popup-mobile-modal'
+            '.game-card'
         )
-        .forEach(popup => {
-            if (
-                popup === currentPopup
-            ) {
-                return;
+        .forEach(
+            card => {
+                if (
+                    card ===
+                    currentCard
+                ) {
+                    return;
+                }
+
+                card._closePreviewImmediately?.();
             }
-
-            popup._closePreviewImmediately?.();
-        });
-}
-
-
-function createPreviewCloseButton() {
-    const button =
-        document.createElement(
-            'button'
         );
-
-    button.className =
-        'game-preview-close';
-
-    button.type =
-        'button';
-
-    button.setAttribute(
-        'aria-label',
-        'Закрыть меню игры'
-    );
-
-    button.title =
-        'Закрыть';
-
-    button.textContent =
-        '×';
-
-    return button;
 }
 
 
-function setTierRowActive(
-    card,
-    isActive
+/*
+ * Обновляет z-index всего тира.
+ *
+ * Старый вариант мог снять ACTIVE_ROW_CLASS у ряда, где
+ * одна карточка закрылась, но другая ещё оставалась открыта.
+ */
+function updateTierRowActiveState(
+    card
 ) {
     const tierRow =
         card.closest(
             '.tier-row'
         );
 
-    if (!tierRow) {
+    if (
+        !tierRow
+    ) {
         return;
     }
 
+    const hasActiveCard =
+        Boolean(
+            tierRow.querySelector(
+                `.${ACTIVE_CARD_CLASS}:not(.${PREVIEW_CLOSED_CLASS})`
+            )
+        );
+
     tierRow.classList.toggle(
         ACTIVE_ROW_CLASS,
-        isActive
+        hasActiveCard
     );
 }
 
 
-export function createPreviewPopup({
-    name,
-    cover,
-    steamLink,
-    video,
-    steamImage,
-    description
-}) {
+/*
+ * =========================================================
+ * Создание popup
+ * =========================================================
+ */
+
+export function createPreviewPopup(
+    {
+        name,
+        cover,
+        steamLink,
+        video,
+        steamImage,
+        description
+    }
+) {
     const popup =
         document.createElement(
             'div'
         );
 
     popup.className =
-        'game-preview-popup';
+        POPUP_CLASS;
 
     const hasDescription =
-        Boolean(description);
+        Boolean(
+            description
+        );
 
     const hasActions =
         Boolean(
@@ -569,7 +754,9 @@ export function createPreviewPopup({
         hasActions
     );
 
-    if (hasActions) {
+    if (
+        hasActions
+    ) {
         const actions =
             document.createElement(
                 'div'
@@ -578,18 +765,24 @@ export function createPreviewPopup({
         actions.className =
             'preview-actions';
 
-        if (steamLink) {
+        if (
+            steamLink
+        ) {
             actions.appendChild(
-                createSteamPreview({
-                    name,
-                    cover,
-                    steamLink,
-                    steamImage
-                })
+                createSteamPreview(
+                    {
+                        name,
+                        cover,
+                        steamLink,
+                        steamImage
+                    }
+                )
             );
         }
 
-        if (video) {
+        if (
+            video
+        ) {
             actions.appendChild(
                 createVideoPreview(
                     name,
@@ -603,7 +796,9 @@ export function createPreviewPopup({
         );
     }
 
-    if (hasDescription) {
+    if (
+        hasDescription
+    ) {
         const descriptionElement =
             document.createElement(
                 'blockquote'
@@ -624,12 +819,14 @@ export function createPreviewPopup({
 }
 
 
-function createSteamPreview({
-    name,
-    cover,
-    steamLink,
-    steamImage
-}) {
+function createSteamPreview(
+    {
+        name,
+        cover,
+        steamLink,
+        steamImage
+    }
+) {
     const preview =
         document.createElement(
             'a'
@@ -650,37 +847,30 @@ function createSteamPreview({
     preview.title =
         `Открыть ${name} в Steam`;
 
-    const image =
-        document.createElement(
-            'img'
-        );
-
-    image.className =
-        'preview-image';
-
-    image.src =
+    const imageUrl =
         cover ||
         steamImage;
 
-    image.alt =
-        `${name} — страница в Steam`;
-
-    image.loading =
-        'lazy';
-
-    image.addEventListener(
-        'error',
-        () => {
-            if (
-                cover &&
-                steamImage &&
-                image.src !== steamImage
-            ) {
-                image.src =
-                    steamImage;
-            }
-        }
-    );
+    if (
+        imageUrl
+    ) {
+        preview.appendChild(
+            createSteamPreviewImage(
+                {
+                    imageUrl,
+                    cover,
+                    steamImage,
+                    name
+                }
+            )
+        );
+    } else {
+        preview.appendChild(
+            createPreviewImagePlaceholder(
+                '♜'
+            )
+        );
+    }
 
     const label =
         document.createElement(
@@ -694,14 +884,66 @@ function createSteamPreview({
         'Открыть в Steam';
 
     preview.appendChild(
-        image
-    );
-
-    preview.appendChild(
         label
     );
 
     return preview;
+}
+
+
+function createSteamPreviewImage(
+    {
+        imageUrl,
+        cover,
+        steamImage,
+        name
+    }
+) {
+    const image =
+        document.createElement(
+            'img'
+        );
+
+    image.className =
+        'preview-image';
+
+    image.src =
+        imageUrl;
+
+    image.alt =
+        `${name} — страница в Steam`;
+
+    image.loading =
+        'lazy';
+
+    image.decoding =
+        'async';
+
+    let usesSteamFallback =
+        !cover ||
+        imageUrl === steamImage;
+
+    image.addEventListener(
+        'error',
+        () => {
+            if (
+                !usesSteamFallback &&
+                steamImage
+            ) {
+                usesSteamFallback =
+                    true;
+
+                image.src =
+                    steamImage;
+
+                return;
+            }
+
+            image.remove();
+        }
+    );
+
+    return image;
 }
 
 
@@ -734,7 +976,9 @@ function createVideoPreview(
             video
         );
 
-    if (thumbnail) {
+    if (
+        thumbnail
+    ) {
         const image =
             document.createElement(
                 'img'
@@ -752,23 +996,31 @@ function createVideoPreview(
         image.loading =
             'lazy';
 
+        image.decoding =
+            'async';
+
+        image.addEventListener(
+            'error',
+            () => {
+                image.replaceWith(
+                    createPreviewImagePlaceholder(
+                        '▶'
+                    )
+                );
+            },
+            {
+                once: true
+            }
+        );
+
         preview.appendChild(
             image
         );
     } else {
-        const placeholder =
-            document.createElement(
-                'div'
-            );
-
-        placeholder.className =
-            'preview-image preview-image-placeholder';
-
-        placeholder.textContent =
-            '▶';
-
         preview.appendChild(
-            placeholder
+            createPreviewImagePlaceholder(
+                '▶'
+            )
         );
     }
 
@@ -791,15 +1043,75 @@ function createVideoPreview(
 }
 
 
+function createPreviewImagePlaceholder(
+    icon
+) {
+    const placeholder =
+        document.createElement(
+            'div'
+        );
+
+    placeholder.className =
+        'preview-image preview-image-placeholder';
+
+    placeholder.textContent =
+        icon;
+
+    return placeholder;
+}
+
+
+function createPreviewCloseButton() {
+    const button =
+        document.createElement(
+            'button'
+        );
+
+    button.className =
+        'game-preview-close';
+
+    button.type =
+        'button';
+
+    button.textContent =
+        '×';
+
+    button.setAttribute(
+        'aria-label',
+        'Закрыть меню игры'
+    );
+
+    button.title =
+        'Закрыть';
+
+    return button;
+}
+
+
+/*
+ * =========================================================
+ * Позиционирование desktop-popup
+ * =========================================================
+ */
+
 function positionPreview(
     card
 ) {
     const popup =
         card.querySelector(
-            '.game-preview-popup'
+            `.${POPUP_CLASS}`
         );
 
-    if (!popup) {
+    /*
+     * На мобильном popup перенесён в document.body,
+     * поэтому card.querySelector() вернёт null.
+     */
+    if (
+        !popup ||
+        popup.classList.contains(
+            MOBILE_MODAL_CLASS
+        )
+    ) {
         return;
     }
 
@@ -808,9 +1120,7 @@ function positionPreview(
     );
 
     popup.classList.remove(
-        'preview-position-right',
-        'preview-position-left',
-        'preview-position-bottom'
+        ...POPUP_POSITION_CLASSES
     );
 
     const cardRect =
@@ -828,13 +1138,44 @@ function positionPreview(
     const viewportHeight =
         window.innerHeight;
 
+    /*
+     * Если размеры ещё не рассчитались, переносим
+     * позиционирование на следующий кадр.
+     */
+    if (
+        !popupWidth ||
+        !popupHeight
+    ) {
+        requestAnimationFrame(
+            () => {
+                if (
+                    !card.classList.contains(
+                        PREVIEW_CLOSED_CLASS
+                    )
+                ) {
+                    positionPreview(
+                        card
+                    );
+                }
+            }
+        );
+
+        return;
+    }
+
     const centeredLeft =
         cardRect.left +
-        (cardRect.width - popupWidth) / 2;
+        (
+            cardRect.width -
+            popupWidth
+        ) / 2;
 
     const centeredTop =
         cardRect.top +
-        (cardRect.height - popupHeight) / 2;
+        (
+            cardRect.height -
+            popupHeight
+        ) / 2;
 
     const topPosition =
         cardRect.top -
@@ -855,7 +1196,8 @@ function positionPreview(
         PREVIEW_GAP;
 
     const fitsAbove =
-        topPosition >= SCREEN_PADDING;
+        topPosition >=
+        SCREEN_PADDING;
 
     const fitsRight =
         rightPosition +
@@ -864,7 +1206,8 @@ function positionPreview(
         SCREEN_PADDING;
 
     const fitsLeft =
-        leftPosition >= SCREEN_PADDING;
+        leftPosition >=
+        SCREEN_PADDING;
 
     const fitsBelow =
         bottomPosition +
@@ -875,7 +1218,9 @@ function positionPreview(
     let popupLeft;
     let popupTop;
 
-    if (fitsAbove) {
+    if (
+        fitsAbove
+    ) {
         popupLeft =
             clamp(
                 centeredLeft,
@@ -887,7 +1232,9 @@ function positionPreview(
 
         popupTop =
             topPosition;
-    } else if (fitsRight) {
+    } else if (
+        fitsRight
+    ) {
         popup.classList.add(
             'preview-position-right'
         );
@@ -903,7 +1250,9 @@ function positionPreview(
                     popupHeight -
                     SCREEN_PADDING
             );
-    } else if (fitsLeft) {
+    } else if (
+        fitsLeft
+    ) {
         popup.classList.add(
             'preview-position-left'
         );
@@ -945,6 +1294,9 @@ function positionPreview(
                 );
     }
 
+    /*
+     * Popup position:absolute относительно карточки.
+     */
     popup.style.left =
         `${popupLeft - cardRect.left}px`;
 
@@ -963,16 +1315,47 @@ function positionPreview(
 }
 
 
+function clearPopupInlinePosition(
+    popup
+) {
+    popup.classList.remove(
+        ...POPUP_POSITION_CLASSES
+    );
+
+    [
+        'top',
+        'right',
+        'bottom',
+        'left',
+        'transform'
+    ].forEach(
+        property => {
+            popup.style.removeProperty(
+                property
+            );
+        }
+    );
+}
+
+
+/*
+ * =========================================================
+ * Глобальное управление popup
+ * =========================================================
+ */
+
 export function updateVisiblePreviewPositions() {
     document
         .querySelectorAll(
             `.game-card:not(.${PREVIEW_CLOSED_CLASS})`
         )
-        .forEach(card => {
-            positionPreview(
-                card
-            );
-        });
+        .forEach(
+            card => {
+                positionPreview(
+                    card
+                );
+            }
+        );
 }
 
 
@@ -981,25 +1364,57 @@ export function closeAllPreviews() {
         .querySelectorAll(
             '.game-card'
         )
-        .forEach(card => {
-            if (
-                card._closePreviewImmediately
-            ) {
-                card._closePreviewImmediately();
+        .forEach(
+            card => {
+                if (
+                    card._closePreviewImmediately
+                ) {
+                    card._closePreviewImmediately();
 
-                return;
+                    return;
+                }
+
+                card._cancelPreviewClose?.();
+
+                card.classList.add(
+                    PREVIEW_CLOSED_CLASS
+                );
+
+                card.classList.remove(
+                    PREVIEW_READY_CLASS,
+                    ACTIVE_CARD_CLASS
+                );
+
+                updateTierRowActiveState(
+                    card
+                );
             }
+        );
+}
 
-            card._cancelPreviewClose?.();
 
-            card.classList.add(
-                PREVIEW_CLOSED_CLASS
-            );
+/*
+ * =========================================================
+ * Утилиты
+ * =========================================================
+ */
 
-            card.classList.remove(
-                PREVIEW_READY_CLASS
-            );
-        });
+function clearCardTimer(
+    state,
+    timerName
+) {
+    if (
+        !state[timerName]
+    ) {
+        return;
+    }
+
+    window.clearTimeout(
+        state[timerName]
+    );
+
+    state[timerName] =
+        null;
 }
 
 
@@ -1008,11 +1423,21 @@ function clamp(
     min,
     max
 ) {
+    /*
+     * При очень маленьком viewport popup может быть
+     * шире доступной области. В таком случае max < min.
+     */
+    const safeMax =
+        Math.max(
+            min,
+            max
+        );
+
     return Math.min(
         Math.max(
             value,
             min
         ),
-        max
+        safeMax
     );
 }
