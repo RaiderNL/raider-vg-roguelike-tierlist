@@ -4169,4 +4169,410 @@ body.main-page {
         opacity: 1;
     }
 }
+/*
+ * =========================================================
+ * Единая панель управления тир-листом
+ * =========================================================
+ */
+
+.tier-controls {
+    display: grid;
+    grid-template-columns:
+        minmax(0, 1.55fr)
+        minmax(250px, 1fr)
+        minmax(250px, 1fr);
+    align-items: stretch;
+    gap: 12px;
+
+    margin-bottom: 24px;
+    padding: 12px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #ffffff,
+            #f8fafc
+        );
+    border: 1px solid rgb(203 213 225 / 85%);
+    border-radius: 14px;
+    box-shadow:
+        0 8px 22px rgb(15 23 42 / 10%);
+}
+
+.tier-controls-section {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+
+    min-width: 0;
+    padding: 13px;
+
+    background: rgb(248 250 252 / 85%);
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+}
+
+.tier-controls-section-heading {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+
+    min-width: 0;
+    padding-bottom: 10px;
+
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.tier-controls-section-icon {
+    display: inline-grid;
+    flex: 0 0 auto;
+    place-items: center;
+
+    width: 32px;
+    height: 32px;
+
+    font-size: 17px;
+
+    background: #fff8df;
+    border: 1px solid #ecd17a;
+    border-radius: 9px;
+}
+
+.tier-controls-section-title {
+    margin: 0;
+
+    color: #26313d;
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: 0.01em;
+    line-height: 1.15;
+}
+
+.tier-controls-section-description {
+    margin: 3px 0 0;
+
+    color: #718096;
+    font-size: 11px;
+    line-height: 1.2;
+}
+
+
+/*
+ * Поля поиска и select.
+ */
+.tier-controls-fields {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+}
+
+.tier-controls .control-group,
+.tier-controls .search-group,
+.tier-controls .filter-group {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    gap: 5px;
+
+    width: auto;
+    min-width: 0;
+}
+
+.tier-controls .control-group label {
+    color: #52606d;
+    font-size: 11px;
+    font-weight: 800;
+    line-height: 1.1;
+}
+
+.tier-controls .control-group input,
+.tier-controls .control-group select {
+    width: 100%;
+    min-width: 0;
+    min-height: 38px;
+    padding: 7px 9px;
+
+    color: #26313d;
+    font-size: 13px;
+    font-weight: 600;
+
+    background: #fff;
+    border: 1px solid #cbd5e1;
+    border-radius: 7px;
+    box-shadow: inset 0 1px 1px rgb(15 23 42 / 3%);
+}
+
+.tier-controls .control-group input:focus,
+.tier-controls .control-group select:focus {
+    border-color: #c49316;
+    box-shadow: 0 0 0 3px rgb(196 147 22 / 18%);
+}
+
+
+/*
+ * Унифицированные кнопки.
+ */
+.tier-control-button {
+    display: inline-flex;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+
+    min-height: 38px;
+    padding: 8px 10px;
+
+    color: #384554;
+    font-size: 12px;
+    font-weight: 800;
+    line-height: 1;
+    white-space: nowrap;
+
+    cursor: pointer;
+
+    background: #fff;
+    border: 1px solid #cbd5e1;
+    border-radius: 7px;
+    box-shadow: 0 1px 2px rgb(15 23 42 / 6%);
+
+    transition:
+        color 0.18s ease,
+        background 0.18s ease,
+        border-color 0.18s ease,
+        box-shadow 0.18s ease,
+        transform 0.18s ease;
+}
+
+.tier-control-button:hover {
+    color: #634b0a;
+
+    background: #fff9e8;
+    border-color: #d8ad35;
+    box-shadow: 0 3px 7px rgb(120 87 0 / 14%);
+    transform: translateY(-1px);
+}
+
+.tier-control-button:active {
+    transform: translateY(0);
+}
+
+.tier-control-button:focus-visible {
+    outline: 3px solid rgb(196 147 22 / 28%);
+    outline-offset: 2px;
+}
+
+.tier-control-button-icon {
+    font-size: 15px;
+    line-height: 1;
+}
+
+.tier-control-button-primary {
+    color: #fff;
+
+    background:
+        linear-gradient(
+            135deg,
+            #3d4653,
+            #20232a
+        );
+    border-color: #20232a;
+}
+
+.tier-control-button-primary:hover {
+    color: #fff;
+
+    background:
+        linear-gradient(
+            135deg,
+            #505c6c,
+            #303945
+        );
+    border-color: #cfa230;
+}
+
+.tier-control-button-favorite.is-active {
+    color: #7a5600;
+
+    background: #fff1bd;
+    border-color: #d29f22;
+    box-shadow: 0 0 0 3px rgb(210 159 34 / 15%);
+}
+
+
+/*
+ * Нижние быстрые кнопки фильтров.
+ */
+.tier-controls-quick-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+
+    margin-top: auto;
+}
+
+
+/*
+ * Блок внешнего вида.
+ */
+.tier-controls .tier-display-controls {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    gap: 10px;
+
+    width: 100%;
+    min-width: 0;
+}
+
+.tier-controls .tier-range-control {
+    display: grid;
+    grid-template-columns:
+        minmax(0, 1fr)
+        44px;
+    gap: 8px;
+
+    width: 100%;
+    min-width: 0;
+    padding: 0;
+
+    background: transparent;
+    border: 0;
+}
+
+.tier-controls .tier-range-label {
+    grid-column: 1 / -1;
+
+    color: #52606d;
+    font-size: 11px;
+    font-weight: 800;
+}
+
+.tier-controls .tier-range-control input[type='range'] {
+    min-width: 0;
+    accent-color: #c49316;
+}
+
+.tier-controls .tier-range-control output {
+    color: #8a6508;
+    font-size: 12px;
+    font-weight: 800;
+}
+
+.tier-controls .price-mode-toggle {
+    width: 100%;
+    min-height: 38px;
+    padding: 7px 11px;
+
+    color: #4b5563;
+    font-size: 12px;
+
+    background: #fff;
+    border-color: #cbd5e1;
+    border-radius: 7px;
+    box-shadow: 0 1px 2px rgb(15 23 42 / 6%);
+}
+
+.tier-controls .price-mode-toggle::before {
+    flex-basis: 34px;
+
+    width: 34px;
+    height: 19px;
+}
+
+.tier-controls .price-mode-toggle::after {
+    left: 13px;
+
+    width: 13px;
+    height: 13px;
+}
+
+.tier-controls .price-mode-toggle:has(input:checked)::after {
+    transform: translate(15px, -50%);
+}
+
+
+/*
+ * Блок действий.
+ */
+.tier-controls-actions-list {
+    display: grid;
+    gap: 8px;
+}
+
+.tier-controls-actions-list .tier-control-button {
+    justify-content: flex-start;
+
+    width: 100%;
+}
+
+.tier-controls-actions-list .video-presentation-button {
+    display: inline-flex;
+}
+
+.tier-controls-actions-list .video-presentation-button[hidden] {
+    display: none !important;
+}
+
+/*
+ * Сохраняем красный вид кнопки Stop,
+ * который используется presentation-режимом.
+ */
+.tier-controls-actions-list
+.video-presentation-button.is-active {
+    color: #fff4f4;
+
+    background:
+        linear-gradient(
+            135deg,
+            #8b2635,
+            #5f1722
+        );
+    border-color: rgb(255 211 211 / 45%);
+}
+
+
+/*
+ * Планшеты: фильтры получают полную строку,
+ * остальные два блока становятся рядом.
+ */
+@media (max-width: 1100px) {
+    .tier-controls {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .tier-controls-filters {
+        grid-column: 1 / -1;
+    }
+}
+
+
+/*
+ * Мобильный экран: аккуратная одна колонка.
+ */
+@media (max-width: 600px) {
+    .tier-controls {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+
+        padding: 10px;
+    }
+
+    .tier-controls-section {
+        padding: 11px;
+    }
+
+    .tier-controls-fields {
+        grid-template-columns: 1fr;
+    }
+
+    .tier-controls-quick-actions {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .tier-controls-quick-actions .tier-control-button {
+        width: 100%;
+    }
+}
 
