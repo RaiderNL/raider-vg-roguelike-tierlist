@@ -65,6 +65,19 @@ const VIDEO_PRESENTATION_ACTIVE_CLASS =
 
 const VIDEO_PRESENTATION_TIER_ACTIVE_CLASS =
     'tier-row-presentation-active';
+const VIDEO_PRESENTATION_ANIMATION_CLASSES =
+    [
+        'presentation-animation-rise',
+        'presentation-animation-drop',
+        'presentation-animation-slide-left',
+        'presentation-animation-slide-right',
+        'presentation-animation-pop',
+        'presentation-animation-tilt-left',
+        'presentation-animation-tilt-right',
+        'presentation-animation-flip',
+        'presentation-animation-zoom',
+        'presentation-animation-bounce'
+    ];
 
 const BACK_TO_TOP_VISIBLE_CLASS =
     'is-visible';
@@ -507,6 +520,18 @@ function renderGames() {
  * Режим презентации передаёт presentationEntry: true,
  * чтобы карточка появилась с эффектом «помещения» в тир.
  */
+function getRandomPresentationAnimationClass() {
+    const randomIndex =
+        Math.floor(
+            Math.random() *
+            VIDEO_PRESENTATION_ANIMATION_CLASSES.length
+        );
+
+    return VIDEO_PRESENTATION_ANIMATION_CLASSES[
+        randomIndex
+    ];
+}
+
 function appendGameCardToTier(
     game,
     {
@@ -546,13 +571,18 @@ function appendGameCardToTier(
             }
         );
 
-    if (
-        presentationEntry
-    ) {
-        card.classList.add(
-            'presentation-card-entering'
-        );
-    }
+if (
+    presentationEntry
+) {
+    card.classList.add(
+        'presentation-card-entering'
+    );
+
+    card.classList.add(
+        getRandomPresentationAnimationClass()
+    );
+}
+
 
     container.appendChild(
         card
