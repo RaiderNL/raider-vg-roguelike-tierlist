@@ -1,3 +1,19 @@
+/*
+ * =========================================================
+ * Локальное и общее избранное
+ * =========================================================
+ *
+ * Локальное избранное:
+ * - хранится только в localStorage;
+ * - меняется кнопками-звёздочками;
+ * - не перезаписывается при открытии чужой ссылки.
+ *
+ * Общее избранное:
+ * - передаётся параметром URL;
+ * - не сохраняется в localStorage;
+ * - имеет приоритет при просмотре общей подборки.
+ */
+
 import {
     FAVORITES_STORAGE_KEY,
     FAVORITES_FILTER_PARAMETER,
@@ -7,8 +23,11 @@ import {
 
 
 /*
- * Возвращает стабильный ID игры.
+ * =========================================================
+ * Стабильный ID игры
+ * =========================================================
  */
+
 export function getGameId(
     game
 ) {
@@ -19,8 +38,11 @@ export function getGameId(
 
 
 /*
- * Возвращает локальный список избранного.
+ * =========================================================
+ * Локальное избранное
+ * =========================================================
  */
+
 export function getFavoriteIds() {
     try {
         const storedValue =
@@ -73,7 +95,11 @@ export function getFavoriteIds() {
 
 
 /*
- * Сохраняет локальный список избранного.
+ * Возвращает true только при успешной записи.
+ *
+ * Это важно: если localStorage недоступен, интерфейс
+ * не должен показывать игру как сохранённую, когда после
+ * следующего рендера она снова исчезнет из избранного.
  */
 function saveFavoriteIds(
     favoriteIds
@@ -85,6 +111,8 @@ function saveFavoriteIds(
                 [...favoriteIds]
             )
         );
+
+        return true;
     } catch (
         error
     ) {
@@ -92,13 +120,18 @@ function saveFavoriteIds(
             'Не удалось сохранить избранное:',
             error
         );
+
+        return false;
     }
 }
 
 
 /*
- * Проверяет, добавлена ли игра
- * в локальное избранное.
+ * Проверяет, есть ли игра в локальном избранном.
+ *
+ * Общая подборка намеренно здесь не учитывается:
+ * звёздочка карточки отражает именно личное локальное
+ * избранное пользователя.
  */
 export function isFavorite(
     game
@@ -121,12 +154,15 @@ export function isFavorite(
 
 
 /*
- * Добавляет или удаляет игру
- * из локального избранного.
+ * Добавляет или удаляет игру из локального избранного.
  *
  * Возвращает новое состояние:
- * true — игра добавлена;
- * false — игра удалена.
+ * - true  — игра добавлена;
+ * - false — игра удалена.
+ *
+ * При успешном сохранении отправляет favoriteschange.
+ * Его слушает ui-controls.js и обновляет тир-лист,
+ * если включён фильтр «только избранное».
  */
 export function toggleFavorite(
     game
@@ -145,10 +181,13 @@ export function toggleFavorite(
     const favoriteIds =
         getFavoriteIds();
 
-    if (
+    const wasFavorite =
         favoriteIds.has(
             gameId
-        )
+        );
+
+    if (
+        wasFavorite
     ) {
         favoriteIds.delete(
             gameId
@@ -159,34 +198,61 @@ export function toggleFavorite(
         );
     }
 
-    saveFavoriteIds(
-        favoriteIds
+    const isSaved =
+        saveFavoriteIds(
+            favoriteIds
+        );
+
+    /*
+     * Если запись в localStorage не удалась, возвращаем
+     * исходное состояние и не инициируем перерисовку.
+     */
+    if (
+        !isSaved
+    ) {
+        return wasFavorite;
+    }
+
+    const isNowFavorite =
+        favoriteIds.has(
+            gameId
+        );
+
+    dispatchFavoritesChange(
+        {
+            gameId,
+            isFavorite:
+                isNowFavorite
+        }
     );
 
-    return favoriteIds.has(
-        gameId
-    );
+    return isNowFavorite;
 }
 
 
 /*
- * Возвращает список ID из общей ссылки.
- *
- * Общий список не записывается в localStorage.
+ * =========================================================
+ * Общее избранное из URL
+ * =========================================================
  */
-export function getSharedFavoriteIds() {
-    const url =
-        new URL(
-            window.location.href
-        );
 
+/*
+ * Возвращает общий список из переданного URL.
+ *
+ * null означает, что параметра sharedFavorites нет.
+ * Пустой Set означает, что параметр есть, но список пуст.
+ */
+function getSharedFavoriteIdsFromUrl(
+    url
+) {
     const sharedValue =
         url.searchParams.get(
             SHARED_FAVORITES_PARAMETER
         );
 
     if (
-        !sharedValue
+        sharedValue ===
+        null
     ) {
         return null;
     }
@@ -211,8 +277,24 @@ export function getSharedFavoriteIds() {
 
 
 /*
- * Проверяет, открыта ли ссылка
- * с переданным списком избранного.
+ * Возвращает список ID из общей ссылки текущей страницы.
+ *
+ * Этот список не записывается в localStorage.
+ */
+export function getSharedFavoriteIds() {
+    const url =
+        new URL(
+            window.location.href
+        );
+
+    return getSharedFavoriteIdsFromUrl(
+        url
+    );
+}
+
+
+/*
+ * Проверяет, открыт ли режим просмотра общей подборки.
  */
 export function hasSharedFavorites() {
     return getSharedFavoriteIds() !== null;
@@ -220,23 +302,37 @@ export function hasSharedFavorites() {
 
 
 /*
- * Возвращает активный список избранного.
+ * Возвращает активный список ID для фильтрации:
  *
- * Если открыта общая ссылка,
- * используется список из неё.
- * Локальное избранное при этом не меняется.
+ * - при просмотре общей ссылки — IDs из URL;
+ * - в обычном режиме — локальное избранное.
  */
 export function getActiveFavoriteIds() {
     const sharedFavoriteIds =
         getSharedFavoriteIds();
 
-    return sharedFavoriteIds ||
-        getFavoriteIds();
+    return (
+        sharedFavoriteIds ||
+        getFavoriteIds()
+    );
 }
 
 
 /*
- * Проверяет, включён ли фильтр избранного.
+ * =========================================================
+ * Состояние фильтра
+ * =========================================================
+ */
+
+/*
+ * Фильтр считается активным, если:
+ *
+ * - URL явно содержит favorites=only;
+ * - открыта общая ссылка со списком избранного.
+ *
+ * Второй случай позволяет общей ссылке работать, даже если
+ * в ней по старой версии проекта нет отдельного параметра
+ * favorites=only.
  */
 export function isFavoritesFilterActive() {
     const url =
@@ -244,18 +340,34 @@ export function isFavoritesFilterActive() {
             window.location.href
         );
 
-    return (
+    const isOnlyFavorites =
         url.searchParams.get(
             FAVORITES_FILTER_PARAMETER
-        ) === FAVORITES_ONLY_VALUE ||
-        hasSharedFavorites()
+        ) === FAVORITES_ONLY_VALUE;
+
+    return (
+        isOnlyFavorites ||
+        getSharedFavoriteIdsFromUrl(
+            url
+        ) !== null
     );
 }
 
 
 /*
- * Меняет состояние фильтра избранного
- * в URL текущей страницы.
+ * Меняет состояние фильтра в URL текущей страницы.
+ *
+ * Включение:
+ * - добавляет favorites=only;
+ * - не трогает sharedFavorites, если пользователь уже
+ *   просматривает чужую подборку.
+ *
+ * Выключение:
+ * - удаляет favorites=only;
+ * - удаляет sharedFavorites;
+ * - возвращает пользователя к обычному полному списку.
+ *
+ * Локальные звёздочки в localStorage никогда не удаляются.
  */
 export function setFavoritesFilter(
     isActive
@@ -276,6 +388,14 @@ export function setFavoritesFilter(
         url.searchParams.delete(
             FAVORITES_FILTER_PARAMETER
         );
+
+        /*
+         * Иначе sharedFavorites всё ещё заставит
+         * isFavoritesFilterActive() вернуть true.
+         */
+        url.searchParams.delete(
+            SHARED_FAVORITES_PARAMETER
+        );
     }
 
     window.history.replaceState(
@@ -287,16 +407,37 @@ export function setFavoritesFilter(
 
 
 /*
- * Добавляет список избранного в URL
- * для передачи ссылки другому пользователю.
+ * =========================================================
+ * Создание ссылки для шаринга
+ * =========================================================
  *
- * Локальное избранное пользователя
- * при этом не изменяется.
+ * Правила:
+ *
+ * 1. В обычном режиме в ссылку попадает локальное избранное.
+ *
+ * 2. При открытой общей подборке повторное копирование
+ *    сохраняет её оригинальный набор ID. Локальные звёздочки
+ *    пользователя не заменяют список автора ссылки.
  */
+
 export function addFavoritesToUrl(
     url
 ) {
+    if (
+        !(url instanceof URL)
+    ) {
+        throw new TypeError(
+            'addFavoritesToUrl ожидает объект URL'
+        );
+    }
+
+    const sharedFavoriteIds =
+        getSharedFavoriteIdsFromUrl(
+            url
+        );
+
     const favoriteIds =
+        sharedFavoriteIds ||
         getFavoriteIds();
 
     url.searchParams.set(
@@ -312,6 +453,11 @@ export function addFavoritesToUrl(
             [...favoriteIds].join(',')
         );
     } else {
+        /*
+         * Пустая локальная подборка не требует параметра IDs.
+         * Параметр favorites=only остаётся, чтобы получатель
+         * увидел именно пустой фильтр избранного.
+         */
         url.searchParams.delete(
             SHARED_FAVORITES_PARAMETER
         );
@@ -322,8 +468,10 @@ export function addFavoritesToUrl(
 
 
 /*
- * Удаляет параметры общего списка
- * из текущего URL.
+ * Удаляет параметры общего списка из URL.
+ *
+ * Используется, если в будущем понадобится отдельная кнопка
+ * «Вернуться к своему избранному».
  */
 export function clearSharedFavoritesFromUrl() {
     const url =
@@ -343,5 +491,31 @@ export function clearSharedFavoritesFromUrl() {
         {},
         '',
         url
+    );
+}
+
+
+/*
+ * =========================================================
+ * События
+ * =========================================================
+ */
+
+function dispatchFavoritesChange(
+    {
+        gameId,
+        isFavorite
+    }
+) {
+    window.dispatchEvent(
+        new CustomEvent(
+            'favoriteschange',
+            {
+                detail: {
+                    gameId,
+                    isFavorite
+                }
+            }
+        )
     );
 }
