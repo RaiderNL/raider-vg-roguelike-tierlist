@@ -171,28 +171,39 @@
         </output>
     </label>
 </div>
+    
+               <div class="filter-actions">
+        <button
+            class="filter-action-button"
+            id="reset-filters"
+            type="button"
+            aria-label="Сбросить фильтры"
+            title="Сбросить фильтры"
+        >
+            <span aria-hidden="true">↻</span>
+        </button>
+    
+        <button
+            class="filter-action-button"
+            id="share-filters"
+            type="button"
+            aria-label="Скопировать ссылку на подборку"
+            title="Скопировать ссылку на подборку"
+        >
+            <span aria-hidden="true">🔗</span>
+        </button>
+    
+        <button
+            class="filter-action-button"
+            id="download-tierlist-screenshot"
+            type="button"
+            aria-label="Скачать скриншот тир-листа"
+            title="Скачать скриншот тир-листа"
+        >
+            <span aria-hidden="true">📷</span>
+        </button>
+    </div>
 
-            <div class="filter-actions">
-            <button
-                class="filter-action-button"
-                id="reset-filters"
-                type="button"
-                aria-label="Сбросить фильтры"
-                title="Сбросить фильтры"
-            >
-                <span aria-hidden="true">↻</span>
-            </button>
-        
-            <button
-                class="filter-action-button"
-                id="share-filters"
-                type="button"
-                aria-label="Скопировать ссылку на подборку"
-                title="Скопировать ссылку на подборку"
-            >
-                <span aria-hidden="true">🔗</span>
-            </button>
-        </div>
 
 
         </section>
@@ -365,8 +376,10 @@
 
 
         <div class="tier-list-layout">
+        
+            <div class="tier-list-wrapper">
+                <section class="tier-list">
 
-            <section class="tier-list">
 
                 <div class="tier-row">
                     <div class="tier-label tier-s">
@@ -459,17 +472,14 @@
                     </div>
                 </div>
 
-            </section>
-
-
+                </section>
+            </div>
+        
             <aside
                 class="selected-video-panel"
                 id="selected-video-panel"
                 aria-hidden="true"
-            >
-                <!-- Выбранное видео будет добавлено через script.js -->
-            </aside>
-
+            ></aside>
         </div>
 
     </main>
@@ -502,9 +512,14 @@
 
 
     <script
+        src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"
+    ></script>
+    
+    <script
         type="module"
         src="js/main.js"
     ></script>
+
 
 </body>
 </html>
