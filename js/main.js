@@ -1149,23 +1149,24 @@ async function downloadTierListScreenshot() {
                                     overflow: hidden !important;
                                 }
                             
-                                .tierlist-screenshot-render
+                               .tierlist-screenshot-render
                                 .game-cover {
                                     position: absolute !important;
-                                    inset: 0 !important;
-                            
+                                
                                     display: block !important;
-                            
-                                    width: 100% !important;
-                                    height: 100% !important;
+                                
                                     min-width: 0 !important;
                                     min-height: 0 !important;
                                     max-width: none !important;
                                     max-height: none !important;
-                            
-                                    object-fit: cover !important;
+                                
+                                    /*
+                                     * Точные width / height / top / left
+                                     * назначаются ниже через JavaScript.
+                                     */
                                     object-position: center !important;
                                 }
+
 
                                 .tierlist-screenshot-render
                                 .game-card,
