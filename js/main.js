@@ -1060,6 +1060,9 @@ async function downloadTierListScreenshot() {
             );
         }
     );
+        const tierListRect =
+        tierList.getBoundingClientRect();
+
 
     try {
         const canvas =
@@ -1088,14 +1091,22 @@ async function downloadTierListScreenshot() {
                      * и высоту всего списка, включая
                      * все тиры S–F.
                      */
-                    width:
-                        tierList.scrollWidth,
-
+                   width:
+                        Math.ceil(
+                            tierListRect.width
+                        ),
+                    
                     height:
-                        tierList.scrollHeight,
-
+                        Math.ceil(
+                            tierListRect.height
+                        ),
+                    
                     windowWidth:
-                        tierList.scrollWidth,
+                        window.innerWidth,
+                    
+                    windowHeight:
+                        window.innerHeight,
+
 
                     scrollX:
                         0,
