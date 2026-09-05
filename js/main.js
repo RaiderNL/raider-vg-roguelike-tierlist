@@ -74,6 +74,12 @@ let searchRenderTimer =
 
 let shareButtonResetTimer =
     null;
+let screenshotFormatMenu =
+    null;
+
+let screenshotFormatMenuCleanup =
+    null;
+
 
 
 const tierContainers =
@@ -978,19 +984,23 @@ function setupTierListAppearanceControls(
  * =========================================================
  */
 
+/*
+ * =========================================================
+ * Меню выбора формата скриншота
+ * =========================================================
+ *
+ * Вместо системного <dialog> используем собственное
+ * компактное меню над кнопкой загрузки.
+ */
 function openTierListScreenshotDialog() {
-    const dialog =
+    const triggerButton =
         document.querySelector(
-            '#tierlist-screenshot-dialog'
+            '#download-tierlist-screenshot'
         );
 
     if (
-        !dialog
+        !triggerButton
     ) {
-        /*
-         * Запасной вариант для старых браузеров:
-         * сохраняем обычный вертикальный формат.
-         */
         downloadTierListScreenshot(
             'vertical'
         );
@@ -998,29 +1008,294 @@ function openTierListScreenshotDialog() {
         return;
     }
 
+    /*
+     * Повторное нажатие на кнопку закрывает меню.
+     */
     if (
-        !dialog.open
+        screenshotFormatMenu
     ) {
-        dialog.showModal();
+        closeTierListScreenshotMenu();
+
+        return;
     }
 
-    dialog.onclose =
-        () => {
-            const format =
-                dialog.returnValue;
+    const menu =
+        document.createElement(
+            'div'
+        );
+
+    menu.className =
+        'screenshot-format-menu';
+
+    menu.setAttribute(
+        'role',
+        'menu'
+    );
+
+    menu.setAttribute(
+        'aria-label',
+        'Выбор формата скриншота'
+    );
+
+    menu.innerHTML = `
+        <button
+            class="screenshot-format-option"
+            type="button"
+            role="menuitem"
+            data-screenshot-format="vertical"
+        >
+            <span
+                class="screenshot-format-icon screenshot-format-icon-vertical"
+                aria-hidden="true"
+            >
+                <svg
+                    viewBox="0 0 24 24"
+                    focusable="false"
+                >
+                    <rect
+                        x="7"
+                        y="3"
+                        width="10"
+                        height="18"
+                        rx="1.8"
+                    ></rect>
+                    <path
+                        d="M9.5 7.5h5M9.5 10.5h5M9.5 13.5h3.2"
+                    ></path>
+                </svg>
+            </span>
+
+            <span class="screenshot-format-text">
+                Вертикальный
+            </span>
+
+            <span class="screenshot-format-ratio">
+                Обычный
+            </span>
+        </button>
+
+        <button
+            class="screenshot-format-option"
+            type="button"
+            role="menuitem"
+            data-screenshot-format="landscape"
+        >
+            <span
+                class="screenshot-format-icon screenshot-format-icon-landscape"
+                aria-hidden="true"
+            >
+                <svg
+                    viewBox="0 0 24 24"
+                    focusable="false"
+                >
+                    <rect
+                        x="3"
+                        y="6"
+                        width="18"
+                        height="12"
+                        rx="1.8"
+                    ></rect>
+                    <path
+                        d="M6.5 10h11M6.5 13h7"
+                    ></path>
+                </svg>
+            </span>
+
+            <span class="screenshot-format-text">
+                Горизонтальный
+            </span>
+
+            <span class="screenshot-format-ratio">
+                16:9
+            </span>
+        </button>
+    `;
+
+    document.body.appendChild(
+        menu
+    );
+
+    screenshotFormatMenu =
+        menu;
+
+    triggerButton.setAttribute(
+        'aria-expanded',
+        'true'
+    );
+
+    positionTierListScreenshotMenu(
+        menu,
+        triggerButton
+    );
+
+    menu.addEventListener(
+        'click',
+        event => {
+            const option =
+                event.target.closest(
+                    '[data-screenshot-format]'
+                );
 
             if (
-                format !== 'vertical' &&
-                format !== 'landscape'
+                !option
             ) {
                 return;
             }
 
+            const format =
+                option.dataset.screenshotFormat;
+
+            closeTierListScreenshotMenu();
+
             downloadTierListScreenshot(
                 format
             );
-        };
+        }
+    );
+
+    /*
+     * Добавляем обработчики после текущего клика,
+     * иначе клик по исходной кнопке сразу закрыл бы меню.
+     */
+    window.setTimeout(
+        () => {
+            const closeOnOutsideClick =
+                event => {
+                    if (
+                        menu.contains(
+                            event.target
+                        ) ||
+                        triggerButton.contains(
+                            event.target
+                        )
+                    ) {
+                        return;
+                    }
+
+                    closeTierListScreenshotMenu();
+                };
+
+            const closeOnEscape =
+                event => {
+                    if (
+                        event.key ===
+                        'Escape'
+                    ) {
+                        closeTierListScreenshotMenu();
+
+                        triggerButton.focus();
+                    }
+                };
+
+            document.addEventListener(
+                'pointerdown',
+                closeOnOutsideClick
+            );
+
+            document.addEventListener(
+                'keydown',
+                closeOnEscape
+            );
+
+            screenshotFormatMenuCleanup =
+                () => {
+                    document.removeEventListener(
+                        'pointerdown',
+                        closeOnOutsideClick
+                    );
+
+                    document.removeEventListener(
+                        'keydown',
+                        closeOnEscape
+                    );
+                };
+        },
+        0
+    );
 }
+
+
+/*
+ * Ставит меню над кнопкой и не даёт ему выйти
+ * за левую или правую границу экрана.
+ */
+function positionTierListScreenshotMenu(
+    menu,
+    triggerButton
+) {
+    const buttonRect =
+        triggerButton.getBoundingClientRect();
+
+    const menuRect =
+        menu.getBoundingClientRect();
+
+    const viewportPadding =
+        10;
+
+    const gap =
+        8;
+
+    let left =
+        buttonRect.right -
+        menuRect.width;
+
+    left =
+        Math.max(
+            viewportPadding,
+            Math.min(
+                left,
+                window.innerWidth -
+                menuRect.width -
+                viewportPadding
+            )
+        );
+
+    const top =
+        Math.max(
+            viewportPadding,
+            buttonRect.top -
+            menuRect.height -
+            gap
+        );
+
+    menu.style.left =
+        `${left}px`;
+
+    menu.style.top =
+        `${top}px`;
+}
+
+
+function closeTierListScreenshotMenu() {
+    if (
+        screenshotFormatMenuCleanup
+    ) {
+        screenshotFormatMenuCleanup();
+
+        screenshotFormatMenuCleanup =
+            null;
+    }
+
+    if (
+        screenshotFormatMenu
+    ) {
+        screenshotFormatMenu.remove();
+
+        screenshotFormatMenu =
+            null;
+    }
+
+    const triggerButton =
+        document.querySelector(
+            '#download-tierlist-screenshot'
+        );
+
+    triggerButton?.setAttribute(
+        'aria-expanded',
+        'false'
+    );
+}
+
 
 async function downloadTierListScreenshot(
     format = 'vertical'
