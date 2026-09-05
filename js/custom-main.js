@@ -1665,7 +1665,9 @@ async function downloadCustomScreenshot() {
     if (
         button
     ) {
-        button.disabled = true;
+        button.disabled =
+            true;
+
         button.textContent =
             'Создание скриншота…';
     }
@@ -1673,49 +1675,55 @@ async function downloadCustomScreenshot() {
     closeAllPreviews();
 
     /*
-     * Дожидаемся загрузки обложек.
+     * У lazy-картинок из нижних тиров меняем
+     * режим загрузки перед созданием скриншота.
      */
     const images =
-        Array.from(
-            tierList.querySelectorAll(
+        [
+            ...tierList.querySelectorAll(
                 'img'
             )
-        );
+        ];
+
+    images.forEach(
+        image => {
+            image.loading =
+                'eager';
+        }
+    );
 
     await Promise.all(
         images.map(
-            image => {
-                if (
-                    image.complete
-                ) {
-                    return image.decode?.()
-                        .catch(
-                            () => {}
-                        );
-                }
-
-                return new Promise(
-                    resolve => {
-                        image.addEventListener(
-                            'load',
-                            resolve,
-                            {
-                                once: true
-                            }
-                        );
-
-                        image.addEventListener(
-                            'error',
-                            resolve,
-                            {
-                                once: true
-                            }
-                        );
-                    }
-                );
-            }
+            image =>
+                waitForScreenshotImage(
+                    image
+                )
         )
     );
+
+    /*
+     * Даём браузеру два кадра на перерасчёт layout
+     * после загрузки обложек.
+     */
+    await new Promise(
+        resolve => {
+            requestAnimationFrame(
+                () => {
+                    requestAnimationFrame(
+                        resolve
+                    );
+                }
+            );
+        }
+    );
+
+    /*
+     * Используем фактические границы тир-листа.
+     * scrollWidth / scrollHeight могут захватывать
+     * скрытые popup и создавать пустое пространство.
+     */
+    const tierListRect =
+        tierList.getBoundingClientRect();
 
     try {
         const canvas =
@@ -1742,6 +1750,22 @@ async function downloadCustomScreenshot() {
                     imageTimeout:
                         15000,
 
+                    width:
+                        Math.ceil(
+                            tierListRect.width
+                        ),
+
+                    height:
+                        Math.ceil(
+                            tierListRect.height
+                        ),
+
+                    windowWidth:
+                        window.innerWidth,
+
+                    windowHeight:
+                        window.innerHeight,
+
                     scrollX:
                         0,
 
@@ -1761,10 +1785,6 @@ async function downloadCustomScreenshot() {
                                 return;
                             }
 
-                            /*
-                             * Специальный режим рендера
-                             * только для клона.
-                             */
                             clonedTierList.classList.add(
                                 'custom-screenshot-render'
                             );
@@ -1776,8 +1796,8 @@ async function downloadCustomScreenshot() {
 
                             style.textContent = `
                                 /*
-                                 * Отключаем все эффекты,
-                                 * которые могут менять геометрию.
+                                 * Отключаем эффекты, которые
+                                 * могут изменить геометрию.
                                  */
                                 *,
                                 *::before,
@@ -1787,8 +1807,33 @@ async function downloadCustomScreenshot() {
                                 }
 
                                 /*
-                                 * Убираем смещения карточек
-                                 * от hover/active-состояний.
+                                 * html2canvas нестабильно обрабатывает
+                                 * object-fit внутри Grid. Размер и позиция
+                                 * обложек задаются вручную в JavaScript
+                                 * после добавления этого style.
+                                 */
+                                .custom-screenshot-render
+                                .game-media {
+                                    position: relative !important;
+                                    overflow: hidden !important;
+                                }
+
+                                .custom-screenshot-render
+                                .game-cover {
+                                    position: absolute !important;
+
+                                    display: block !important;
+
+                                    min-width: 0 !important;
+                                    min-height: 0 !important;
+                                    max-width: none !important;
+                                    max-height: none !important;
+
+                                    object-position: center !important;
+                                }
+
+                                /*
+                                 * Отключаем hover, focus и тени карточек.
                                  */
                                 .custom-screenshot-render
                                 .game-card,
@@ -1805,79 +1850,47 @@ async function downloadCustomScreenshot() {
 
                                     opacity: 1 !important;
                                     filter: none !important;
-                                }
-
-                                /*
-                                 * Убираем тени, из-за которых
-                                 * появляются светлые ореолы
-                                 * между карточками.
-                                 */
-                                .custom-screenshot-render
-                                .game-card {
                                     box-shadow: none !important;
                                 }
 
-                                .custom-screenshot-render
-                                .custom-tier-row {
-                                    box-shadow: none !important;
-                                    overflow: hidden !important;
-                                }
-
                                 /*
-                                 * У контейнеров не должно быть
-                                 * выхода содержимого наружу.
+                                 * Не допускаем выхода содержимого
+                                 * карточек и рядов за их границы.
                                  */
+                                .custom-screenshot-render
+                                .custom-tier-row,
                                 .custom-screenshot-render
                                 .custom-games-container {
                                     overflow: hidden !important;
+                                    box-shadow: none !important;
                                 }
 
                                 /*
-                                 * Убираем drag-состояния
-                                 * и placeholder.
-                                 */
-                                .custom-screenshot-render
-                                .is-dragging,
-                                .custom-screenshot-render
-                                .custom-drop-placeholder {
-                                    display: none !important;
-                                }
-
-                                /*
-                                 * Убираем интерактивные элементы
-                                 * со скриншота.
+                                 * Скрываем служебные элементы.
                                  */
                                 .custom-screenshot-render
                                 .favorite-button,
                                 .custom-screenshot-render
                                 .game-info-button,
                                 .custom-screenshot-render
-                                .game-preview-popup {
+                                .game-preview-popup,
+                                .custom-screenshot-render
+                                .custom-drop-placeholder,
+                                .custom-screenshot-render
+                                .is-dragging {
                                     display: none !important;
                                 }
 
                                 /*
-                                 * Фиксируем геометрию flex-элементов.
+                                 * Не даём карточкам сжиматься.
                                  */
                                 .custom-screenshot-render
-                                .custom-games-container
                                 .game-card {
                                     flex-shrink: 0 !important;
                                 }
 
                                 /*
-                                 * Не даём изображениям
-                                 * влиять на размеры карточек.
-                                 */
-                                .custom-screenshot-render
-                                .game-cover {
-                                    transform: none !important;
-                                    display: block !important;
-                                }
-
-                                /*
-                                 * Сохраняем цвета тир-листа
-                                 * без белых промежутков.
+                                 * Сохраняем фон рядов без зазоров.
                                  */
                                 .custom-screenshot-render
                                 .custom-tier-row-s {
@@ -1918,6 +1931,161 @@ async function downloadCustomScreenshot() {
                             clonedDocument.head.appendChild(
                                 style
                             );
+
+                            /*
+                             * Ручная реализация object-fit: cover.
+                             *
+                             * Это обход ограничения html2canvas:
+                             * обложки масштабируются до заполнения
+                             * блока .game-media и обрезаются по краям.
+                             */
+                            clonedDocument
+                                .querySelectorAll(
+                                    '.custom-screenshot-render .game-media'
+                                )
+                                .forEach(
+                                    media => {
+                                        const image =
+                                            media.querySelector(
+                                                '.game-cover'
+                                            );
+
+                                        if (
+                                            !image ||
+                                            !image.naturalWidth ||
+                                            !image.naturalHeight
+                                        ) {
+                                            return;
+                                        }
+
+                                        const mediaWidth =
+                                            media.offsetWidth;
+
+                                        const mediaHeight =
+                                            media.offsetHeight;
+
+                                        if (
+                                            !mediaWidth ||
+                                            !mediaHeight
+                                        ) {
+                                            return;
+                                        }
+
+                                        const imageRatio =
+                                            image.naturalWidth /
+                                            image.naturalHeight;
+
+                                        const mediaRatio =
+                                            mediaWidth /
+                                            mediaHeight;
+
+                                        let renderedWidth;
+                                        let renderedHeight;
+
+                                        /*
+                                         * Повторяем поведение cover:
+                                         * широкая картинка обрезается
+                                         * слева и справа, высокая —
+                                         * сверху и снизу.
+                                         */
+                                        if (
+                                            imageRatio >
+                                            mediaRatio
+                                        ) {
+                                            renderedHeight =
+                                                mediaHeight;
+
+                                            renderedWidth =
+                                                mediaHeight *
+                                                imageRatio;
+                                        } else {
+                                            renderedWidth =
+                                                mediaWidth;
+
+                                            renderedHeight =
+                                                mediaWidth /
+                                                imageRatio;
+                                        }
+
+                                        const offsetLeft =
+                                            (
+                                                mediaWidth -
+                                                renderedWidth
+                                            ) / 2;
+
+                                        const offsetTop =
+                                            (
+                                                mediaHeight -
+                                                renderedHeight
+                                            ) / 2;
+
+                                        image.style.setProperty(
+                                            'position',
+                                            'absolute',
+                                            'important'
+                                        );
+
+                                        image.style.setProperty(
+                                            'display',
+                                            'block',
+                                            'important'
+                                        );
+
+                                        image.style.setProperty(
+                                            'width',
+                                            `${renderedWidth}px`,
+                                            'important'
+                                        );
+
+                                        image.style.setProperty(
+                                            'height',
+                                            `${renderedHeight}px`,
+                                            'important'
+                                        );
+
+                                        image.style.setProperty(
+                                            'max-width',
+                                            'none',
+                                            'important'
+                                        );
+
+                                        image.style.setProperty(
+                                            'max-height',
+                                            'none',
+                                            'important'
+                                        );
+
+                                        image.style.setProperty(
+                                            'left',
+                                            `${offsetLeft}px`,
+                                            'important'
+                                        );
+
+                                        image.style.setProperty(
+                                            'top',
+                                            `${offsetTop}px`,
+                                            'important'
+                                        );
+
+                                        image.style.setProperty(
+                                            'right',
+                                            'auto',
+                                            'important'
+                                        );
+
+                                        image.style.setProperty(
+                                            'bottom',
+                                            'auto',
+                                            'important'
+                                        );
+
+                                        image.style.setProperty(
+                                            'object-fit',
+                                            'fill',
+                                            'important'
+                                        );
+                                    }
+                                );
                         }
                 }
             );
@@ -1955,12 +2123,63 @@ async function downloadCustomScreenshot() {
         if (
             button
         ) {
-            button.disabled = false;
+            button.disabled =
+                false;
+
             button.textContent =
                 'Скачать скриншот';
         }
     }
 }
+function waitForScreenshotImage(
+    image
+) {
+    if (
+        image.complete
+    ) {
+        return image.decode?.()
+            .catch(
+                () => {}
+            ) ||
+            Promise.resolve();
+    }
+
+    return new Promise(
+        resolve => {
+            const timeout =
+                window.setTimeout(
+                    resolve,
+                    15000
+                );
+
+            const finish =
+                () => {
+                    window.clearTimeout(
+                        timeout
+                    );
+
+                    resolve();
+                };
+
+            image.addEventListener(
+                'load',
+                finish,
+                {
+                    once: true
+                }
+            );
+
+            image.addEventListener(
+                'error',
+                finish,
+                {
+                    once: true
+                }
+            );
+        }
+    );
+}
+
 
 function showLoadingError() {
     const tierList =
