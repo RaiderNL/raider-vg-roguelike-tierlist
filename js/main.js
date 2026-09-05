@@ -168,6 +168,21 @@ function init() {
         document.querySelector(
             '#back-to-top'
         );
+        const tierListWidthRange =
+        document.querySelector(
+            '#tier-list-width-range'
+        );
+
+    const tierCardScaleRange =
+        document.querySelector(
+            '#tier-card-scale-range'
+        );
+
+    const screenshotButton =
+        document.querySelector(
+            '#download-tierlist-screenshot'
+        );
+
 
 
     cacheTierContainers();
