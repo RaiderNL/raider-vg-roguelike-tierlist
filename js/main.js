@@ -1206,6 +1206,7 @@ const screenshotOptions =
                                     position: relative !important;
                                     overflow: hidden !important;
                                 }
+                                
                             
                                .tierlist-screenshot-render
                                 .game-cover {
@@ -1411,22 +1412,14 @@ const screenshotOptions =
  * Если общий размер карточек пришлось уменьшить,
  * теги становятся нечитаемыми — скрываем их.
  */
-.tierlist-screenshot-render.tierlist-screenshot-landscape.landscape-screenshot-compact
-.game-tags {
-    display: none !important;
-}
+
 
 
 /*
  * В экстремально заполненном тир-листе карточки
  * остаются с обложками, но без нечитаемого текста.
  */
-.tierlist-screenshot-render.tierlist-screenshot-landscape.landscape-screenshot-tiny
-.game-title,
-.tierlist-screenshot-render.tierlist-screenshot-landscape.landscape-screenshot-tiny
-.game-tags {
-    display: none !important;
-}
+
 
                                 
                                 
@@ -1444,9 +1437,81 @@ const screenshotOptions =
                                     font-size: 7px !important;
                                     line-height: 1 !important;
                                 }
+                                /*
+ * В горизонтальном экспорте оставляем только:
+ * - обложку;
+ * - название игры в отдельной нижней зоне.
+ *
+ * Теги и цена скрываются, чтобы не перекрывать текст.
+ */
+.tierlist-screenshot-render.tierlist-screenshot-landscape
+.game-card,
+.tierlist-screenshot-render.tierlist-screenshot-landscape
+#tier-S .game-card,
+.tierlist-screenshot-render.tierlist-screenshot-landscape
+#tier-A .game-card {
+    grid-template-rows:
+        minmax(0, 72%)
+        minmax(0, 1fr)
+        0 !important;
+}
 
 
+.tierlist-screenshot-render.tierlist-screenshot-landscape
+.game-tags,
+.tierlist-screenshot-render.tierlist-screenshot-landscape
+#tier-D .game-tags,
+.tierlist-screenshot-render.tierlist-screenshot-landscape
+#tier-E .game-tags,
+.tierlist-screenshot-render.tierlist-screenshot-landscape
+#tier-F .game-tags {
+    display: none !important;
+}
 
+
+/*
+ * Перебивает правило landscape-screenshot-tiny,
+ * которое раньше могло скрывать заголовки в очень
+ * заполненном тир-листе.
+ */
+.tierlist-screenshot-render.tierlist-screenshot-landscape
+.game-title,
+.tierlist-screenshot-render.tierlist-screenshot-landscape
+#tier-B .game-title,
+.tierlist-screenshot-render.tierlist-screenshot-landscape
+#tier-C .game-title,
+.tierlist-screenshot-render.tierlist-screenshot-landscape
+#tier-D .game-title,
+.tierlist-screenshot-render.tierlist-screenshot-landscape
+#tier-E .game-title,
+.tierlist-screenshot-render.tierlist-screenshot-landscape
+#tier-F .game-title {
+    display: -webkit-box !important;
+    align-self: center !important;
+
+    width: calc(100% - 8px) !important;
+    max-height: calc(100% - 6px) !important;
+    margin: 3px auto !important;
+    overflow: hidden !important;
+
+    font-size: 9px !important;
+    line-height: 1.1 !important;
+    text-align: center !important;
+    white-space: normal !important;
+
+    -webkit-box-orient: vertical !important;
+    -webkit-line-clamp: 2 !important;
+}
+
+
+/*
+ * Цена тоже находится поверх нижней части карточки,
+ * поэтому в PNG её не показываем.
+ */
+.tierlist-screenshot-render.tierlist-screenshot-landscape
+.game-price {
+    display: none !important;
+}
 
                                 .tierlist-screenshot-render
                                 .game-card,
