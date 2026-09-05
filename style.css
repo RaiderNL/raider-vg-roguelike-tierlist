@@ -2860,3 +2860,169 @@ body.main-page {
             visibility 0.25s ease,
             transform 0.25s ease,
             background 
+/*
+ * =========================================================
+ * Мобильная нижняя навигация
+ * =========================================================
+ */
+
+.mobile-tier-navigation {
+    display: none;
+}
+
+@media (max-width: 600px) {
+    body {
+        padding-bottom: calc(
+            66px +
+            env(safe-area-inset-bottom)
+        );
+    }
+
+    .mobile-tier-navigation {
+        position: fixed;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        z-index: 1000;
+
+        display: flex;
+        align-items: stretch;
+        justify-content: stretch;
+
+        width: 100%;
+        min-height: 58px;
+        padding: 0 0 env(safe-area-inset-bottom);
+
+        background: rgb(255 255 255 / 96%);
+        border-top: 1px solid rgb(207 210 216 / 90%);
+        box-shadow: 0 -4px 16px rgb(0 0 0 / 14%);
+        backdrop-filter: blur(8px);
+    }
+
+    .mobile-tier-navigation-button {
+        display: inline-flex;
+        flex: 1 1 0;
+        align-items: center;
+        justify-content: center;
+
+        width: 0;
+        min-width: 0;
+        min-height: 58px;
+        padding: 5px 2px;
+
+        color: var(--color-dark);
+        font-size: 14px;
+        font-weight: 700;
+        line-height: 1;
+
+        cursor: pointer;
+
+        background: var(--color-surface);
+        border: 0;
+        border-right: 1px solid rgb(0 0 0 / 12%);
+        border-radius: 0;
+
+        transition:
+            color 0.2s ease,
+            background 0.2s ease,
+            transform 0.2s ease,
+            filter 0.2s ease;
+    }
+
+    .mobile-tier-navigation-button:last-child {
+        border-right: 0;
+    }
+
+    .mobile-tier-navigation-button:hover,
+    .mobile-tier-navigation-button:focus-visible {
+        filter: brightness(0.94);
+    }
+
+    .mobile-tier-navigation-button:active {
+        transform: scale(0.94);
+    }
+
+    .mobile-tier-navigation-button:focus-visible {
+        outline: 3px solid var(--color-primary-focus);
+        outline-offset: 2px;
+    }
+
+    .mobile-tier-navigation-button.home-button {
+        flex-grow: 1;
+
+        color: #fff;
+        font-size: 22px;
+
+        background: var(--color-dark);
+        border-color: rgb(255 255 255 / 15%);
+    }
+
+    .mobile-tier-navigation-button.tier-navigation-s {
+        color: #5b4300;
+        background: #e8c766;
+        border-color: #e8c766;
+    }
+
+    .mobile-tier-navigation-button.tier-navigation-a {
+        color: #5a3d2b;
+        background: #e8b58f;
+        border-color: #e8b58f;
+    }
+
+    .mobile-tier-navigation-button.tier-navigation-b {
+        color: #51452d;
+        background: #d8c58a;
+        border-color: #d8c58a;
+    }
+
+    .mobile-tier-navigation-button.tier-navigation-c {
+        color: #344638;
+        background: #b7d1a5;
+        border-color: #b7d1a5;
+    }
+
+    .mobile-tier-navigation-button.tier-navigation-d {
+        color: #294354;
+        background: #a9cdd8;
+        border-color: #a9cdd8;
+    }
+
+    .mobile-tier-navigation-button.tier-navigation-e {
+        color: #443d5c;
+        background: #bdb6d1;
+        border-color: #bdb6d1;
+    }
+
+    .mobile-tier-navigation-button.tier-navigation-f {
+        color: #334155;
+        background: #9daabd;
+        border-color: #9daabd;
+    }
+}
+
+@media (max-width: 400px) {
+    .mobile-tier-navigation {
+        padding-right: 0;
+        padding-left: 0;
+    }
+
+    .mobile-tier-navigation-button {
+        flex: 1 1 0;
+
+        width: 0;
+        min-width: 0;
+        min-height: 52px;
+        padding: 5px 2px;
+
+        font-size: 13px;
+    }
+
+    .mobile-tier-navigation-button.home-button {
+        flex-grow: 1;
+
+        min-width: 0;
+
+        font-size: 20px;
+    }
+}
+
