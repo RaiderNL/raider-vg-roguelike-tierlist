@@ -3140,4 +3140,239 @@ body.main-page {
         text-overflow: ellipsis;
     }
 }
+/*
+ * =========================================================
+ * Меню выбора формата скриншота
+ * =========================================================
+ */
+
+.screenshot-format-menu {
+    position: fixed;
+    z-index: 10000;
+
+    display: grid;
+    gap: 6px;
+
+    width: min(
+        238px,
+        calc(100vw - 20px)
+    );
+    padding: 7px;
+
+    border: 1px solid
+        rgba(
+            255,
+            255,
+            255,
+            0.14
+        );
+    border-radius: 12px;
+
+    background:
+        rgba(
+            28,
+            31,
+            42,
+            0.98
+        );
+
+    box-shadow:
+        0 12px 32px
+        rgba(
+            0,
+            0,
+            0,
+            0.32
+        );
+
+    animation:
+        screenshot-format-menu-show
+        0.16s
+        ease-out;
+}
+
+
+.screenshot-format-menu::after {
+    position: absolute;
+    right: 18px;
+    bottom: -6px;
+
+    width: 11px;
+    height: 11px;
+
+    content: '';
+
+    border-right: 1px solid
+        rgba(
+            255,
+            255,
+            255,
+            0.14
+        );
+    border-bottom: 1px solid
+        rgba(
+            255,
+            255,
+            255,
+            0.14
+        );
+
+    background:
+        rgb(
+            28,
+            31,
+            42
+        );
+
+    transform: rotate(
+        45deg
+    );
+}
+
+
+.screenshot-format-option {
+    display: grid;
+    grid-template-columns:
+        34px
+        minmax(
+            0,
+            1fr
+        )
+        auto;
+    align-items: center;
+    gap: 9px;
+
+    width: 100%;
+    min-height: 48px;
+    padding: 7px 9px;
+
+    color: #f5f7ff;
+    font: inherit;
+    text-align: left;
+
+    border: 0;
+    border-radius: 8px;
+
+    background: transparent;
+    cursor: pointer;
+
+    transition:
+        background-color 0.15s ease,
+        transform 0.15s ease;
+}
+
+
+.screenshot-format-option:hover,
+.screenshot-format-option:focus-visible {
+    outline: none;
+
+    background:
+        rgba(
+            255,
+            255,
+            255,
+            0.1
+        );
+}
+
+
+.screenshot-format-option:active {
+    transform: scale(
+        0.98
+    );
+}
+
+
+.screenshot-format-icon {
+    display: grid;
+    place-items: center;
+
+    width: 34px;
+    height: 34px;
+
+    color: #8ab4ff;
+
+    border-radius: 7px;
+
+    background:
+        rgba(
+            105,
+            161,
+            255,
+            0.14
+        );
+}
+
+
+.screenshot-format-icon svg {
+    width: 23px;
+    height: 23px;
+
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.7;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+
+.screenshot-format-text {
+    overflow: hidden;
+
+    font-size: 13px;
+    font-weight: 650;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+
+.screenshot-format-ratio {
+    padding: 3px 6px;
+
+    color:
+        rgba(
+            245,
+            247,
+            255,
+            0.62
+        );
+
+    font-size: 11px;
+    line-height: 1;
+
+    border-radius: 5px;
+
+    background:
+        rgba(
+            255,
+            255,
+            255,
+            0.08
+        );
+}
+
+
+@keyframes screenshot-format-menu-show {
+    from {
+        opacity: 0;
+        transform:
+            translateY(
+                5px
+            )
+            scale(
+                0.97
+            );
+    }
+
+    to {
+        opacity: 1;
+        transform:
+            translateY(
+                0
+            )
+            scale(
+                1
+            );
+    }
+}
 
