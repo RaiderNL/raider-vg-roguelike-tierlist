@@ -3044,18 +3044,34 @@ body.main-page {
 /*
  * Подготовка к созданию PNG.
  */
+/*
+ * Общая подготовка скриншота.
+ * Вертикальному экспорту нельзя принудительно
+ * обрезать содержимое по высоте.
+ */
 .tierlist-screenshot-render {
     isolation: isolate;
+}
+
+
+/*
+ * Обрезание нужно только горизонтальному холсту
+ * фиксированного размера 1920 × 1080.
+ */
+.tierlist-screenshot-render.tierlist-screenshot-landscape {
     overflow: hidden !important;
 }
 
-.tierlist-screenshot-render .tier-row {
+.tierlist-screenshot-render.tierlist-screenshot-landscape
+.tier-row {
     overflow: hidden !important;
 }
 
-.tierlist-screenshot-render .games-container {
+.tierlist-screenshot-render.tierlist-screenshot-landscape
+.games-container {
     overflow: hidden !important;
 }
+
 
 
 /*
