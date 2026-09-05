@@ -3587,8 +3587,7 @@ body.main-page {
  * кривую. Отличается только траектория появления.
  */
 
-.game-card.presentation-card-visible
-.presentation-animation-rise {
+.game-card.presentation-card-visible.presentation-animation-rise {
     animation:
         presentation-card-rise
         680ms
@@ -3596,8 +3595,7 @@ body.main-page {
         both;
 }
 
-.game-card.presentation-card-visible
-.presentation-animation-drop {
+.game-card.presentation-card-visible.presentation-animation-drop {
     animation:
         presentation-card-drop
         680ms
@@ -3605,8 +3603,7 @@ body.main-page {
         both;
 }
 
-.game-card.presentation-card-visible
-.presentation-animation-slide-left {
+.game-card.presentation-card-visible.presentation-animation-slide-left {
     animation:
         presentation-card-slide-left
         680ms
@@ -3614,8 +3611,7 @@ body.main-page {
         both;
 }
 
-.game-card.presentation-card-visible
-.presentation-animation-slide-right {
+.game-card.presentation-card-visible.presentation-animation-slide-right {
     animation:
         presentation-card-slide-right
         680ms
@@ -3623,8 +3619,7 @@ body.main-page {
         both;
 }
 
-.game-card.presentation-card-visible
-.presentation-animation-pop {
+.game-card.presentation-card-visible.presentation-animation-pop {
     animation:
         presentation-card-pop
         650ms
@@ -3632,8 +3627,7 @@ body.main-page {
         both;
 }
 
-.game-card.presentation-card-visible
-.presentation-animation-tilt-left {
+.game-card.presentation-card-visible.presentation-animation-tilt-left {
     animation:
         presentation-card-tilt-left
         700ms
@@ -3641,8 +3635,7 @@ body.main-page {
         both;
 }
 
-.game-card.presentation-card-visible
-.presentation-animation-tilt-right {
+.game-card.presentation-card-visible.presentation-animation-tilt-right {
     animation:
         presentation-card-tilt-right
         700ms
@@ -3650,8 +3643,7 @@ body.main-page {
         both;
 }
 
-.game-card.presentation-card-visible
-.presentation-animation-flip {
+.game-card.presentation-card-visible.presentation-animation-flip {
     transform-origin: center bottom;
 
     animation:
@@ -3661,8 +3653,7 @@ body.main-page {
         both;
 }
 
-.game-card.presentation-card-visible
-.presentation-animation-zoom {
+.game-card.presentation-card-visible.presentation-animation-zoom {
     animation:
         presentation-card-zoom
         660ms
@@ -3670,14 +3661,14 @@ body.main-page {
         both;
 }
 
-.game-card.presentation-card-visible
-.presentation-animation-bounce {
+.game-card.presentation-card-visible.presentation-animation-bounce {
     animation:
         presentation-card-bounce
         720ms
         cubic-bezier(0.16, 1, 0.3, 1)
         both;
 }
+
 
 
 /*
