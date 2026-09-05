@@ -2930,3 +2930,210 @@ body.main-page {
         animation: none;
     }
 }
+/*
+ * =========================================================
+ * Настраиваемый размер тир-листа
+ * =========================================================
+ */
+
+:root {
+    --tier-list-width: 100%;
+    --tier-card-scale: 1;
+}
+
+
+/*
+ * Контейнер не даёт широкому тир-листу
+ * растягивать страницу. Вместо этого
+ * появляется горизонтальная прокрутка.
+ */
+.tier-list-wrapper {
+    min-width: 0;
+    overflow-x: auto;
+    overflow-y: visible;
+
+    scrollbar-color: #b8bec8 #edf0f4;
+    scrollbar-width: thin;
+}
+
+
+/*
+ * Ширина регулируется первым ползунком.
+ */
+.tier-list-layout .tier-list {
+    width: var(--tier-list-width);
+    max-width: none;
+}
+
+
+/*
+ * Стандартные карточки.
+ */
+.tier-list .game-card {
+    width: calc(
+        190px * var(--tier-card-scale)
+    );
+}
+
+
+/*
+ * S и A.
+ */
+.tier-list #tier-S .game-card,
+.tier-list #tier-A .game-card {
+    width: calc(
+        230px * var(--tier-card-scale)
+    );
+}
+
+
+/*
+ * D, E и F.
+ */
+.tier-list #tier-D .game-card,
+.tier-list #tier-E .game-card,
+.tier-list #tier-F .game-card {
+    width: calc(
+        142px * var(--tier-card-scale)
+    );
+}
+
+
+/*
+ * Ползунки интерфейса.
+ */
+.tier-display-controls {
+    display: flex;
+    flex: 1 1 360px;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px 14px;
+
+    min-width: 0;
+}
+
+.tier-range-control {
+    display: grid;
+    grid-template-columns:
+        max-content
+        minmax(100px, 1fr)
+        46px;
+    align-items: center;
+    gap: 8px;
+
+    flex: 1 1 280px;
+    min-width: 250px;
+    min-height: var(--control-height);
+    padding: 6px 9px;
+
+    color: #4b5563;
+    font-size: 12px;
+    font-weight: 700;
+
+    background: var(--color-surface-soft);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+}
+
+.tier-range-label {
+    white-space: nowrap;
+}
+
+.tier-range-control input[type='range'] {
+    width: 100%;
+    min-width: 0;
+
+    accent-color: var(--color-primary);
+}
+
+.tier-range-control output {
+    color: var(--color-primary-dark);
+    font-variant-numeric: tabular-nums;
+    text-align: right;
+}
+
+
+/*
+ * Подготовка к созданию PNG.
+ */
+.tierlist-screenshot-render {
+    isolation: isolate;
+    overflow: hidden !important;
+}
+
+.tierlist-screenshot-render .tier-row {
+    overflow: hidden !important;
+}
+
+.tierlist-screenshot-render .games-container {
+    overflow: hidden !important;
+}
+
+
+/*
+ * Мобильные размеры карточек также зависят
+ * от общего ползунка масштаба.
+ */
+@media (max-width: 600px) {
+    .tier-list .game-card {
+        width: calc(
+            145px * var(--tier-card-scale)
+        );
+    }
+
+    .tier-list #tier-S .game-card,
+    .tier-list #tier-A .game-card {
+        width: calc(
+            165px * var(--tier-card-scale)
+        );
+    }
+
+    .tier-list #tier-D .game-card,
+    .tier-list #tier-E .game-card,
+    .tier-list #tier-F .game-card {
+        width: calc(
+            108px * var(--tier-card-scale)
+        );
+    }
+
+    .tier-display-controls {
+        flex-basis: 100%;
+        width: 100%;
+    }
+
+    .tier-range-control {
+        flex-basis: 100%;
+        width: 100%;
+        min-width: 0;
+    }
+}
+
+
+@media (max-width: 400px) {
+    .tier-list .game-card,
+    .tier-list #tier-S .game-card,
+    .tier-list #tier-A .game-card,
+    .tier-list #tier-B .game-card,
+    .tier-list #tier-C .game-card,
+    .tier-list #tier-D .game-card,
+    .tier-list #tier-E .game-card,
+    .tier-list #tier-F .game-card {
+        width: calc(
+            (50% - 3px) *
+            var(--tier-card-scale)
+        );
+    }
+
+    .tier-range-control {
+        grid-template-columns:
+            1fr
+            minmax(90px, 1fr)
+            44px;
+    }
+
+    .tier-range-label {
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+}
+
