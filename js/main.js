@@ -1437,12 +1437,14 @@ const screenshotOptions =
                                     font-size: 7px !important;
                                     line-height: 1 !important;
                                 }
-                                /*
- * В горизонтальном экспорте оставляем только:
- * - обложку;
- * - название игры в отдельной нижней зоне.
+                                
+/*
+ * В горизонтальном экспорте у карточки есть только:
+ * 1. обложка;
+ * 2. зона для названия.
  *
- * Теги и цена скрываются, чтобы не перекрывать текст.
+ * Отдаём названию 36% высоты: этого хватает
+ * для двух строк без обрезания.
  */
 .tierlist-screenshot-render.tierlist-screenshot-landscape
 .game-card,
@@ -1451,10 +1453,10 @@ const screenshotOptions =
 .tierlist-screenshot-render.tierlist-screenshot-landscape
 #tier-A .game-card {
     grid-template-rows:
-        minmax(0, 72%)
-        minmax(0, 1fr)
-        0 !important;
+        minmax(0, 64%)
+        minmax(0, 36%) !important;
 }
+
 
 
 .tierlist-screenshot-render.tierlist-screenshot-landscape
@@ -1470,9 +1472,8 @@ const screenshotOptions =
 
 
 /*
- * Перебивает правило landscape-screenshot-tiny,
- * которое раньше могло скрывать заголовки в очень
- * заполненном тир-листе.
+ * Название занимает всю нижнюю секцию карточки
+ * и центрируется в ней вертикально.
  */
 .tierlist-screenshot-render.tierlist-screenshot-landscape
 .game-title,
@@ -1487,21 +1488,24 @@ const screenshotOptions =
 .tierlist-screenshot-render.tierlist-screenshot-landscape
 #tier-F .game-title {
     display: -webkit-box !important;
-    align-self: center !important;
+    align-self: stretch !important;
 
     width: calc(100% - 8px) !important;
-    max-height: calc(100% - 6px) !important;
-    margin: 3px auto !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    margin: 0 auto !important;
+    padding: 2px 0 !important;
     overflow: hidden !important;
 
     font-size: 9px !important;
-    line-height: 1.1 !important;
+    line-height: 1.12 !important;
     text-align: center !important;
     white-space: normal !important;
 
     -webkit-box-orient: vertical !important;
     -webkit-line-clamp: 2 !important;
 }
+
 
 
 /*
