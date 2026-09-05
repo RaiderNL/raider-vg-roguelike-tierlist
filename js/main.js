@@ -272,6 +272,16 @@ function init() {
     setupBackToTop(
         backToTopButton
     );
+        setupTierListAppearanceControls(
+        tierListWidthRange,
+        tierCardScaleRange
+    );
+
+    screenshotButton?.addEventListener(
+        'click',
+        downloadTierListScreenshot
+    );
+
 
 
     loadApplicationData();
@@ -896,3 +906,397 @@ function showLoadingError() {
         </p>
     `;
 }
+/*
+ * =========================================================
+ * Настройка размеров тир-листа
+ * =========================================================
+ */
+
+function setupTierListAppearanceControls(
+    widthRange,
+    cardScaleRange
+) {
+    const widthValue =
+        document.querySelector(
+            '#tier-list-width-value'
+        );
+
+    const cardScaleValue =
+        document.querySelector(
+            '#tier-card-scale-value'
+        );
+
+    const updateTierListWidth =
+        () => {
+            if (
+                !widthRange
+            ) {
+                return;
+            }
+
+            const value =
+                Number(
+                    widthRange.value
+                );
+
+            document.documentElement.style.setProperty(
+                '--tier-list-width',
+                `${value}%`
+            );
+
+            if (
+                widthValue
+            ) {
+                widthValue.textContent =
+                    `${value}%`;
+            }
+        };
+
+    const updateCardScale =
+        () => {
+            if (
+                !cardScaleRange
+            ) {
+                return;
+            }
+
+            const value =
+                Number(
+                    cardScaleRange.value
+                );
+
+            document.documentElement.style.setProperty(
+                '--tier-card-scale',
+                String(
+                    value / 100
+                )
+            );
+
+            if (
+                cardScaleValue
+            ) {
+                cardScaleValue.textContent =
+                    `${value}%`;
+            }
+        };
+
+    widthRange?.addEventListener(
+        'input',
+        updateTierListWidth
+    );
+
+    cardScaleRange?.addEventListener(
+        'input',
+        updateCardScale
+    );
+
+    updateTierListWidth();
+    updateCardScale();
+}
+
+
+/*
+ * =========================================================
+ * Скриншот тир-листа
+ * =========================================================
+ */
+
+async function downloadTierListScreenshot() {
+    const tierList =
+        document.querySelector(
+            '.tier-list'
+        );
+
+    if (
+        !tierList
+    ) {
+        return;
+    }
+
+    if (
+        typeof window.html2canvas !==
+        'function'
+    ) {
+        window.alert(
+            'Модуль скриншота ещё не загрузился.'
+        );
+
+        return;
+    }
+
+    const button =
+        document.querySelector(
+            '#download-tierlist-screenshot'
+        );
+
+    if (
+        button
+    ) {
+        button.disabled =
+            true;
+
+        button.title =
+            'Создание скриншота…';
+
+        button.setAttribute(
+            'aria-label',
+            'Создание скриншота…'
+        );
+    }
+
+    closeAllPreviews();
+
+    /*
+     * Lazy-изображения из нижних тиров могут ещё
+     * не быть загружены. На время скриншота просим
+     * браузер загрузить их сразу.
+     */
+    const images =
+        [
+            ...tierList.querySelectorAll(
+                'img'
+            )
+        ];
+
+    images.forEach(
+        image => {
+            image.loading =
+                'eager';
+        }
+    );
+
+    await Promise.all(
+        images.map(
+            image =>
+                waitForImage(
+                    image
+                )
+        )
+    );
+
+    /*
+     * Даём браузеру один кадр на перерасчёт
+     * размеров после загрузки обложек.
+     */
+    await new Promise(
+        resolve => {
+            requestAnimationFrame(
+                () => {
+                    requestAnimationFrame(
+                        resolve
+                    );
+                }
+            );
+        }
+    );
+
+    try {
+        const canvas =
+            await window.html2canvas(
+                tierList,
+                {
+                    backgroundColor:
+                        '#f3f4f6',
+
+                    scale: 2,
+
+                    useCORS:
+                        true,
+
+                    allowTaint:
+                        false,
+
+                    logging:
+                        false,
+
+                    imageTimeout:
+                        15000,
+
+                    /*
+                     * Захватываем реальную ширину
+                     * и высоту всего списка, включая
+                     * все тиры S–F.
+                     */
+                    width:
+                        tierList.scrollWidth,
+
+                    height:
+                        tierList.scrollHeight,
+
+                    windowWidth:
+                        tierList.scrollWidth,
+
+                    scrollX:
+                        0,
+
+                    scrollY:
+                        0,
+
+                    onclone:
+                        clonedDocument => {
+                            const clonedTierList =
+                                clonedDocument.querySelector(
+                                    '.tier-list'
+                                );
+
+                            if (
+                                !clonedTierList
+                            ) {
+                                return;
+                            }
+
+                            clonedTierList.classList.add(
+                                'tierlist-screenshot-render'
+                            );
+
+                            const style =
+                                clonedDocument.createElement(
+                                    'style'
+                                );
+
+                            style.textContent = `
+                                *,
+                                *::before,
+                                *::after {
+                                    animation: none !important;
+                                    transition: none !important;
+                                }
+
+                                .tierlist-screenshot-render
+                                .game-card,
+                                .tierlist-screenshot-render
+                                .game-card:hover,
+                                .tierlist-screenshot-render
+                                .game-card:focus,
+                                .tierlist-screenshot-render
+                                .game-card:focus-within {
+                                    transform: none !important;
+                                    opacity: 1 !important;
+                                    filter: none !important;
+                                    box-shadow: none !important;
+                                }
+
+                                .tierlist-screenshot-render
+                                .tier-row {
+                                    overflow: hidden !important;
+                                    box-shadow: none !important;
+                                }
+
+                                .tierlist-screenshot-render
+                                .games-container {
+                                    overflow: hidden !important;
+                                }
+
+                                .tierlist-screenshot-render
+                                .favorite-button,
+                                .tierlist-screenshot-render
+                                .game-preview-popup {
+                                    display: none !important;
+                                }
+
+                                .tierlist-screenshot-render
+                                .game-card {
+                                    flex-shrink: 0 !important;
+                                }
+                            `;
+
+                            clonedDocument.head.appendChild(
+                                style
+                            );
+                        }
+                }
+            );
+
+        const link =
+            document.createElement(
+                'a'
+            );
+
+        link.download =
+            'raider-roguelike-tierlist.png';
+
+        link.href =
+            canvas.toDataURL(
+                'image/png'
+            );
+
+        link.click();
+    } catch (
+        error
+    ) {
+        console.error(
+            'Ошибка создания скриншота:',
+            error
+        );
+
+        window.alert(
+            'Не удалось создать скриншот.'
+        );
+    } finally {
+        if (
+            button
+        ) {
+            button.disabled =
+                false;
+
+            button.title =
+                'Скачать скриншот тир-листа';
+
+            button.setAttribute(
+                'aria-label',
+                'Скачать скриншот тир-листа'
+            );
+        }
+    }
+}
+
+
+function waitForImage(
+    image
+) {
+    if (
+        image.complete
+    ) {
+        return image.decode?.()
+            .catch(
+                () => {}
+            ) ||
+            Promise.resolve();
+    }
+
+    return new Promise(
+        resolve => {
+            const timeout =
+                window.setTimeout(
+                    resolve,
+                    15000
+                );
+
+            const finish =
+                () => {
+                    window.clearTimeout(
+                        timeout
+                    );
+
+                    resolve();
+                };
+
+            image.addEventListener(
+                'load',
+                finish,
+                {
+                    once: true
+                }
+            );
+
+            image.addEventListener(
+                'error',
+                finish,
+                {
+                    once: true
+                }
+            );
+        }
+    );
+}
+
