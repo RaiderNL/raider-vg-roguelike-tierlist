@@ -1,3 +1,19 @@
+/*
+ * =========================================================
+ * Фильтры игр и синхронизация с URL
+ * =========================================================
+ *
+ * Модуль отвечает только за:
+ * - наполнение select тегов и роликов;
+ * - чтение активных значений фильтров;
+ * - проверку игры на соответствие фильтрам;
+ * - чтение фильтров из URL;
+ * - запись обычных фильтров в URL.
+ *
+ * Избранное намеренно не обрабатывается здесь:
+ * его параметры принадлежат favorites.js.
+ */
+
 import {
     appState
 } from './state.js';
@@ -5,17 +21,40 @@ import {
 import {
     getGameTags,
     getVideoUrl,
-    getVideoTitle,
     getVideoNumber,
     getVideoLabel
 } from './data.js';
 
+import {
+    elements
+} from './dom.js';
+
+
+const SEARCH_PARAMETER =
+    'search';
+
+const TAG_PARAMETER =
+    'tag';
+
+const VIDEO_PARAMETER =
+    'video';
+
+const ALL_TAGS_LABEL =
+    'Все жанры';
+
+const ALL_VIDEOS_LABEL =
+    'Все ролики';
+
+
+/*
+ * =========================================================
+ * Наполнение фильтра тегов
+ * =========================================================
+ */
 
 export function fillTagFilter() {
     const tagFilter =
-        document.querySelector(
-            '#tag-filter'
-        );
+        elements.tagFilter;
 
     if (
         !tagFilter
@@ -23,7 +62,38 @@ export function fillTagFilter() {
         return;
     }
 
-    const tags = [
+    const tags =
+        getAvailableTags();
+
+    const fragment =
+        document.createDocumentFragment();
+
+    fragment.appendChild(
+        createOption(
+            '',
+            ALL_TAGS_LABEL
+        )
+    );
+
+    tags.forEach(
+        tag => {
+            fragment.appendChild(
+                createOption(
+                    tag,
+                    tag
+                )
+            );
+        }
+    );
+
+    tagFilter.replaceChildren(
+        fragment
+    );
+}
+
+
+function getAvailableTags() {
+    return [
         ...new Set(
             appState.games.flatMap(
                 game =>
@@ -32,42 +102,32 @@ export function fillTagFilter() {
                     )
             )
         )
-    ].sort(
-        (
-            firstTag,
-            secondTag
-        ) =>
-            firstTag.localeCompare(
-                secondTag,
-                'ru'
-            )
-    );
-
-    tagFilter.replaceChildren(
-        createOption(
-            '',
-            'Все жанры'
+    ]
+        .filter(
+            Boolean
         )
-    );
-
-    tags.forEach(
-        tag => {
-            tagFilter.appendChild(
-                createOption(
-                    tag,
-                    tag
+        .sort(
+            (
+                firstTag,
+                secondTag
+            ) =>
+                firstTag.localeCompare(
+                    secondTag,
+                    'ru'
                 )
-            );
-        }
-    );
+        );
 }
 
 
+/*
+ * =========================================================
+ * Наполнение фильтра роликов
+ * =========================================================
+ */
+
 export function fillVideoFilter() {
     const videoFilter =
-        document.querySelector(
-            '#video-filter'
-        );
+        elements.videoFilter;
 
     if (
         !videoFilter
@@ -75,6 +135,48 @@ export function fillVideoFilter() {
         return;
     }
 
+    const videos =
+        getAvailableVideos();
+
+    const latestVideoNumber =
+        getLatestVideoNumber(
+            videos
+        );
+
+    const fragment =
+        document.createDocumentFragment();
+
+    fragment.appendChild(
+        createOption(
+            '',
+            ALL_VIDEOS_LABEL
+        )
+    );
+
+    videos.forEach(
+        video => {
+            fragment.appendChild(
+                createOption(
+                    video.videoUrl,
+                    getVideoLabel(
+                        video.game,
+                        latestVideoNumber
+                    )
+                )
+            );
+        }
+    );
+
+    videoFilter.replaceChildren(
+        fragment
+    );
+}
+
+
+/*
+ * Собирает один элемент на каждый уникальный URL ролика.
+ */
+function getAvailableVideos() {
     const videoMap =
         new Map();
 
@@ -82,11 +184,6 @@ export function fillVideoFilter() {
         game => {
             const videoUrl =
                 getVideoUrl(
-                    game
-                );
-
-            const videoTitle =
-                getVideoTitle(
                     game
                 );
 
@@ -103,7 +200,8 @@ export function fillVideoFilter() {
                 videoUrl,
                 {
                     game,
-                    videoTitle,
+                    videoUrl,
+
                     videoNumber:
                         getVideoNumber(
                             game
@@ -113,36 +211,9 @@ export function fillVideoFilter() {
         }
     );
 
-    const videos =
-        [...videoMap.entries()]
-            .map(
-                ([
-                    videoUrl,
-                    videoData
-                ]) => ({
-                    videoUrl,
-                    ...videoData
-                })
-            );
-
-    const numberedVideos =
-        videos
-            .map(
-                video => video.videoNumber
-            )
-            .filter(
-                videoNumber =>
-                    videoNumber !== null
-            );
-
-    const latestVideoNumber =
-        numberedVideos.length > 0
-            ? Math.max(
-                ...numberedVideos
-            )
-            : null;
-
-    videos.sort(
+    return [
+        ...videoMap.values()
+    ].sort(
         (
             firstVideo,
             secondVideo
@@ -155,83 +226,95 @@ export function fillVideoFilter() {
                 secondVideo.videoNumber ??
                 -Infinity;
 
-            return secondNumber - firstNumber;
-        }
-    );
-
-    videoFilter.replaceChildren(
-        createOption(
-            '',
-            'Все ролики'
-        )
-    );
-
-    videos.forEach(
-        video => {
-            videoFilter.appendChild(
-                createOption(
-                    video.videoUrl,
-                    getVideoLabel(
-                        video.game,
-                        latestVideoNumber
-                    )
-                )
+            return (
+                secondNumber -
+                firstNumber
             );
         }
     );
 }
 
 
-export function getSearchValue() {
-    const searchInput =
-        document.querySelector(
-            '#search'
-        );
+function getLatestVideoNumber(
+    videos
+) {
+    const numberedVideos =
+        videos
+            .map(
+                video =>
+                    video.videoNumber
+            )
+            .filter(
+                Number.isFinite
+            );
 
-    return searchInput
-        ? searchInput.value
-            .trim()
-            .toLowerCase()
-        : '';
+    if (
+        numberedVideos.length ===
+        0
+    ) {
+        return null;
+    }
+
+    return Math.max(
+        ...numberedVideos
+    );
+}
+
+
+/*
+ * =========================================================
+ * Чтение состояния фильтров
+ * =========================================================
+ */
+
+export function getSearchValue() {
+    return (
+        elements.searchInput?.value ||
+        ''
+    )
+        .trim()
+        .toLocaleLowerCase(
+            'ru'
+        );
 }
 
 
 export function getSelectedTag() {
-    const tagFilter =
-        document.querySelector(
-            '#tag-filter'
-        );
-
-    return tagFilter
-        ? tagFilter.value
-        : '';
+    return (
+        elements.tagFilter?.value ||
+        ''
+    );
 }
 
 
 export function getSelectedVideo() {
-    const videoFilter =
-        document.querySelector(
-            '#video-filter'
-        );
-
-    return videoFilter
-        ? videoFilter.value
-        : '';
+    return (
+        elements.videoFilter?.value ||
+        ''
+    );
 }
 
 
+/*
+ * =========================================================
+ * Проверка игры
+ * =========================================================
+ */
+
 export function gameMatchesFilters(
     game,
-    searchValue,
-    selectedTag,
-    selectedVideo
+    searchValue = '',
+    selectedTag = '',
+    selectedVideo = ''
 ) {
     const name =
         String(
             game['Name'] || ''
         )
             .trim()
-            .toLowerCase();
+            .toLocaleLowerCase(
+                'ru'
+            );
 
     const gameTags =
         getGameTags(
@@ -249,13 +332,13 @@ export function gameMatchesFilters(
         );
 
     const matchesTag =
-        selectedTag === '' ||
+        !selectedTag ||
         gameTags.includes(
             selectedTag
         );
 
     const matchesVideo =
-        selectedVideo === '' ||
+        !selectedVideo ||
         videoUrl === selectedVideo;
 
     return (
@@ -266,47 +349,56 @@ export function gameMatchesFilters(
 }
 
 
+/*
+ * =========================================================
+ * URL → элементы управления
+ * =========================================================
+ *
+ * Вызывается:
+ * - при первой загрузке после заполнения select;
+ * - после browser Back / Forward.
+ *
+ * Неизвестные tag/video из старой или ошибочной ссылки
+ * безопасно заменяются пустым значением.
+ */
+
 export function setFiltersFromUrl() {
     const url =
         new URL(
             window.location.href
         );
 
-    const searchInput =
-        document.querySelector(
-            '#search'
+    const searchValue =
+        getUrlParameter(
+            url,
+            SEARCH_PARAMETER
         );
 
-    const tagFilter =
-        document.querySelector(
-            '#tag-filter'
+    const tagValue =
+        getUrlParameter(
+            url,
+            TAG_PARAMETER
         );
 
-    const videoFilter =
-        document.querySelector(
-            '#video-filter'
+    const videoValue =
+        getUrlParameter(
+            url,
+            VIDEO_PARAMETER
         );
 
     if (
-        searchInput
+        elements.searchInput
     ) {
-        searchInput.value =
-            url.searchParams.get(
-                'search'
-            ) || '';
+        elements.searchInput.value =
+            searchValue;
     }
 
     if (
-        tagFilter
+        elements.tagFilter
     ) {
-        const tagValue =
-            url.searchParams.get(
-                'tag'
-            ) || '';
-
-        tagFilter.value =
+        elements.tagFilter.value =
             optionExists(
-                tagFilter,
+                elements.tagFilter,
                 tagValue
             )
                 ? tagValue
@@ -314,23 +406,45 @@ export function setFiltersFromUrl() {
     }
 
     if (
-        videoFilter
+        elements.videoFilter
     ) {
-        const videoValue =
-            url.searchParams.get(
-                'video'
-            ) || '';
-
-        videoFilter.value =
+        elements.videoFilter.value =
             optionExists(
-                videoFilter,
+                elements.videoFilter,
                 videoValue
             )
                 ? videoValue
                 : '';
     }
+
+    return {
+        searchValue,
+
+        selectedTag:
+            elements.tagFilter?.value ||
+            '',
+
+        selectedVideo:
+            elements.videoFilter?.value ||
+            ''
+    };
 }
 
+
+/*
+ * =========================================================
+ * Элементы управления → URL
+ * =========================================================
+ *
+ * Меняет только параметры обычных фильтров:
+ *
+ * - search;
+ * - tag;
+ * - video.
+ *
+ * Параметры избранного favorites/sharedFavorites сохраняются,
+ * потому что URL создаётся из текущего window.location.href.
+ */
 
 export function updateUrlFromFilters() {
     const url =
@@ -338,37 +452,48 @@ export function updateUrlFromFilters() {
             window.location.href
         );
 
-    const searchValue =
-        getSearchValue();
-
-    const selectedTag =
-        getSelectedTag();
-
-    const selectedVideo =
-        getSelectedVideo();
-
     updateUrlParameter(
         url,
-        'search',
-        searchValue
+        SEARCH_PARAMETER,
+        getSearchValue()
     );
 
     updateUrlParameter(
         url,
-        'tag',
-        selectedTag
+        TAG_PARAMETER,
+        getSelectedTag()
     );
 
     updateUrlParameter(
         url,
-        'video',
-        selectedVideo
+        VIDEO_PARAMETER,
+        getSelectedVideo()
     );
 
     window.history.replaceState(
         {},
         '',
         url
+    );
+
+    return url;
+}
+
+
+/*
+ * =========================================================
+ * Вспомогательные функции
+ * =========================================================
+ */
+
+function getUrlParameter(
+    url,
+    parameter
+) {
+    return (
+        url.searchParams.get(
+            parameter
+        ) || ''
     );
 }
 
