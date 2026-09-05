@@ -1741,6 +1741,471 @@ clonedDocument
         }
     }
 }
+/*
+ * =========================================================
+ * Умная раскладка горизонтального PNG
+ * =========================================================
+ *
+ * Холст всегда 1920 × 1080.
+ *
+ * Функция ищет максимально возможный единый размер карточек,
+ * при котором все тиры и все карточки в них помещаются.
+ *
+ * Если игр в тире слишком много для одной строки:
+ * - тир получает вторую / третью строку;
+ * - его высота увеличивается;
+ * - соседние тиры получают меньше свободной высоты;
+ * - если суммарной высоты не хватает, карточки уменьшаются.
+ */
+
+function applyAdaptiveLandscapeScreenshotLayout(
+    tierList
+) {
+    const screenshotWidth =
+        1920;
+
+    const screenshotHeight =
+        1080;
+
+    const outerPaddingX =
+        18;
+
+    const outerPaddingY =
+        18;
+
+    const tierGap =
+        6;
+
+    const tierLabelWidth =
+        76;
+
+    const gamesPaddingX =
+        8 * 2;
+
+    const gamesPaddingY =
+        5 * 2;
+
+    const cardGap =
+        6;
+
+    const minimumTierHeight =
+        48;
+
+    /*
+     * Пространство, доступное именно карточкам
+     * внутри строки: без внешних отступов PNG,
+     * ярлыка S/A/B... и внутренних отступов игр.
+     */
+    const gamesAvailableWidth =
+        screenshotWidth -
+        outerPaddingX * 2 -
+        tierLabelWidth -
+        gamesPaddingX -
+        2;
+
+    /*
+     * Пространство для семи рядов без внешних отступов
+     * и шести промежутков между рядами.
+     */
+    const availableRowsHeight =
+        screenshotHeight -
+        outerPaddingY * 2 -
+        tierGap * 6;
+
+    const tierRows =
+        [
+            ...tierList.querySelectorAll(
+                '.tier-row'
+            )
+        ];
+
+    /*
+     * Сначала пробуем крупные карточки.
+     * Затем уменьшаем их по одному пикселю, пока
+     * все строки не смогут поместиться по высоте.
+     */
+    const maximumCardSize =
+        150;
+
+    const minimumCardSize =
+        32;
+
+    let selectedLayout =
+        null;
+
+    for (
+        let cardSize = maximumCardSize;
+        cardSize >= minimumCardSize;
+        cardSize -= 1
+    ) {
+        const cardsPerLine =
+            Math.max(
+                1,
+                Math.floor(
+                    (
+                        gamesAvailableWidth +
+                        cardGap
+                    ) /
+                    (
+                        cardSize +
+                        cardGap
+                    )
+                )
+            );
+
+        const tiers =
+            tierRows.map(
+                tierRow => {
+                    const gamesContainer =
+                        tierRow.querySelector(
+                            '.games-container'
+                        );
+
+                    const cardsCount =
+                        gamesContainer
+                            ? gamesContainer.querySelectorAll(
+                                '.game-card'
+                            ).length
+                            : 0;
+
+                    /*
+                     * Пустой тир всё равно остаётся
+                     * видимой полосой с буквой.
+                     */
+                    const linesCount =
+                        cardsCount > 0
+                            ? Math.ceil(
+                                cardsCount /
+                                cardsPerLine
+                            )
+                            : 0;
+
+                    const cardsHeight =
+                        linesCount > 0
+                            ? (
+                                linesCount *
+                                cardSize
+                            ) +
+                            (
+                                (
+                                    linesCount -
+                                    1
+                                ) *
+                                cardGap
+                            )
+                            : 0;
+
+                    const requiredHeight =
+                        Math.max(
+                            minimumTierHeight,
+                            cardsHeight +
+                            gamesPaddingY +
+                            2
+                        );
+
+                    return {
+                        tierRow,
+                        gamesContainer,
+                        cardsCount,
+                        linesCount,
+                        requiredHeight
+                    };
+                }
+            );
+
+        const totalRowsHeight =
+            tiers.reduce(
+                (
+                    total,
+                    tier
+                ) => (
+                    total +
+                    tier.requiredHeight
+                ),
+                0
+            );
+
+        if (
+            totalRowsHeight <=
+            availableRowsHeight
+        ) {
+            selectedLayout =
+                {
+                    cardSize,
+                    cardsPerLine,
+                    tiers,
+                    totalRowsHeight
+                };
+
+            break;
+        }
+    }
+
+    /*
+     * На практике этот fallback не должен срабатывать,
+     * но не даём экспорту упасть, если игр окажется
+     * экстремально много.
+     */
+    if (
+        !selectedLayout
+    ) {
+        const cardSize =
+            minimumCardSize;
+
+        const cardsPerLine =
+            Math.max(
+                1,
+                Math.floor(
+                    (
+                        gamesAvailableWidth +
+                        cardGap
+                    ) /
+                    (
+                        cardSize +
+                        cardGap
+                    )
+                )
+            );
+
+        const tiers =
+            tierRows.map(
+                tierRow => {
+                    const gamesContainer =
+                        tierRow.querySelector(
+                            '.games-container'
+                        );
+
+                    const cardsCount =
+                        gamesContainer
+                            ? gamesContainer.querySelectorAll(
+                                '.game-card'
+                            ).length
+                            : 0;
+
+                    const linesCount =
+                        cardsCount > 0
+                            ? Math.ceil(
+                                cardsCount /
+                                cardsPerLine
+                            )
+                            : 0;
+
+                    const cardsHeight =
+                        linesCount > 0
+                            ? (
+                                linesCount *
+                                cardSize
+                            ) +
+                            (
+                                (
+                                    linesCount -
+                                    1
+                                ) *
+                                cardGap
+                            )
+                            : 0;
+
+                    return {
+                        tierRow,
+                        gamesContainer,
+                        cardsCount,
+                        linesCount,
+                        requiredHeight:
+                            Math.max(
+                                minimumTierHeight,
+                                cardsHeight +
+                                gamesPaddingY +
+                                2
+                            )
+                    };
+                }
+            );
+
+        selectedLayout =
+            {
+                cardSize,
+                cardsPerLine,
+                tiers,
+                totalRowsHeight:
+                    tiers.reduce(
+                        (
+                            total,
+                            tier
+                        ) => (
+                            total +
+                            tier.requiredHeight
+                        ),
+                        0
+                    )
+            };
+    }
+
+    const {
+        cardSize,
+        tiers,
+        totalRowsHeight
+    } = selectedLayout;
+
+    /*
+     * Неиспользуемую высоту распределяем между тирами.
+     *
+     * Благодаря этому список занимает весь холст,
+     * а карточки красиво центрируются по вертикали
+     * внутри своей цветной полосы.
+     */
+    const freeHeight =
+        Math.max(
+            0,
+            availableRowsHeight -
+            totalRowsHeight
+        );
+
+    const extraHeightPerTier =
+        freeHeight /
+        Math.max(
+            1,
+            tiers.length
+        );
+
+    tierList.classList.toggle(
+        'landscape-screenshot-compact',
+        cardSize <= 82
+    );
+
+    tierList.classList.toggle(
+        'landscape-screenshot-tiny',
+        cardSize <= 54
+    );
+
+    tierList.style.setProperty(
+        'width',
+        `${screenshotWidth}px`,
+        'important'
+    );
+
+    tierList.style.setProperty(
+        'height',
+        `${screenshotHeight}px`,
+        'important'
+    );
+
+    tierList.style.setProperty(
+        'min-height',
+        `${screenshotHeight}px`,
+        'important'
+    );
+
+    tiers.forEach(
+        tier => {
+            const rowHeight =
+                tier.requiredHeight +
+                extraHeightPerTier;
+
+            const {
+                tierRow,
+                gamesContainer
+            } = tier;
+
+            tierRow.style.setProperty(
+                'height',
+                `${rowHeight}px`,
+                'important'
+            );
+
+            tierRow.style.setProperty(
+                'min-height',
+                `${rowHeight}px`,
+                'important'
+            );
+
+            tierRow.style.setProperty(
+                'max-height',
+                `${rowHeight}px`,
+                'important'
+            );
+
+            tierRow.style.setProperty(
+                'flex',
+                `0 0 ${rowHeight}px`,
+                'important'
+            );
+
+            if (
+                !gamesContainer
+            ) {
+                return;
+            }
+
+            gamesContainer.style.setProperty(
+                'flex-wrap',
+                'wrap',
+                'important'
+            );
+
+            gamesContainer.style.setProperty(
+                'gap',
+                `${cardGap}px`,
+                'important'
+            );
+
+            gamesContainer.style.setProperty(
+                'align-content',
+                'center',
+                'important'
+            );
+
+            gamesContainer
+                .querySelectorAll(
+                    '.game-card'
+                )
+                .forEach(
+                    card => {
+                        card.style.setProperty(
+                            'width',
+                            `${cardSize}px`,
+                            'important'
+                        );
+
+                        card.style.setProperty(
+                            'height',
+                            `${cardSize}px`,
+                            'important'
+                        );
+
+                        card.style.setProperty(
+                            'min-width',
+                            `${cardSize}px`,
+                            'important'
+                        );
+
+                        card.style.setProperty(
+                            'min-height',
+                            `${cardSize}px`,
+                            'important'
+                        );
+
+                        card.style.setProperty(
+                            'max-width',
+                            `${cardSize}px`,
+                            'important'
+                        );
+
+                        card.style.setProperty(
+                            'max-height',
+                            `${cardSize}px`,
+                            'important'
+                        );
+
+                        card.style.setProperty(
+                            'flex',
+                            `0 0 ${cardSize}px`,
+                            'important'
+                        );
+                    }
+                );
+        }
+    );
+}
 
 
 function waitForImage(
