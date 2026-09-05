@@ -1,3 +1,17 @@
+/*
+ * =========================================================
+ * Создание карточек игр
+ * =========================================================
+ *
+ * Карточка включает:
+ * - обложку;
+ * - кнопку избранного;
+ * - название;
+ * - теги;
+ * - popup с описанием, Steam и видео;
+ * - цену из steam-price.js.
+ */
+
 import {
     getGameTags,
     getSteamImage,
@@ -23,6 +37,12 @@ import {
     toggleFavorite
 } from './favorites.js';
 
+
+/*
+ * =========================================================
+ * Основная карточка
+ * =========================================================
+ */
 
 export function createGameCard(
     game,
@@ -81,11 +101,6 @@ export function createGameCard(
         cover ||
         steamImage;
 
-
-    /*
-     * Медиа-блок содержит обложку,
-     * кнопки и цену.
-     */
     const media =
         createGameMedia();
 
@@ -105,18 +120,16 @@ export function createGameCard(
     if (
         showFavorite
     ) {
-        const favoriteButton =
+        media.appendChild(
             createFavoriteButton(
                 game,
                 name
-            );
-
-        media.appendChild(
-            favoriteButton
+            )
         );
     }
 
-    let infoButton = null;
+    let infoButton =
+        null;
 
     if (
         showInfo
@@ -125,7 +138,7 @@ export function createGameCard(
             createInfoButton(
                 name
             );
-    
+
         media.appendChild(
             infoButton
         );
@@ -134,7 +147,6 @@ export function createGameCard(
     card.appendChild(
         media
     );
-
 
     card.appendChild(
         createGameTitle(
@@ -152,31 +164,39 @@ export function createGameCard(
         );
     }
 
-
     /*
-     * Описание, Steam-ссылка или видео
-     * создают popup.
+     * Popup существует, если есть хотя бы один полезный
+     * источник информации об игре.
+     *
+     * При выбранном видео ссылка на само видео в popup
+     * не добавляется: оно уже представлено внешней панелью.
      */
+    const hasPreviewContent =
+        Boolean(
+            steamLink ||
+            video ||
+            description
+        );
+
     if (
-        steamLink ||
-        video ||
-        description
+        hasPreviewContent
     ) {
         card.appendChild(
-            createPreviewPopup({
-                name,
-                cover,
-                steamLink,
-                video:
-                    videoFilterActive
-                        ? ''
-                        : video,
-                steamImage,
-                description
-            })
+            createPreviewPopup(
+                {
+                    name,
+                    cover,
+                    steamLink,
+                    video:
+                        videoFilterActive
+                            ? ''
+                            : video,
+                    steamImage,
+                    description
+                }
+            )
         );
     }
-
 
     const openPreview =
         setupCardHover(
@@ -187,7 +207,6 @@ export function createGameCard(
                 openOnCardClick
             }
         );
-
 
     if (
         infoButton &&
@@ -204,9 +223,9 @@ export function createGameCard(
         );
     }
 
-
     /*
-     * Регистрация карточки в системе цен.
+     * Система цен самостоятельно решает, нужно ли
+     * показывать цену в текущем режиме.
      */
     registerPriceCard(
         card,
@@ -216,6 +235,12 @@ export function createGameCard(
     return card;
 }
 
+
+/*
+ * =========================================================
+ * Медиа-блок и обложка
+ * =========================================================
+ */
 
 function createGameMedia() {
     const media =
@@ -229,6 +254,79 @@ function createGameMedia() {
     return media;
 }
 
+
+/*
+ * Если основная обложка не загрузилась, один раз пытаемся
+ * использовать Steam-изображение как запасной вариант.
+ */
+export function createGameCover(
+    imageUrl,
+    cover,
+    steamImage,
+    name
+) {
+    const image =
+        document.createElement(
+            'img'
+        );
+
+    image.className =
+        'game-cover';
+
+    image.src =
+        imageUrl;
+
+    image.alt =
+        name;
+
+    image.loading =
+        'lazy';
+
+    image.decoding =
+        'async';
+
+    /*
+     * true означает, что сейчас уже используется Steam fallback.
+     * Это надёжнее, чем сравнивать image.src со строкой URL:
+     * браузер может преобразовать относительный адрес в абсолютный.
+     */
+    let usesSteamFallback =
+        !cover ||
+        imageUrl === steamImage;
+
+    image.addEventListener(
+        'error',
+        () => {
+            console.warn(
+                `Не удалось загрузить обложку игры: ${name}`
+            );
+
+            if (
+                !usesSteamFallback &&
+                steamImage
+            ) {
+                usesSteamFallback =
+                    true;
+
+                image.src =
+                    steamImage;
+
+                return;
+            }
+
+            image.remove();
+        }
+    );
+
+    return image;
+}
+
+
+/*
+ * =========================================================
+ * Избранное
+ * =========================================================
+ */
 
 function createFavoriteButton(
     game,
@@ -255,42 +353,61 @@ function createFavoriteButton(
 
     updateFavoriteButton(
         button,
-        game
+        game,
+        name
     );
+
+    /*
+     * Игра без ID не может иметь стабильную запись
+     * в localStorage, поэтому кнопка становится недоступной.
+     */
+    if (
+        !gameId
+    ) {
+        button.disabled =
+            true;
+
+        button.title =
+            'Нельзя добавить игру без ID';
+
+        button.setAttribute(
+            'aria-label',
+            'Нельзя добавить игру без ID'
+        );
+
+        return button;
+    }
 
     button.addEventListener(
         'click',
         event => {
             /*
-             * Не открываем popup при нажатии
-             * на кнопку избранного.
+             * Кнопка не должна открывать preview popup.
              */
             event.preventDefault();
             event.stopPropagation();
 
-            if (
-                !gameId
-            ) {
-                return;
-            }
-
+            /*
+             * toggleFavorite() сам отправляет событие
+             * favoriteschange после успешного сохранения.
+             *
+             * Не отправляем его повторно здесь, иначе
+             * один клик вызовет две перерисовки тир-листа.
+             */
             toggleFavorite(
                 game
             );
 
+            /*
+             * Обновляем состояние сразу. Если активен фильтр
+             * избранного, обработчик favoriteschange уже может
+             * заменить карточку новым рендером — обновление
+             * старого элемента при этом безопасно.
+             */
             updateFavoriteButton(
                 button,
-                game
-            );
-
-            /*
-             * main.js будет использовать это событие,
-             * чтобы обновить фильтр избранного.
-             */
-            window.dispatchEvent(
-                new CustomEvent(
-                    'favoriteschange'
-                )
+                game,
+                name
             );
         }
     );
@@ -305,6 +422,56 @@ function createFavoriteButton(
     return button;
 }
 
+
+function updateFavoriteButton(
+    button,
+    game,
+    name
+) {
+    const favorite =
+        isFavorite(
+            game
+        );
+
+    button.classList.toggle(
+        'is-favorite',
+        favorite
+    );
+
+    button.textContent =
+        favorite
+            ? '★'
+            : '☆';
+
+    button.setAttribute(
+        'aria-pressed',
+        String(
+            favorite
+        )
+    );
+
+    const label =
+        favorite
+            ? `Удалить «${name}» из избранного`
+            : `Добавить «${name}» в избранное`;
+
+    button.setAttribute(
+        'aria-label',
+        label
+    );
+
+    button.title =
+        favorite
+            ? 'Удалить из избранного'
+            : 'Добавить в избранное';
+}
+
+
+/*
+ * =========================================================
+ * Необязательная кнопка информации
+ * =========================================================
+ */
 
 function createInfoButton(
     name
@@ -345,94 +512,11 @@ function createInfoButton(
 }
 
 
-function updateFavoriteButton(
-    button,
-    game
-) {
-    const favorite =
-        isFavorite(
-            game
-        );
-
-    button.classList.toggle(
-        'is-favorite',
-        favorite
-    );
-
-    button.textContent =
-        favorite
-            ? '★'
-            : '☆';
-
-    button.setAttribute(
-        'aria-pressed',
-        String(
-            favorite
-        )
-    );
-
-    button.setAttribute(
-        'aria-label',
-        favorite
-            ? 'Удалить игру из избранного'
-            : 'Добавить игру в избранное'
-    );
-
-    button.title =
-        favorite
-            ? 'Удалить из избранного'
-            : 'Добавить в избранное';
-}
-
-
-export function createGameCover(
-    imageUrl,
-    cover,
-    steamImage,
-    name
-) {
-    const image =
-        document.createElement(
-            'img'
-        );
-
-    image.className =
-        'game-cover';
-
-    image.src =
-        imageUrl;
-
-    image.alt =
-        name;
-
-    image.loading =
-        'lazy';
-
-    image.addEventListener(
-        'error',
-        () => {
-            console.warn(
-                `Не удалось загрузить обложку игры: ${name}`
-            );
-
-            if (
-                cover &&
-                steamImage &&
-                image.src !== steamImage
-            ) {
-                image.src =
-                    steamImage;
-
-                return;
-            }
-
-            image.remove();
-        }
-    );
-
-    return image;
-}
-
+/*
+ * =========================================================
+ * Название и теги
+ * =========================================================
+ */
 
 export function createGameTitle(
     name
@@ -486,6 +570,9 @@ export function createGameTagsElement(
 }
 
 
+/*
+ * Используется другими модулями для простых текстовых блоков.
+ */
 export function createTextElement(
     className,
     text
