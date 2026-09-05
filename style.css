@@ -2947,15 +2947,6 @@ body.main-page {
  * растягивать страницу. Вместо этого
  * появляется горизонтальная прокрутка.
  */
-.tier-list-wrapper {
-    min-width: 0;
-    overflow-x: auto;
-    overflow-y: visible;
-
-    scrollbar-color: #b8bec8 #edf0f4;
-    scrollbar-width: thin;
-}
-
 
 /*
  * Ширина регулируется первым ползунком.
