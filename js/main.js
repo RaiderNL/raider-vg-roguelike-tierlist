@@ -288,10 +288,11 @@ function init() {
         tierCardScaleRange
     );
 
-    screenshotButton?.addEventListener(
-        'click',
-        downloadTierListScreenshot
-    );
+screenshotButton?.addEventListener(
+    'click',
+    openTierListScreenshotDialog
+);
+
 
 
 
@@ -971,8 +972,60 @@ function setupTierListAppearanceControls(
  * Скриншот тир-листа
  * =========================================================
  */
+/*
+ * =========================================================
+ * Выбор формата скриншота
+ * =========================================================
+ */
 
-async function downloadTierListScreenshot() {
+function openTierListScreenshotDialog() {
+    const dialog =
+        document.querySelector(
+            '#tierlist-screenshot-dialog'
+        );
+
+    if (
+        !dialog
+    ) {
+        /*
+         * Запасной вариант для старых браузеров:
+         * сохраняем обычный вертикальный формат.
+         */
+        downloadTierListScreenshot(
+            'vertical'
+        );
+
+        return;
+    }
+
+    if (
+        !dialog.open
+    ) {
+        dialog.showModal();
+    }
+
+    dialog.onclose =
+        () => {
+            const format =
+                dialog.returnValue;
+
+            if (
+                format !== 'vertical' &&
+                format !== 'landscape'
+            ) {
+                return;
+            }
+
+            downloadTierListScreenshot(
+                format
+            );
+        };
+}
+
+async function downloadTierListScreenshot(
+    format = 'vertical'
+) {
+
     const tierList =
         document.querySelector(
             '.tier-list'
@@ -983,6 +1036,9 @@ async function downloadTierListScreenshot() {
     ) {
         return;
     }
+        const isLandscape =
+        format === 'landscape';
+
 
     if (
         typeof window.html2canvas !==
@@ -1062,6 +1118,20 @@ async function downloadTierListScreenshot() {
     );
         const tierListRect =
         tierList.getBoundingClientRect();
+        const screenshotWidth =
+        isLandscape
+            ? 1920
+            : Math.ceil(
+                tierListRect.width
+            );
+
+    const screenshotHeight =
+        isLandscape
+            ? 1080
+            : Math.ceil(
+                tierListRect.height
+            );
+
 
 
     try {
@@ -1092,20 +1162,17 @@ async function downloadTierListScreenshot() {
                      * все тиры S–F.
                      */
                    width:
-                        Math.ceil(
-                            tierListRect.width
-                        ),
+                        screenshotWidth,
                     
                     height:
-                        Math.ceil(
-                            tierListRect.height
-                        ),
+                        screenshotHeight,
                     
                     windowWidth:
-                        window.innerWidth,
+                        screenshotWidth,
                     
                     windowHeight:
-                        window.innerHeight,
+                        screenshotHeight,
+
 
 
                     scrollX:
@@ -1130,6 +1197,14 @@ async function downloadTierListScreenshot() {
                             clonedTierList.classList.add(
                                 'tierlist-screenshot-render'
                             );
+                            if (
+    isLandscape
+) {
+    clonedTierList.classList.add(
+        'tierlist-screenshot-landscape'
+    );
+}
+
 
                             const style =
                                 clonedDocument.createElement(
@@ -1166,6 +1241,173 @@ async function downloadTierListScreenshot() {
                                      */
                                     object-position: center !important;
                                 }
+                                /*
+ * =====================================================
+ * Горизонтальный экспорт 16:9
+ * =====================================================
+ *
+ * Семь рядов равномерно распределяются
+ * по высоте холста 1920 × 1080.
+ */
+.tierlist-screenshot-render
+.tierlist-screenshot-landscape {
+    width: 1920px !important;
+    height: 1080px !important;
+    min-width: 1920px !important;
+    max-width: none !important;
+
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 6px !important;
+
+    padding: 18px !important;
+    overflow: hidden !important;
+
+    background: #f3f4f6 !important;
+}
+
+/*
+ * Каждый тир получает одинаковую долю
+ * вертикального пространства.
+ */
+.tierlist-screenshot-render
+.tierlist-screenshot-landscape
+.tier-row {
+    display: flex !important;
+    flex: 1 1 0 !important;
+
+    min-height: 0 !important;
+    height: auto !important;
+
+    overflow: hidden !important;
+}
+
+/*
+ * Компактные, но читаемые ярлыки тиров.
+ */
+.tierlist-screenshot-render
+.tierlist-screenshot-landscape
+.tier-label {
+    flex: 0 0 76px !important;
+
+    font-size: 25px !important;
+}
+
+/*
+ * В ширину доступно почти 1800px —
+ * поэтому карточек помещается заметно больше.
+ */
+.tierlist-screenshot-render
+.tierlist-screenshot-landscape
+.games-container {
+    display: flex !important;
+    flex: 1 1 auto !important;
+    flex-wrap: wrap !important;
+    align-content: center !important;
+    align-items: center !important;
+
+    min-height: 0 !important;
+    padding: 4px !important;
+    gap: 6px !important;
+
+    overflow: hidden !important;
+}
+
+/*
+ * Единый компактный размер карточек для
+ * всех тиров. 132px позволяет уместить
+ * семь полноценных полос по высоте 1080px.
+ */
+.tierlist-screenshot-render
+.tierlist-screenshot-landscape
+.game-card,
+.tierlist-screenshot-render
+.tierlist-screenshot-landscape
+#tier-S
+.game-card,
+.tierlist-screenshot-render
+.tierlist-screenshot-landscape
+#tier-A
+.game-card,
+.tierlist-screenshot-render
+.tierlist-screenshot-landscape
+#tier-B
+.game-card,
+.tierlist-screenshot-render
+.tierlist-screenshot-landscape
+#tier-C
+.game-card,
+.tierlist-screenshot-render
+.tierlist-screenshot-landscape
+#tier-D
+.game-card,
+.tierlist-screenshot-render
+.tierlist-screenshot-landscape
+#tier-E
+.game-card,
+.tierlist-screenshot-render
+.tierlist-screenshot-landscape
+#tier-F
+.game-card {
+    flex: 0 0 132px !important;
+
+    width: 132px !important;
+    height: 132px !important;
+    max-width: none !important;
+
+    aspect-ratio: 1 / 1 !important;
+}
+
+/*
+ * У S/A сохраняем более высокую медиазону,
+ * но в пределах компактной экспортной карточки.
+ */
+.tierlist-screenshot-render
+.tierlist-screenshot-landscape
+#tier-S
+.game-card,
+.tierlist-screenshot-render
+.tierlist-screenshot-landscape
+#tier-A
+.game-card {
+    grid-template-rows:
+        minmax(0, 74%)
+        minmax(0, 1fr)
+        auto !important;
+}
+
+/*
+ * Текст делаем компактнее, чтобы он не вылезал
+ * из карточек на горизонтальном изображении.
+ */
+.tierlist-screenshot-render
+.tierlist-screenshot-landscape
+.game-title {
+    width: calc(100% - 8px) !important;
+    margin: 3px auto 2px !important;
+
+    font-size: 9px !important;
+    line-height: 1.1 !important;
+}
+
+.tierlist-screenshot-render
+.tierlist-screenshot-landscape
+.game-tags {
+    width: calc(100% - 8px) !important;
+    max-height: 22px !important;
+    margin: 0 auto 4px !important;
+    gap: 2px !important;
+}
+
+.tierlist-screenshot-render
+.tierlist-screenshot-landscape
+.game-tag {
+    padding: 2px 3px !important;
+
+    font-size: 7px !important;
+    line-height: 1 !important;
+}
+
 
 
                                 .tierlist-screenshot-render
@@ -1381,7 +1623,10 @@ clonedDocument
             );
 
         link.download =
-            'raider-roguelike-tierlist.png';
+            isLandscape
+                ? 'raider-roguelike-tierlist-16x9.png'
+                : 'raider-roguelike-tierlist.png';
+
 
         link.href =
             canvas.toDataURL(
