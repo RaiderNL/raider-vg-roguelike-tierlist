@@ -296,11 +296,14 @@ export function getVideoUrl(
     game
 ) {
     return String(
-        game?.['Video Type'] ||
         game?.['Video'] ||
+        game?.['Video URL'] ||
+        game?.['Video Link'] ||
+        game?.['Video Type'] ||
         ''
     ).trim();
 }
+
 
 
 /*
