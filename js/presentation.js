@@ -43,8 +43,11 @@ import {
 } from './dom.js';
 
 
+const PRESENTATION_INITIAL_DELAY =
+    2500;
+
 const PRESENTATION_INTERVAL =
-    1000;
+    2000;
 
 const PRESENTATION_ACTIVE_CLASS =
     'video-presentation-active';
@@ -301,24 +304,16 @@ export function startVideoPresentation() {
     );
 
     /*
-     * Первая игра выводится сразу после нажатия.
+     * Сначала показываем пустую сцену: это нужно для записи
+     * видео, чтобы в начале был чистый тир-лист без карточек.
+     *
+     * После паузы showNextVideoPresentationGame() добавит
+     * первую игру и сам запланирует последующие шаги.
      */
-    showNextVideoPresentationGame();
+    scheduleNextPresentationStep(
+        PRESENTATION_INITIAL_DELAY
+    );
 
-    /*
-     * Если игра была всего одна, режим уже закончен,
-     * но визуально остаётся активным до Stop.
-     */
-    if (
-        presentationState.currentStep >=
-        presentationState.games.length
-    ) {
-        finishVideoPresentation();
-
-        return;
-    }
-
-    scheduleNextPresentationStep();
 }
 
 
@@ -459,7 +454,10 @@ function showNextVideoPresentationGame() {
  * текущей обработки. Это удобнее для будущих паузы,
  * изменения скорости показа и ручного переключения.
  */
-function scheduleNextPresentationStep() {
+function scheduleNextPresentationStep(
+    delay =
+        PRESENTATION_INTERVAL
+) {
     clearPresentationTimer();
 
     presentationState.timerId =
@@ -476,9 +474,10 @@ function scheduleNextPresentationStep() {
 
                 showNextVideoPresentationGame();
             },
-            PRESENTATION_INTERVAL
+            delay
         );
 }
+
 
 
 /*
