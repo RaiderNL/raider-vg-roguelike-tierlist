@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-09-22T16:31:40.670Z",
+  "updatedAt": "2026-09-22T21:01:21.725Z",
   "prices": {
     "337320": {
       "available": true,
@@ -661,9 +661,9 @@
     },
     "3724710": {
       "available": true,
-      "finalFormatted": "567,30 руб.",
-      "initialFormatted": "",
-      "discountPercent": 0
+      "finalFormatted": "453,30 руб.",
+      "initialFormatted": "567,30 руб.",
+      "discountPercent": 20
     },
     "3726190": {
       "available": true,
