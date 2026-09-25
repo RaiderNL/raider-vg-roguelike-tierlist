@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-09-25T03:56:27.367Z",
+  "updatedAt": "2026-09-25T11:24:39.752Z",
   "prices": {
     "337320": {
       "available": false,
@@ -516,10 +516,8 @@
       "discountPercent": 35
     },
     "3633760": {
-      "available": true,
-      "finalFormatted": "268 руб.",
-      "initialFormatted": "335 руб.",
-      "discountPercent": 20
+      "available": false,
+      "error": "Данные игры недоступны"
     },
     "3656560": {
       "available": true,
