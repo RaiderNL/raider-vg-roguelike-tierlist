@@ -1,21 +1,29 @@
 {
-  "updatedAt": "2026-09-27T21:03:48.302Z",
+  "updatedAt": "2026-09-28T04:14:31.332Z",
   "prices": {
     "337320": {
-      "available": false,
-      "error": "Данные игры недоступны"
+      "available": true,
+      "finalFormatted": "710 руб.",
+      "initialFormatted": "",
+      "discountPercent": 0
     },
     "528230": {
-      "available": false,
-      "error": "Данные игры недоступны"
+      "available": true,
+      "finalFormatted": "599 руб.",
+      "initialFormatted": "",
+      "discountPercent": 0
     },
     "774291": {
-      "available": false,
-      "error": "Данные игры недоступны"
+      "available": true,
+      "finalFormatted": "385 руб.",
+      "initialFormatted": "",
+      "discountPercent": 0
     },
     "958520": {
-      "available": false,
-      "error": "Данные игры недоступны"
+      "available": true,
+      "finalFormatted": "655,60 руб.",
+      "initialFormatted": "",
+      "discountPercent": 0
     },
     "1067360": {
       "available": true,
@@ -24,20 +32,28 @@
       "discountPercent": 0
     },
     "1135230": {
-      "available": false,
-      "error": "Данные игры недоступны"
+      "available": true,
+      "finalFormatted": "710 руб.",
+      "initialFormatted": "",
+      "discountPercent": 0
     },
     "1201540": {
-      "available": false,
-      "error": "Данные игры недоступны"
+      "available": true,
+      "finalFormatted": "699 руб.",
+      "initialFormatted": "",
+      "discountPercent": 0
     },
     "1217060": {
-      "available": false,
-      "error": "Данные игры недоступны"
+      "available": true,
+      "finalFormatted": "625 руб.",
+      "initialFormatted": "",
+      "discountPercent": 0
     },
     "1619520": {
-      "available": false,
-      "error": "Данные игры недоступны"
+      "available": true,
+      "finalFormatted": "809,58 руб.",
+      "initialFormatted": "",
+      "discountPercent": 0
     },
     "1678650": {
       "available": true,
@@ -46,20 +62,28 @@
       "discountPercent": 0
     },
     "1700270": {
-      "available": false,
-      "error": "Данные игры недоступны"
+      "available": true,
+      "finalFormatted": "550 руб.",
+      "initialFormatted": "",
+      "discountPercent": 0
     },
     "1712100": {
-      "available": false,
-      "error": "Данные игры недоступны"
+      "available": true,
+      "finalFormatted": "1500 руб.",
+      "initialFormatted": "",
+      "discountPercent": 0
     },
     "1719040": {
-      "available": false,
-      "error": "Данные игры недоступны"
+      "available": true,
+      "finalFormatted": "639 руб.",
+      "initialFormatted": "",
+      "discountPercent": 0
     },
     "1725410": {
-      "available": false,
-      "error": "Данные игры недоступны"
+      "available": true,
+      "finalFormatted": "660 руб.",
+      "initialFormatted": "",
+      "discountPercent": 0
     },
     "1817500": {
       "available": true,
@@ -86,12 +110,16 @@
       "discountPercent": 0
     },
     "2062430": {
-      "available": false,
-      "error": "Данные игры недоступны"
+      "available": true,
+      "finalFormatted": "363 руб.",
+      "initialFormatted": "550 руб.",
+      "discountPercent": 34
     },
     "2071280": {
-      "available": false,
-      "error": "Данные игры недоступны"
+      "available": true,
+      "finalFormatted": "999 руб.",
+      "initialFormatted": "",
+      "discountPercent": 0
     },
     "2141280": {
       "available": true,
@@ -100,24 +128,34 @@
       "discountPercent": 0
     },
     "2163330": {
-      "available": false,
-      "error": "Данные игры недоступны"
+      "available": true,
+      "finalFormatted": "550 руб.",
+      "initialFormatted": "",
+      "discountPercent": 0
     },
     "2197740": {
-      "available": false,
-      "error": "Данные игры недоступны"
+      "available": true,
+      "finalFormatted": "650 руб.",
+      "initialFormatted": "",
+      "discountPercent": 0
     },
     "2225960": {
-      "available": false,
-      "error": "Данные игры недоступны"
+      "available": true,
+      "finalFormatted": "320 руб.",
+      "initialFormatted": "",
+      "discountPercent": 0
     },
     "2237320": {
-      "available": false,
-      "error": "Данные игры недоступны"
+      "available": true,
+      "finalFormatted": "490 руб.",
+      "initialFormatted": "",
+      "discountPercent": 0
     },
     "2256450": {
-      "available": false,
-      "error": "Данные игры недоступны"
+      "available": true,
+      "finalFormatted": "209 руб.",
+      "initialFormatted": "419 руб.",
+      "discountPercent": 50
     },
     "2282790": {
       "available": true,
@@ -132,16 +170,22 @@
       "discountPercent": 0
     },
     "2319730": {
-      "available": false,
-      "error": "Данные игры недоступны"
+      "available": true,
+      "finalFormatted": "620 руб.",
+      "initialFormatted": "",
+      "discountPercent": 0
     },
     "2325920": {
-      "available": false,
-      "error": "Данные игры недоступны"
+      "available": true,
+      "finalFormatted": "385 руб.",
+      "initialFormatted": "",
+      "discountPercent": 0
     },
     "2350790": {
-      "available": false,
-      "error": "Данные игры недоступны"
+      "available": true,
+      "finalFormatted": "1250 руб.",
+      "initialFormatted": "",
+      "discountPercent": 0
     },
     "2369580": {
       "available": true,
@@ -156,8 +200,10 @@
       "discountPercent": 0
     },
     "2427070": {
-      "available": false,
-      "error": "Данные игры недоступны"
+      "available": true,
+      "finalFormatted": "490 руб.",
+      "initialFormatted": "",
+      "discountPercent": 0
     },
     "2436940": {
       "available": true,
@@ -166,8 +212,10 @@
       "discountPercent": 0
     },
     "2444750": {
-      "available": false,
-      "error": "Данные игры недоступны"
+      "available": true,
+      "finalFormatted": "630 руб.",
+      "initialFormatted": "900 руб.",
+      "discountPercent": 30
     },
     "2465060": {
       "available": true,
@@ -182,12 +230,16 @@
       "discountPercent": 20
     },
     "2477090": {
-      "available": false,
-      "error": "Данные игры недоступны"
+      "available": true,
+      "finalFormatted": "320 руб.",
+      "initialFormatted": "",
+      "discountPercent": 0
     },
     "2507820": {
-      "available": false,
-      "error": "Данные игры недоступны"
+      "available": true,
+      "finalFormatted": "899 руб.",
+      "initialFormatted": "",
+      "discountPercent": 0
     },
     "2527550": {
       "available": true,
@@ -220,12 +272,16 @@
       "discountPercent": 0
     },
     "2622380": {
-      "available": false,
-      "error": "Данные игры недоступны"
+      "available": true,
+      "finalFormatted": "2849 руб.",
+      "initialFormatted": "",
+      "discountPercent": 0
     },
     "2646720": {
-      "available": false,
-      "error": "Данные игры недоступны"
+      "available": true,
+      "finalFormatted": "411 руб.",
+      "initialFormatted": "549 руб.",
+      "discountPercent": 25
     },
     "2671450": {
       "available": true,
@@ -234,8 +290,10 @@
       "discountPercent": 0
     },
     "2686020": {
-      "available": false,
-      "error": "Данные игры недоступны"
+      "available": true,
+      "finalFormatted": "460 руб.",
+      "initialFormatted": "",
+      "discountPercent": 0
     },
     "2738490": {
       "available": true,
@@ -244,8 +302,10 @@
       "discountPercent": 0
     },
     "2854620": {
-      "available": false,
-      "error": "Данные игры недоступны"
+      "available": true,
+      "finalFormatted": "359 руб.",
+      "initialFormatted": "",
+      "discountPercent": 0
     },
     "2860990": {
       "available": true,
@@ -266,8 +326,10 @@
       "discountPercent": 0
     },
     "2904000": {
-      "available": false,
-      "error": "Данные игры недоступны"
+      "available": true,
+      "finalFormatted": "490 руб.",
+      "initialFormatted": "",
+      "discountPercent": 0
     },
     "2952180": {
       "available": true,
@@ -288,8 +350,10 @@
       "discountPercent": 0
     },
     "3026450": {
-      "available": false,
-      "error": "Данные игры недоступны"
+      "available": true,
+      "finalFormatted": "550 руб.",
+      "initialFormatted": "",
+      "discountPercent": 0
     },
     "3028830": {
       "available": true,
@@ -304,8 +368,10 @@
       "discountPercent": 0
     },
     "3057670": {
-      "available": false,
-      "error": "Данные игры недоступны"
+      "available": true,
+      "finalFormatted": "650 руб.",
+      "initialFormatted": "",
+      "discountPercent": 0
     },
     "3073480": {
       "available": true,
@@ -314,8 +380,10 @@
       "discountPercent": 0
     },
     "3073990": {
-      "available": false,
-      "error": "Данные игры недоступны"
+      "available": true,
+      "finalFormatted": "338 руб.",
+      "initialFormatted": "520 руб.",
+      "discountPercent": 35
     },
     "3080560": {
       "available": true,
@@ -324,8 +392,10 @@
       "discountPercent": 0
     },
     "3081280": {
-      "available": false,
-      "error": "Данные игры недоступны"
+      "available": true,
+      "finalFormatted": "429 руб.",
+      "initialFormatted": "550 руб.",
+      "discountPercent": 22
     },
     "3091140": {
       "available": true,
@@ -334,12 +404,16 @@
       "discountPercent": 35
     },
     "3100310": {
-      "available": false,
-      "error": "Данные игры недоступны"
+      "available": true,
+      "finalFormatted": "532,32 руб.",
+      "initialFormatted": "",
+      "discountPercent": 0
     },
     "3100370": {
-      "available": false,
-      "error": "Данные игры недоступны"
+      "available": true,
+      "finalFormatted": "499 руб.",
+      "initialFormatted": "",
+      "discountPercent": 0
     },
     "3144340": {
       "available": true,
@@ -366,8 +440,10 @@
       "discountPercent": 0
     },
     "3181650": {
-      "available": false,
-      "error": "Данные игры недоступны"
+      "available": true,
+      "finalFormatted": "785 руб.",
+      "initialFormatted": "",
+      "discountPercent": 0
     },
     "3187880": {
       "available": true,
@@ -376,16 +452,22 @@
       "discountPercent": 0
     },
     "3214610": {
-      "available": false,
-      "error": "Данные игры недоступны"
+      "available": true,
+      "finalFormatted": "650 руб.",
+      "initialFormatted": "",
+      "discountPercent": 0
     },
     "3216800": {
-      "available": false,
-      "error": "Данные игры недоступны"
+      "available": true,
+      "finalFormatted": "710 руб.",
+      "initialFormatted": "",
+      "discountPercent": 0
     },
     "3219180": {
-      "available": false,
-      "error": "Данные игры недоступны"
+      "available": true,
+      "finalFormatted": "385 руб.",
+      "initialFormatted": "550 руб.",
+      "discountPercent": 30
     },
     "3223160": {
       "available": true,
@@ -400,16 +482,20 @@
       "discountPercent": 0
     },
     "3228590": {
-      "available": false,
-      "error": "Данные игры недоступны"
+      "available": true,
+      "finalFormatted": "900 руб.",
+      "initialFormatted": "",
+      "discountPercent": 0
     },
     "3232380": {
       "available": false,
       "error": "Данные игры недоступны"
     },
     "3265700": {
-      "available": false,
-      "error": "Данные игры недоступны"
+      "available": true,
+      "finalFormatted": "385 руб.",
+      "initialFormatted": "",
+      "discountPercent": 0
     },
     "3282420": {
       "available": true,
@@ -418,8 +504,10 @@
       "discountPercent": 0
     },
     "3314790": {
-      "available": false,
-      "error": "Данные игры недоступны"
+      "available": true,
+      "finalFormatted": "385 руб.",
+      "initialFormatted": "",
+      "discountPercent": 0
     },
     "3371510": {
       "available": true,
@@ -434,16 +522,22 @@
       "discountPercent": 0
     },
     "3383040": {
-      "available": false,
-      "error": "Данные игры недоступны"
+      "available": true,
+      "finalFormatted": "465 руб.",
+      "initialFormatted": "",
+      "discountPercent": 0
     },
     "3405340": {
-      "available": false,
-      "error": "Данные игры недоступны"
+      "available": true,
+      "finalFormatted": "257 руб.",
+      "initialFormatted": "429 руб.",
+      "discountPercent": 40
     },
     "3405540": {
-      "available": false,
-      "error": "Данные игры недоступны"
+      "available": true,
+      "finalFormatted": "550 руб.",
+      "initialFormatted": "",
+      "discountPercent": 0
     },
     "3430340": {
       "available": true,
@@ -458,8 +552,10 @@
       "discountPercent": 0
     },
     "3493400": {
-      "available": false,
-      "error": "Данные игры недоступны"
+      "available": true,
+      "finalFormatted": "687,80 руб.",
+      "initialFormatted": "",
+      "discountPercent": 0
     },
     "3509230": {
       "available": true,
@@ -468,12 +564,16 @@
       "discountPercent": 0
     },
     "3520420": {
-      "available": false,
-      "error": "Данные игры недоступны"
+      "available": true,
+      "finalFormatted": "550 руб.",
+      "initialFormatted": "",
+      "discountPercent": 0
     },
     "3526710": {
-      "available": false,
-      "error": "Данные игры недоступны"
+      "available": true,
+      "finalFormatted": "385 руб.",
+      "initialFormatted": "",
+      "discountPercent": 0
     },
     "3541000": {
       "available": true,
@@ -482,12 +582,16 @@
       "discountPercent": 40
     },
     "3548520": {
-      "available": false,
-      "error": "Данные игры недоступны"
+      "available": true,
+      "finalFormatted": "385 руб.",
+      "initialFormatted": "",
+      "discountPercent": 0
     },
     "3561220": {
-      "available": false,
-      "error": "Данные игры недоступны"
+      "available": true,
+      "finalFormatted": "596 руб.",
+      "initialFormatted": "745 руб.",
+      "discountPercent": 20
     },
     "3592210": {
       "available": true,
@@ -496,8 +600,10 @@
       "discountPercent": 20
     },
     "3596700": {
-      "available": false,
-      "error": "Данные игры недоступны"
+      "available": true,
+      "finalFormatted": "465 руб.",
+      "initialFormatted": "",
+      "discountPercent": 0
     },
     "3617620": {
       "available": true,
@@ -506,8 +612,10 @@
       "discountPercent": 0
     },
     "3631290": {
-      "available": false,
-      "error": "Данные игры недоступны"
+      "available": true,
+      "finalFormatted": "320 руб.",
+      "initialFormatted": "",
+      "discountPercent": 0
     },
     "3632670": {
       "available": true,
@@ -516,8 +624,10 @@
       "discountPercent": 35
     },
     "3633760": {
-      "available": false,
-      "error": "Данные игры недоступны"
+      "available": true,
+      "finalFormatted": "268 руб.",
+      "initialFormatted": "335 руб.",
+      "discountPercent": 20
     },
     "3656560": {
       "available": true,
@@ -532,8 +642,10 @@
       "discountPercent": 0
     },
     "3664320": {
-      "available": false,
-      "error": "Данные игры недоступны"
+      "available": true,
+      "finalFormatted": "350 руб.",
+      "initialFormatted": "",
+      "discountPercent": 0
     },
     "3705150": {
       "available": true,
@@ -542,8 +654,10 @@
       "discountPercent": 0
     },
     "3720420": {
-      "available": false,
-      "error": "Данные игры недоступны"
+      "available": true,
+      "finalFormatted": "436 руб.",
+      "initialFormatted": "545 руб.",
+      "discountPercent": 20
     },
     "3724710": {
       "available": true,
@@ -576,12 +690,16 @@
       "discountPercent": 0
     },
     "3784030": {
-      "available": false,
-      "error": "Данные игры недоступны"
+      "available": true,
+      "finalFormatted": "550 руб.",
+      "initialFormatted": "",
+      "discountPercent": 0
     },
     "3808690": {
-      "available": false,
-      "error": "Данные игры недоступны"
+      "available": true,
+      "finalFormatted": "465 руб.",
+      "initialFormatted": "",
+      "discountPercent": 0
     },
     "3860590": {
       "available": true,
@@ -596,8 +714,10 @@
       "discountPercent": 0
     },
     "3877790": {
-      "available": false,
-      "error": "Данные игры недоступны"
+      "available": true,
+      "finalFormatted": "447 руб.",
+      "initialFormatted": "639 руб.",
+      "discountPercent": 30
     },
     "3921670": {
       "available": true,
@@ -606,20 +726,28 @@
       "discountPercent": 0
     },
     "3930510": {
-      "available": false,
-      "error": "Данные игры недоступны"
+      "available": true,
+      "finalFormatted": "320 руб.",
+      "initialFormatted": "",
+      "discountPercent": 0
     },
     "3934270": {
-      "available": false,
-      "error": "Данные игры недоступны"
+      "available": true,
+      "finalFormatted": "660 руб.",
+      "initialFormatted": "",
+      "discountPercent": 0
     },
     "3944070": {
-      "available": false,
-      "error": "Данные игры недоступны"
+      "available": true,
+      "finalFormatted": "385 руб.",
+      "initialFormatted": "",
+      "discountPercent": 0
     },
     "3971630": {
-      "available": false,
-      "error": "Данные игры недоступны"
+      "available": true,
+      "finalFormatted": "320 руб.",
+      "initialFormatted": "",
+      "discountPercent": 0
     },
     "3975750": {
       "available": true,
@@ -640,8 +768,10 @@
       "discountPercent": 0
     },
     "4117730": {
-      "available": false,
-      "error": "Данные игры недоступны"
+      "available": true,
+      "finalFormatted": "240 руб.",
+      "initialFormatted": "",
+      "discountPercent": 0
     },
     "4195110": {
       "available": true,
@@ -686,12 +816,16 @@
       "discountPercent": 0
     },
     "4627110": {
-      "available": false,
-      "error": "Данные игры недоступны"
+      "available": true,
+      "finalFormatted": "690 руб.",
+      "initialFormatted": "",
+      "discountPercent": 0
     },
     "4832460": {
-      "available": false,
-      "error": "Данные игры недоступны"
+      "available": true,
+      "finalFormatted": "240 руб.",
+      "initialFormatted": "",
+      "discountPercent": 0
     }
   }
 }
