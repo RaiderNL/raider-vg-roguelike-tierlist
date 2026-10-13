@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-10-12T14:43:25.213Z",
+  "updatedAt": "2026-10-13T00:18:22.013Z",
   "prices": {
     "337320": {
       "available": true,
@@ -123,9 +123,9 @@
     },
     "2141280": {
       "available": true,
-      "finalFormatted": "550 руб.",
-      "initialFormatted": "",
-      "discountPercent": 0
+      "finalFormatted": "385 руб.",
+      "initialFormatted": "550 руб.",
+      "discountPercent": 30
     },
     "2163330": {
       "available": true,
@@ -195,9 +195,9 @@
     },
     "2417470": {
       "available": true,
-      "finalFormatted": "799 руб.",
-      "initialFormatted": "",
-      "discountPercent": 0
+      "finalFormatted": "559 руб.",
+      "initialFormatted": "799 руб.",
+      "discountPercent": 30
     },
     "2427070": {
       "available": true,
@@ -243,9 +243,9 @@
     },
     "2527550": {
       "available": true,
-      "finalFormatted": "385 руб.",
-      "initialFormatted": "",
-      "discountPercent": 0
+      "finalFormatted": "308 руб.",
+      "initialFormatted": "385 руб.",
+      "discountPercent": 20
     },
     "2570580": {
       "available": true,
@@ -483,9 +483,9 @@
     },
     "3228590": {
       "available": true,
-      "finalFormatted": "900 руб.",
-      "initialFormatted": "",
-      "discountPercent": 0
+      "finalFormatted": "450 руб.",
+      "initialFormatted": "900 руб.",
+      "discountPercent": 50
     },
     "3232380": {
       "available": false,
@@ -535,9 +535,9 @@
     },
     "3405540": {
       "available": true,
-      "finalFormatted": "550 руб.",
-      "initialFormatted": "",
-      "discountPercent": 0
+      "finalFormatted": "275 руб.",
+      "initialFormatted": "550 руб.",
+      "discountPercent": 50
     },
     "3430340": {
       "available": true,
@@ -805,9 +805,9 @@
     },
     "4502710": {
       "available": true,
-      "finalFormatted": "465 руб.",
-      "initialFormatted": "",
-      "discountPercent": 0
+      "finalFormatted": "395 руб.",
+      "initialFormatted": "465 руб.",
+      "discountPercent": 15
     },
     "4535880": {
       "available": true,
