@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-10-19T12:28:04.205Z",
+  "updatedAt": "2026-10-19T22:07:34.704Z",
   "prices": {
     "337320": {
       "available": true,
@@ -123,9 +123,9 @@
     },
     "2141280": {
       "available": true,
-      "finalFormatted": "385 руб.",
-      "initialFormatted": "550 руб.",
-      "discountPercent": 30
+      "finalFormatted": "550 руб.",
+      "initialFormatted": "",
+      "discountPercent": 0
     },
     "2163330": {
       "available": true,
@@ -243,9 +243,9 @@
     },
     "2527550": {
       "available": true,
-      "finalFormatted": "308 руб.",
-      "initialFormatted": "385 руб.",
-      "discountPercent": 20
+      "finalFormatted": "385 руб.",
+      "initialFormatted": "",
+      "discountPercent": 0
     },
     "2570580": {
       "available": true,
@@ -435,9 +435,9 @@
     },
     "3177890": {
       "available": true,
-      "finalFormatted": "490 руб.",
-      "initialFormatted": "",
-      "discountPercent": 0
+      "finalFormatted": "367 руб.",
+      "initialFormatted": "490 руб.",
+      "discountPercent": 25
     },
     "3181650": {
       "available": true,
@@ -523,9 +523,9 @@
     },
     "3383040": {
       "available": true,
-      "finalFormatted": "465 руб.",
-      "initialFormatted": "",
-      "discountPercent": 0
+      "finalFormatted": "311 руб.",
+      "initialFormatted": "465 руб.",
+      "discountPercent": 33
     },
     "3405340": {
       "available": true,
@@ -637,9 +637,9 @@
     },
     "3657180": {
       "available": true,
-      "finalFormatted": "200 руб.",
-      "initialFormatted": "",
-      "discountPercent": 0
+      "finalFormatted": "120 руб.",
+      "initialFormatted": "200 руб.",
+      "discountPercent": 40
     },
     "3664320": {
       "available": true,
@@ -673,9 +673,9 @@
     },
     "3741860": {
       "available": true,
-      "finalFormatted": "290 руб.",
-      "initialFormatted": "",
-      "discountPercent": 0
+      "finalFormatted": "232 руб.",
+      "initialFormatted": "290 руб.",
+      "discountPercent": 20
     },
     "3755930": {
       "available": true,
@@ -805,9 +805,9 @@
     },
     "4502710": {
       "available": true,
-      "finalFormatted": "395 руб.",
-      "initialFormatted": "465 руб.",
-      "discountPercent": 15
+      "finalFormatted": "465 руб.",
+      "initialFormatted": "",
+      "discountPercent": 0
     },
     "4535880": {
       "available": true,
