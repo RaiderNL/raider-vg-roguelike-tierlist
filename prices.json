@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-11-16T15:07:59.585Z",
+  "updatedAt": "2026-11-17T01:43:52.136Z",
   "prices": {
     "337320": {
       "available": true,
@@ -81,9 +81,9 @@
     },
     "1725410": {
       "available": true,
-      "finalFormatted": "396 руб.",
-      "initialFormatted": "660 руб.",
-      "discountPercent": 40
+      "finalFormatted": "660 руб.",
+      "initialFormatted": "",
+      "discountPercent": 0
     },
     "1817500": {
       "available": true,
@@ -189,9 +189,9 @@
     },
     "2369580": {
       "available": true,
-      "finalFormatted": "660 руб.",
-      "initialFormatted": "",
-      "discountPercent": 0
+      "finalFormatted": "396 руб.",
+      "initialFormatted": "660 руб.",
+      "discountPercent": 40
     },
     "2417470": {
       "available": true,
@@ -345,9 +345,9 @@
     },
     "3009310": {
       "available": true,
-      "finalFormatted": "550 руб.",
-      "initialFormatted": "",
-      "discountPercent": 0
+      "finalFormatted": "440 руб.",
+      "initialFormatted": "550 руб.",
+      "discountPercent": 20
     },
     "3026450": {
       "available": true,
@@ -417,9 +417,9 @@
     },
     "3144340": {
       "available": true,
-      "finalFormatted": "442 руб.",
-      "initialFormatted": "660 руб.",
-      "discountPercent": 33
+      "finalFormatted": "660 руб.",
+      "initialFormatted": "",
+      "discountPercent": 0
     },
     "3156330": {
       "available": true,
@@ -441,9 +441,9 @@
     },
     "3181650": {
       "available": true,
-      "finalFormatted": "785 руб.",
-      "initialFormatted": "",
-      "discountPercent": 0
+      "finalFormatted": "628 руб.",
+      "initialFormatted": "785 руб.",
+      "discountPercent": 20
     },
     "3187880": {
       "available": true,
@@ -535,9 +535,9 @@
     },
     "3405540": {
       "available": true,
-      "finalFormatted": "550 руб.",
-      "initialFormatted": "",
-      "discountPercent": 0
+      "finalFormatted": "275 руб.",
+      "initialFormatted": "550 руб.",
+      "discountPercent": 50
     },
     "3430340": {
       "available": true,
@@ -571,15 +571,15 @@
     },
     "3526710": {
       "available": true,
-      "finalFormatted": "385 руб.",
-      "initialFormatted": "",
-      "discountPercent": 0
+      "finalFormatted": "308 руб.",
+      "initialFormatted": "385 руб.",
+      "discountPercent": 20
     },
     "3541000": {
       "available": true,
-      "finalFormatted": "590 руб.",
-      "initialFormatted": "",
-      "discountPercent": 0
+      "finalFormatted": "236 руб.",
+      "initialFormatted": "590 руб.",
+      "discountPercent": 60
     },
     "3548520": {
       "available": true,
@@ -619,9 +619,9 @@
     },
     "3632670": {
       "available": true,
-      "finalFormatted": "599 руб.",
-      "initialFormatted": "",
-      "discountPercent": 0
+      "finalFormatted": "389 руб.",
+      "initialFormatted": "599 руб.",
+      "discountPercent": 35
     },
     "3633760": {
       "available": true,
@@ -631,9 +631,9 @@
     },
     "3656560": {
       "available": true,
-      "finalFormatted": "399 руб.",
-      "initialFormatted": "499 руб.",
-      "discountPercent": 20
+      "finalFormatted": "499 руб.",
+      "initialFormatted": "",
+      "discountPercent": 0
     },
     "3657180": {
       "available": true,
@@ -643,9 +643,9 @@
     },
     "3664320": {
       "available": true,
-      "finalFormatted": "350 руб.",
-      "initialFormatted": "",
-      "discountPercent": 0
+      "finalFormatted": "210 руб.",
+      "initialFormatted": "350 руб.",
+      "discountPercent": 40
     },
     "3705150": {
       "available": true,
@@ -733,9 +733,9 @@
     },
     "3934270": {
       "available": true,
-      "finalFormatted": "660 руб.",
-      "initialFormatted": "",
-      "discountPercent": 0
+      "finalFormatted": "429 руб.",
+      "initialFormatted": "660 руб.",
+      "discountPercent": 35
     },
     "3944070": {
       "available": true,
