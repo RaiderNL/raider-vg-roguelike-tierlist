@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-11-20T06:10:08.499Z",
+  "updatedAt": "2026-11-20T19:44:25.006Z",
   "prices": {
     "337320": {
       "available": true,
@@ -781,9 +781,9 @@
     },
     "4206270": {
       "available": true,
-      "finalFormatted": "280 руб.",
-      "initialFormatted": "",
-      "discountPercent": 0
+      "finalFormatted": "196 руб.",
+      "initialFormatted": "280 руб.",
+      "discountPercent": 30
     },
     "4279880": {
       "available": true,
@@ -811,9 +811,9 @@
     },
     "4535880": {
       "available": true,
-      "finalFormatted": "465 руб.",
-      "initialFormatted": "",
-      "discountPercent": 0
+      "finalFormatted": "279 руб.",
+      "initialFormatted": "465 руб.",
+      "discountPercent": 40
     },
     "4627110": {
       "available": true,
